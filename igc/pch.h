@@ -59,6 +59,7 @@ const int   c_maxHitTests = 100;
 const int   c_minNodeSize = 5;
 const int   c_minRootSize = 10;
 const float pi = 3.14159265359f;
+const float sqrt2 = 1.41421356237f;
 #define TRUE true
 typedef std::mutex CRITICAL_SECTION;
 typedef std::string ZString;
@@ -387,7 +388,6 @@ class Rotation
         Vector  m_axis;
         float   m_angle;
 };
-const Rotation c_rotationZero(0.0f, 0.0f, 1.0f, 0.0f);
 
 class Transform44
 {
