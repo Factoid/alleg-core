@@ -6,9 +6,9 @@ sources = $(wildcard *.cpp)
 objects = $(sources:.cpp=.o)
 depends = $(sources:.cpp=.d)
 
-all: igc.so $(objects)
+all: libigc.so $(objects)
 
-igc.so: $(objects)
+libigc.so: $(objects)
 	$(CC) -fPIC -shared -o $@ $^
 
 %.d: %.cpp
