@@ -5992,7 +5992,6 @@ ZString ConstantsGlobalComment(int constid) {
 	return strComment;
 }
 
-#ifdef WIN
 /*-------------------------------------------------------------------------
  * ExportStaticIGCObjs
  *-------------------------------------------------------------------------
@@ -6026,6 +6025,7 @@ ZString ConstantsGlobalComment(int constid) {
  */
 void CmissionIGC::ExportStaticIGCObjs()
 {
+#ifdef WIN
 	ImissionIGC * pMission = this;
 
 	// Export Constants 
@@ -6338,6 +6338,5 @@ void CmissionIGC::ExportStaticIGCObjs()
     for (pctlink = pctlist->first(); pctlink; pctlink = pctlink->next())
       Obj2Txt(pctlink->data(), OT_treasureSet, pMission);
   }
-  
-}
 #endif
+}

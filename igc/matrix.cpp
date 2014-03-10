@@ -8,6 +8,11 @@
 
 Matrix g_matIdentity;
 
+template<class T> T sign( const T& t )
+{
+  return t < 0 ? -1 : (t > 0) ? 1 : 0;
+}
+
 class InitializeTransform {
 public:
     InitializeTransform()
@@ -597,8 +602,13 @@ Matrix& Matrix::SetInverse(const Matrix& mStart)
 
             bSwap = true;
             for (int col = 0; col < size; col++) {
+#ifdef WIN
                 Swap(m.m_m[row][col], m.m_m[rowMax][col]);
                 Swap(  m_m[row][col],   m_m[rowMax][col]);
+#else
+                std::swap(m.m_m[row][col], m.m_m[rowMax][col]);
+                std::swap(  m_m[row][col],   m_m[rowMax][col]);
+#endif
             }
         }
 

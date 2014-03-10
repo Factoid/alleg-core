@@ -321,6 +321,12 @@ private:
 
 public:
   Point( float x, float y ) : x(x), y(y) {}
+  Point() : x(0.0f), y(0.0f) {}
+
+  float& X() { return x; }
+  float X() const { return x; }
+  float& Y() { return y; }
+  float Y() const { return y; } 
 };
 
 #include "zlib/vertex.h"
