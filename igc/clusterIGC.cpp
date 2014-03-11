@@ -337,7 +337,7 @@ void        CclusterIGC::Update(Time now)
                 for( auto m : m_modelsCastRay )
                 {
 #endif
-                    HitTest*    ht = m->GetHitTest();
+                    HitTestPtr    ht = m->GetHitTest();
 
                     if (!ht->GetDeadF())
                     {
@@ -598,7 +598,7 @@ void        CclusterIGC::AddModel(ImodelIGC* modelNew)
 
     {
         //Add the model to the collision set
-        HitTest*    ht = modelNew->GetHitTest();
+        HitTestPtr    ht = modelNew->GetHitTest();
         ModelAttributes mt = modelNew->GetAttributes();
 
         if ((mt & c_mtNotPickable) == 0)
@@ -640,7 +640,7 @@ void        CclusterIGC::DeleteModel(ImodelIGC* modelOld)
 
     {
         //Add the model to the collision set
-        HitTest*        ht = modelOld->GetHitTest();
+        HitTestPtr        ht = modelOld->GetHitTest();
         ModelAttributes mt = modelOld->GetAttributes();
 
         if ((mt & c_mtNotPickable) == 0)
@@ -700,7 +700,7 @@ void        CclusterIGC::RecalculateCollisions(float        tOffset,
 {
     //Update the stop positions for the hit tests (& update their bounding boxes)
     assert ((pModel1->GetAttributes() & c_mtStatic) == 0);
-    HitTest*    pHitTest1 = pModel1->GetHitTest();
+    HitTestPtr    pHitTest1 = pModel1->GetHitTest();
     if (pHitTest1)
     {
         if (pHitTest1->GetDeadF())
@@ -709,7 +709,7 @@ void        CclusterIGC::RecalculateCollisions(float        tOffset,
             pHitTest1->SetStopPosition();
     }
 
-    HitTest*    pHitTest2;
+    HitTestPtr pHitTest2;
     if ((pModel2 == NULL) || (pModel2->GetAttributes() & c_mtStatic))
         pHitTest2 = NULL;
     else
@@ -741,7 +741,7 @@ void        CclusterIGC::RecalculateCollisions(float        tOffset,
                 for( auto m : m_models )
                 {
 #endif
-                    HitTest*    pht = m->GetHitTest();
+                    HitTestPtr    pht = m->GetHitTest();
 
                     //Move the models not involved in the collision
                     if ((m != pModel1) && (m != pModel2))
@@ -769,7 +769,7 @@ void        CclusterIGC::RecalculateCollisions(float        tOffset,
 #endif
                     if ((m != pModel1) && (m != pModel2) && (m->GetAttributes() & (c_mtCastRay | c_mtHitable)))
                     {
-                        HitTest*    ht = m->GetHitTest();
+                        HitTestPtr    ht = m->GetHitTest();
 
                         if (!ht->GetDeadF())
                         {

@@ -142,11 +142,7 @@ void TechFromString( TechTreeBitMask& ttbm, const std::string& str )
 //moved from FedSrv.CPP and made data private on 7/28/08
 void CmissionIGC::TechsListToBits(const char * szTechs, TechTreeBitMask & ttbm)
 {
-#ifdef WIN
 	ttbm.ClearAll();
-#else
-  ttbm.reset();
-#endif
 	
 	if(strcmp(szTechs,"0") == 0) {
 		return;
@@ -542,7 +538,7 @@ ZString CmissionIGC::BitsToTechsList(TechTreeBitMask & ttbm)
 	}
 #else
   std::vector<std::string> strArray;
-  for(int i=0; i < ttbm.size(); ++i )
+  for(int i=0; i < c_ttbMax; ++i )
   {
     std::string strTemp = GetTechFlagName(i);
     if( !strTemp.empty() )
@@ -3965,13 +3961,8 @@ void                        CmissionIGC::AddSide(IsideIGC*  s)
 #endif
         sidedata.sideID = SIDE_TEAMLOBBY;
         sidedata.gasAttributes.Initialize();
-#ifdef WIN
         sidedata.ttbmDevelopmentTechs.ClearAll();
         sidedata.ttbmInitialTechs.ClearAll();
-#else
-        sidedata.ttbmDevelopmentTechs.reset();
-        sidedata.ttbmInitialTechs.reset();
-#endif
         sidedata.color = Color(1.0f, 1.0f, 1.0f);
         sidedata.conquest = 0;
         sidedata.territory = 0;
@@ -4173,13 +4164,8 @@ void                        CmissionIGC::UpdateSides(Time now,
                          sideColors[sid][2]);
         memset(ds.name, 0x00, sizeof(ds.name));
         strcpy(ds.name, sideNames[sid]);
-#ifdef WIN
         ds.ttbmDevelopmentTechs.ClearAll();
         ds.ttbmInitialTechs.ClearAll();
-#else
-        ds.ttbmDevelopmentTechs.reset();
-        ds.ttbmInitialTechs.reset();
-#endif
         ds.conquest = 0;
         ds.territory = 0;
         ds.nKills = ds.nEjections = ds.nDeaths = ds.nBaseKills = ds.nBaseCaptures = ds.nFlags = ds.nArtifacts = 0;
@@ -4333,7 +4319,6 @@ void                    CmissionIGC::GenerateMission(Time                   now,
             if (pmp->bAllowDevelopments)
             {
                 ttbmDefaultTechs = pciv->GetBaseTechs();
-#ifdef WIN
                 if (pmp->bAllowShipyardPath)
                 {
                     ttbmDefaultTechs.SetBit(c_ttbShipyardAllowed);
@@ -4350,24 +4335,6 @@ void                    CmissionIGC::GenerateMission(Time                   now,
                 {
                     ttbmDefaultTechs.SetBit(c_ttbSupremacyAllowed);
                 }
-#else
-                if (pmp->bAllowShipyardPath)
-                {
-                    ttbmDefaultTechs.set(c_ttbShipyardAllowed);
-                }
-                if (pmp->bAllowExpansionPath)
-                {
-                    ttbmDefaultTechs.set(c_ttbExpansionAllowed);
-                }
-                if (pmp->bAllowTacticalPath)
-                {
-                    ttbmDefaultTechs.set(c_ttbTacticalAllowed);
-                }
-                if (pmp->bAllowSupremacyPath)
-                {
-                    ttbmDefaultTechs.set(c_ttbSupremacyAllowed);
-                }
-#endif
             }
             else
                 ttbmDefaultTechs = pciv->GetNoDevTechs();
@@ -4375,11 +4342,7 @@ void                    CmissionIGC::GenerateMission(Time                   now,
             if (pttbmShouldOverride && pttbmOverrideValue)
             {
               int nID = pside->GetObjectID();
-#ifdef WIN
               pside->SetDevelopmentTechs((pttbmShouldOverride[nID] & pttbmOverrideValue[nID]) | (ttbmDefaultTechs - pttbmShouldOverride[nID]));
-#else
-              pside->SetDevelopmentTechs((pttbmShouldOverride[nID] & pttbmOverrideValue[nID]) | (ttbmDefaultTechs & ~pttbmShouldOverride[nID]));
-#endif
             }
             else
               pside->SetDevelopmentTechs(ttbmDefaultTechs);

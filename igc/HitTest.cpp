@@ -120,7 +120,7 @@ void    HitTest::UpdateBB(void)
 
 const double epsilon = 1.0f / 128.0f;
 
-void    HitTest::Collide(HitTest*           pHitTest,
+void    HitTest::Collide(HitTestPtr           pHitTest,
                          CollisionQueue*    pQueue)
 {
     assert (pQueue);
@@ -626,9 +626,15 @@ class   BoundingHull : public HitTest
 class   CachedMultiHull
 {
     public:
+#ifndef WIN
+        CachedMultiHull() : m_pMultiHull(nullptr) {}
+#endif
         ~CachedMultiHull(void)
         {
             delete m_pMultiHull;
+#ifndef WIN
+            m_pMultiHull = 0;
+#endif
         }
 
         char        m_name[c_cbName];
@@ -643,8 +649,8 @@ class   CachedMultiHull
 typedef Slist_utl<CachedMultiHull> CachedList;
 typedef Slink_utl<CachedMultiHull> CachedLink;
 
+#ifdef WIN
 CachedList  cachedMultiHulls;
-
 MultiHullBase*  HitTest::Load(const char*    pszFileName)
 {
     if ((!pszFileName) || (pszFileName[0] == '\0'))
@@ -858,12 +864,12 @@ MultiHullBase*  HitTest::Load(const char*    pszFileName)
     return pMultiHull;
 }
 
-HitTest*    HitTest::Create(const char*   pszFileName,
+HitTestPtr    HitTest::Create(const char*   pszFileName,
                             IObject*      data,
                             bool          staticF,
                             HitTestShape  htsDefault)
 {
-    HitTest*    pHitTest = NULL;
+    HitTestPtr    pHitTest = NULL;
 
     if (pszFileName)
     {
@@ -880,13 +886,13 @@ HitTest*    HitTest::Create(const char*   pszFileName,
         switch (htsDefault)
         {
             case c_htsSphere:
-                pHitTest = (HitTest*)(new BoundingSphere(data, staticF));
+                pHitTest = (HitTestPtr)(new BoundingSphere(data, staticF));
             break;
             case c_htsPoint:
-                pHitTest = (HitTest*)(new BoundingPoint(data, staticF));
+                pHitTest = (HitTestPtr)(new BoundingPoint(data, staticF));
             break;
             case c_htsCone:
-                pHitTest = (HitTest*)(new BoundingCone(data, staticF));
+                pHitTest = (HitTestPtr)(new BoundingCone(data, staticF));
             break;
             default:
                 assert (false);
@@ -895,6 +901,25 @@ HitTest*    HitTest::Create(const char*   pszFileName,
 
     return pHitTest;
 }
+
+#else
+
+typedef std::map<std::string,std::shared_ptr<MultiHullBase*>> CachedHulls;
+CachedHulls cachedMultiHulls;
+
+MultiHullBasePtr HitTest::Load( const std::string& filename )
+{
+  return nullptr;
+}
+
+HitTestPtr HitTest::Create( const std::string& filename, IObject* data, bool staticF, HitTestShape htsDefault )
+{
+  return nullptr;
+}
+
+#endif
+
+
 
 Vector    HitTest::GetMinExtreme(HitTestShape         hts,
                                  const Vector&        position,
@@ -942,21 +967,21 @@ Vector    HitTest::GetMaxExtreme(HitTestShape       hts,
     }
 }
 
-static bool     DoGilbert(HitTest*              phtObjectA,
+static bool     DoGilbert(HitTestPtr              phtObjectA,
                           HitTestShape          htsA,
                           const Vector&         positionStart,
                           const Vector&         positionStop,
                           const Vector&         dV,
                           const Orientation&    orientationHullA,
-                          HitTest*              phtObjectB,
+                          HitTestPtr              phtObjectB,
                           HitTestShape          htsB,
                           Vector                simplex[4]);
 
 bool HitTest::HullCollide(float*          tStart,
                           float           tMax,
-                          HitTest*        phtHullA,
+                          HitTestPtr        phtHullA,
                           HitTestShape*   phtsA,
-                          HitTest*        phtHullB,
+                          HitTestPtr        phtHullB,
                           HitTestShape*   phtsB,
                           const Vector&   dP,
                           const Vector&   dV)
@@ -1079,9 +1104,9 @@ bool HitTest::HullCollide(float*          tStart,
 bool    HitTest::IntervalCollide(float               tStart,
                                  float               tStop,
                                  float               maxDeltaT,
-                                 HitTest*            phtHullA,
+                                 HitTestPtr            phtHullA,
                                  HitTestShape        htsA,
-                                 HitTest*            phtHullB,
+                                 HitTestPtr            phtHullB,
                                  HitTestShape        htsB,
                                  const Vector&       dP,
                                  const Vector&       dV,
@@ -1889,13 +1914,13 @@ int Johnson(int             n,
     }
 }
 
-static bool    DoGilbert(HitTest*              phtHullA,
+static bool    DoGilbert(HitTestPtr              phtHullA,
                          HitTestShape          htsA,
                          const Vector&         positionStart,
                          const Vector&         positionStop,
                          const Vector&         dV,
                          const Orientation&    orientationHullA,
-                         HitTest*              phtHullB,
+                         HitTestPtr              phtHullB,
                          HitTestShape          htsB,
                          Vector                simplex[4])
 {

@@ -38,7 +38,7 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
     assert (m_pdtConstruction->GetPilotType() == c_ptBuilder);
 
 
-    MultiHullBase*  pmhb = HitTest::Load(m_data.modelName);
+    MultiHullBasePtr  pmhb = HitTest::Load(m_data.modelName);
     m_nLandSlots = 0;
     m_nCapLandSlots = 0;
     m_nLaunchSlots = 0;

@@ -7,6 +7,8 @@
 #ifndef _mask_H_
 #define _mask_H_
 
+#include <cstdlib>
+#include <climits>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -123,8 +125,11 @@ public:
 // This class implements a flag word with more than 32 bits.
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#ifdef WIN
 template<int nBits> class TLargeBitMask
+#else
+template<unsigned long int nBits> class TLargeBitMask
+#endif
 {
     public:
         TLargeBitMask(void)
@@ -187,34 +192,73 @@ template<int nBits> class TLargeBitMask
             return true;
         }
 		// CHECK THIS, IT MIGHT OVERFLOW ! -KGJV
+#ifdef WIN
         void ToString(char* pszBytes, int cch) const
+#else
+        void ToString(char* pszBytes, long unsigned int cch) const
+#endif
         {
+#ifdef WIN
           int cb = min(cch / 2, sizeof(m_bits));
+#else
+          long unsigned int cb = std::min( cch / 2, sizeof(m_bits) );
+#endif
+#ifdef WIN
           for (int i = 0; i < cb; ++i)
+#else
+          for (long unsigned int i = 0; i < cb; ++i)
+#endif
           {
             char szByte[3];
             sprintf(szByte, "%02X", m_bits[i]);
+#ifdef WIN
             CopyMemory(pszBytes + (i * 2), szByte, 2);
+#else
+            memcpy( pszBytes + (i*2), szByte, 2);
+#endif
           }
         }
 
         bool FromString(const char* pszBits)
         {
+#ifdef WIN
           int cch = strlen(pszBits);
+#else
+          unsigned long int cch = strlen(pszBits);
+#endif
           if (cch % 2)
             return false;
           BYTE bits[sizeof(m_bits)];
           ZeroMemory(bits, sizeof(bits));
+#ifdef WIN
           int cb = min(cch / 2, sizeof(m_bits));
+#else
+          unsigned long int cb = std::min(cch / 2, sizeof(m_bits));
+#endif
+#ifdef WIN
           for (int i = 0; i < cb; ++i)
+#else
+          for( unsigned long int i = 0; i < cb; ++i )
+#endif
           {
             char szByte[3];
+#ifdef WIN
             CopyMemory(szByte, pszBits + (i * 2), 2);
+#else
+            memcpy( szByte, pszBits + (i*2), 2 );
+#endif
             szByte[2] = '\0';
+#ifdef WIN
             long nBits = strtoul(szByte, NULL, 16);
             if ((0 == nBits || ULONG_MAX == nBits) && ERANGE == errno)
               return false;
             bits[i] = (BYTE)nBits;
+#else
+            unsigned long int mBits = strtoul(szByte, NULL, 16);
+            if( (0 == mBits || mBits == ULONG_MAX) && ERANGE == errno )
+              return false;
+            bits[i] = (BYTE)mBits;
+#endif
           }
 
           Set(bits);

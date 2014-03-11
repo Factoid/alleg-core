@@ -38,11 +38,7 @@ HRESULT         CbucketIGC::Initialize(ImissionIGC* pMission,
     if (m_data.buyable->GetObjectType() == OT_development)
     {
         IdevelopmentIGC*    pdevelopment = (IdevelopmentIGC*)(m_data.buyable);
-#ifdef WIN
         if ((!pdevelopment->GetTechOnly()) && pdevelopment->GetEffectTechs().GetAllZero())
-#else
-        if ((!pdevelopment->GetTechOnly()) && pdevelopment->GetEffectTechs().none() )
-#endif
         {
             //A tech that affects only a side's global attributes.
             //Check for other buckets which do exactly the same thing
@@ -63,11 +59,7 @@ HRESULT         CbucketIGC::Initialize(ImissionIGC* pMission,
                 if (pbuyable->GetObjectType() == OT_development)
                 {
                     IdevelopmentIGC*    pd = (IdevelopmentIGC*)pbuyable;
-#ifdef WIN
                     if ((!pd->GetTechOnly()) && (pd->GetPrice() <= price) && pd->GetEffectTechs().GetAllZero())
-#else
-                    if( (!pd->GetTechOnly()) && (pd->GetPrice() <= price) && pd->GetEffectTechs().none() )
-#endif
                     {
                         //Look at that ... a equally or less expensive development that affects only global attributes
                         //do they affect the same global attributes the same way?

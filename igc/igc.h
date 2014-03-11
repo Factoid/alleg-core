@@ -3137,7 +3137,11 @@ class ImodelIGC : public IbaseIGC
         virtual void                 Move(float t) = 0;
         virtual void                 Move(void) = 0;
         virtual void                 SetBB(Time tStart, Time tStop, float dt) = 0;
+#ifdef WIN
         virtual HitTest*             GetHitTest(void) const = 0;
+#else
+        virtual HitTestPtr GetHitTest() const = 0;
+#endif
 
         virtual void                 HandleCollision(Time                   timeCollision,
                                                      float                  tCollision,

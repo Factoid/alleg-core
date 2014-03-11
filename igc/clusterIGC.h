@@ -415,8 +415,11 @@ class       CclusterIGC : public IclusterIGC
         virtual void                    MakeModelStatic(ImodelIGC* pmodel)
         {
             assert (pmodel);
-
+#ifdef WIN
             HitTest*    ht = pmodel->GetHitTest();
+#else
+            HitTestPtr ht = pmodel->GetHitTest();
+#endif
             assert (ht);
 
             assert (pmodel->GetCluster() == this);
@@ -433,7 +436,7 @@ class       CclusterIGC : public IclusterIGC
         {
             assert (pmodel);
 
-            HitTest*    ht = pmodel->GetHitTest();
+            HitTestPtr    ht = pmodel->GetHitTest();
             assert (ht);
             m_kdrMoving.deleteHitTest(ht);
 
@@ -444,7 +447,7 @@ class       CclusterIGC : public IclusterIGC
             DeleteIbaseIGC((BaseListIGC*)&m_modelsCastRay, pmodel);
         }
 
-        virtual void             FreeThingSite(ModelAttributes  ma, ImodelIGC*   pmodel, HitTest* pht)
+        virtual void             FreeThingSite(ModelAttributes  ma, ImodelIGC*   pmodel, HitTestPtr pht)
         {
             if (ma & c_mtHitable)
             {

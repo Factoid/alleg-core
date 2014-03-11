@@ -19,6 +19,9 @@ libigc.so: $(objects)
 
 deps: $(depends)
 
+install:
+	cp libigc.so ../tests
+
 depclean:
 	rm *.d
 

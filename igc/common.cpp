@@ -1786,7 +1786,7 @@ bool    Dodge(IshipIGC*     pship,
     float               myRadius = pship->GetRadius() + 1.0f;
     float               myAcceleration = pship->GetHullType()->GetThrust() / pship->GetMass();
 
-    HitTest*    myHitTest = pship->GetHitTest();
+    HitTestPtr    myHitTest = pship->GetHitTest();
 
     ImodelIGC*  pmodelCollide = NULL;
     float       tCollide = FLT_MAX;

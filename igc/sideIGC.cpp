@@ -30,11 +30,7 @@ HRESULT         CsideIGC::Initialize(ImissionIGC*   pMission,
     m_pCivilization = pMission->GetCivilization(m_data.civilizationID);
     assert (m_pCivilization);
     m_pCivilization->AddRef();
-#ifdef WIN
     m_ttbmBuildingTechs.ClearAll(); //Will automatically adjust for starting buildings
-#else
-    m_ttbmBuildingTechs.reset();
-#endif
 
     m_lastUpdate = now;
 
@@ -118,11 +114,7 @@ int             CsideIGC::Export(void*  data) const
 void            CsideIGC::DestroyBuckets(void)
 {
     m_data.ttbmDevelopmentTechs = GetCivilization()->GetBaseTechs();
-#ifdef WIN
     m_ttbmBuildingTechs.ClearAll();
-#else
-    m_ttbmBuildingTechs.reset();
-#endif
 
     {
 #ifdef WIN
@@ -146,11 +138,7 @@ void            CsideIGC::CreateBuckets(void)
     if (m_pMission->GetMissionParams()->bAllowDevelopments)
     {
         TechTreeBitMask     ttbmLocalUltimate;
-#ifdef WIN
         ttbmLocalUltimate.ClearAll();
-#else
-        ttbmLocalUltimate.reset();
-#endif
         {
             //Resolve what the ultimate techs are for this civ ...
             m_ttbmUltimateTechs = m_data.ttbmDevelopmentTechs;

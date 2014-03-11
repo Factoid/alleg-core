@@ -151,6 +151,7 @@ class   CmodelIGC
         }
         void            FreeThingSite(void)
         {
+#ifdef WIN
             if (m_pHitTest)
             {
                 if (m_cluster)
@@ -167,6 +168,7 @@ class   CmodelIGC
             }
             else
                 assert (!m_pThingSite);
+#endif
         }
 
         const Vector&   GetPosition(void) const
@@ -323,7 +325,11 @@ class   CmodelIGC
         {
             m_pHitTest->SetBB(tStart, tStop, dT);
         }
+#ifdef WIN
         HitTest*                GetHitTest(void) const
+#else
+        HitTestPtr GetHitTest() const
+#endif
         {
             return m_pHitTest;
         }
@@ -383,7 +389,11 @@ class   CmodelIGC
         IclusterIGC*        m_cluster;
         float               m_mass;
         float               m_signature;
+#ifdef WIN
         HitTest*            m_pHitTest;
+#else
+        HitTestPtr          m_pHitTest;
+#endif
         char                m_name[c_cbName];
         ModelAttributes     m_attributes;
         bool                m_visibleF;
@@ -665,7 +675,11 @@ template<class T> class TmodelIGC : public T
         {
             m_model.SetBB(tStart, tStop, dt);
         }
+#ifdef WIN
         virtual HitTest*             GetHitTest(void) const
+#else
+        virtual HitTestPtr GetHitTest() const
+#endif
         {
             return m_model.GetHitTest();
         }

@@ -31,7 +31,7 @@ HRESULT     CprobeTypeIGC::Initialize(ImissionIGC* pMission, Time now, const voi
                                                           ? m_data.textureName
                                                           : NULL);
 
-        MultiHullBase*  pmhb = HitTest::Load(m_data.modelName);
+        MultiHullBasePtr  pmhb = HitTest::Load(m_data.modelName);
         if (m_data.projectileTypeID != NA)
         {
             m_projectileType = pMission->GetProjectileType(m_data.projectileTypeID);

@@ -55,8 +55,8 @@ void    CollisionQueue::sort(int    start)
 }
 
 void    CollisionQueue::flush(int       n,
-                              HitTest*  pHitTest1,
-                              HitTest*  pHitTest2)
+                              HitTestPtr  pHitTest1,
+                              HitTestPtr  pHitTest2)
 {
     assert (n > 0);
     assert (n <= m_nCollisions);
@@ -136,9 +136,9 @@ void    CollisionQueue::purge(void)
 }
 
 void    CollisionQueue::addCollision(float          tCollision,
-                                     HitTest*       pHitTest1,
+                                     HitTestPtr       pHitTest1,
                                      HitTestShape   hts1,
-                                     HitTest*       pHitTest2,
+                                     HitTestPtr       pHitTest2,
                                      HitTestShape   hts2)
 {
     assert (hts1 <= pHitTest1->GetTrueShape());

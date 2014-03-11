@@ -93,11 +93,7 @@ class       CsideIGC : public IsideIGC
 
                 // set the tech bits for the new civ
                 m_data.ttbmDevelopmentTechs = GetCivilization()->GetBaseTechs();
-#ifdef WIN
                 m_ttbmBuildingTechs.ClearAll();
-#else
-                m_ttbmBuildingTechs.reset();
-#endif
                 m_data.civilizationID = GetCivilization()->GetObjectID();
 
                 //Turn all space stations into the base space station for the new civ
@@ -164,11 +160,7 @@ class       CsideIGC : public IsideIGC
         {
             //See what the new set of building techs is, from scratch
             TechTreeBitMask ttbm;
-#ifdef WIN
             ttbm.ClearAll();
-#else
-            ttbm.reset();
-#endif
 
             {
 #ifdef WIN

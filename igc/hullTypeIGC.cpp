@@ -60,9 +60,12 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
 
     {
         static const Vector z(0.0f, 0.0f, 1.0f);
-
+#ifdef WIN
         MultiHullBase*  pmhb = HitTest::Load(m_data->modelName);
         assert (pmhb);
+#else
+        MultiHullBasePtr pmhb = HitTest::Load(m_data->modelName);
+#endif
         {
 
             {

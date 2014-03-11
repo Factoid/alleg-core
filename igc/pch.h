@@ -50,7 +50,7 @@ inline float random( float a, float b )
 
 #define _vsnprintf vsnprintf
 const unsigned int MAX_PATH=0x104;
-const unsigned int c_cbFileName = 20;
+const unsigned int c_cbFileName = 13;
 const unsigned int c_cbLocAbrev = 9;
 const unsigned int c_cbName = 25;
 const unsigned int c_cbDescription = 201;
@@ -78,6 +78,12 @@ typedef long LONG;
 typedef char HitTestShape;
 typedef uint64_t ULONG;
 typedef void* HitTestID;
+
+class MultiHullBase;
+class HitTest;
+typedef std::shared_ptr<MultiHullBase> MultiHullBasePtr;
+typedef HitTest* HitTestPtr;
+
 
 inline bool FAILED( HRESULT hr )
 {
@@ -125,11 +131,14 @@ template<class T> using Slink_utl = std::list<T>;
 template<class T> using TRef = std::shared_ptr<T>;
 template<class T,class V> using TMap = std::map<T,V>;
 
+#include "zlib/mask.h"
+/*
 template<size_t T> using TLargeBitMask = std::bitset<T>;
 template<size_t T> bool operator<= ( const std::bitset<T>& lhs, std::bitset<T> rhs )
 {
   return false;
 }
+*/
 
 /*
 template<size_t T> class TLargeBitMask : public std::bitset<T>
@@ -197,7 +206,11 @@ class UTL
         //  S_OK    ... file exists and has a non-zero length
         //  S_FALSE ... file exists, but has a length of zero
         //  E_FAIL  ... file does not exist.
+#ifdef WIN
         static void SetArtPath(const char* szArtwork);
+#else
+        static void SetArtPath( const std::string& artwork );
+#endif
         static HRESULT getFile(    const char*    name,
                                    const char*    extension,
                                OUT char*          artwork,
@@ -223,11 +236,17 @@ class UTL
         //set allocated on demand strings, file names or names
         static void  putFileName(char*       name, const char*   newVal);
         static void  putName(char*           name, const char*   newVal);
-
+#ifdef WIN
         static const char*  artworkPath(void)
         {
             return s_artworkPath;
         }
+#else
+        static const std::string& artworkPath()
+        {
+          return s_artworkPath;
+        }
+#endif
 #ifdef WIN
         static LONG GetPathFromReg(IN  HKEY hkey,
                                    IN  const char * szSubKey, 
@@ -237,7 +256,11 @@ class UTL
         static int hextoi(const char * pHex);
 
     private:
+#ifdef WIN
         static char     s_artworkPath[MAX_PATH];
+#else
+        static std::string s_artworkPath;
+#endif
         static char     s_szUrlRoot[MAX_PATH];
 		static TMap<DWORD,ZString> m_PrivilegedUsersMap; //Imago 6/10
 		static TMap<DWORD,ZString> m_ServerVersionMap; //Imago 7/10
@@ -394,6 +417,7 @@ class Rotation
         Vector  m_axis;
         float   m_angle;
 };
+const Rotation c_rotationZero(0.0f, 0.0f, 1.0f, 0.0f);
 
 class Transform44
 {
@@ -535,8 +559,8 @@ class CollisionEntry
 {
     public:
         float           m_tCollision;
-        HitTest*        m_pHitTest1;
-        HitTest*        m_pHitTest2;
+        HitTestPtr        m_pHitTest1;
+        HitTestPtr        m_pHitTest2;
         HitTestShape    m_hts1;
         HitTestShape    m_hts2;
 
@@ -569,13 +593,13 @@ class CollisionQueue
 
         void    sort(int                    start);
         void    flush(int                   start,
-                      HitTest*              pHitTest1,
-                      HitTest*              pHitTest2);
+                      HitTestPtr              pHitTest1,
+                      HitTestPtr              pHitTest2);
         void    purge(void);
         void    addCollision(float          tCollision,
-                             HitTest*       pHitTest1,
+                             HitTestPtr       pHitTest1,
                              HitTestShape   hts1,
-                             HitTest*       pHitTest2,
+                             HitTestPtr       pHitTest2,
                              HitTestShape   hts2);
 
     private:
@@ -623,7 +647,7 @@ class   KDnode
         void    reset(bool          highF);
         void    pivot(void);
 
-        void    test(HitTest*           pHitTest,
+        void    test(HitTestPtr           pHitTest,
                      CollisionQueue*    pQueue) const;
 
     protected:
@@ -637,7 +661,7 @@ class   KDnode
 
         int         m_nHitTests;
         int         m_maxHitTests;
-        HitTest**   m_ppHitTests;
+        HitTestPtr*   m_ppHitTests;
         Endpoint**  m_ppEndpoints[c_nAxes];
 };
 
@@ -646,9 +670,9 @@ class   KDroot : public KDnode
     public:
         KDroot(bool bStatic);
         ~KDroot(void);
-
-        void    addHitTest(HitTest*           pHitTest);
-        void    deleteHitTest(HitTest*        pHitTest);
+        
+        void    addHitTest(HitTestPtr           pHitTest);
+        void    deleteHitTest(HitTestPtr        pHitTest);
 
         void    flush(void);
         void    update(void);
@@ -662,12 +686,17 @@ class   KDroot : public KDnode
 class HitTest : public Transform44
 {
     public:
+#ifdef WIN
         static MultiHullBase*   Load(const char*    pszFileName);
-
-        static HitTest*         Create(const char*    pszFileName,
+        static HitTestPtr         Create(const char*    pszFileName,
                                        IObject*       data,
                                        bool           staticF,
                                        HitTestShape   htsDefault = c_htsSphere);
+
+#else
+        static MultiHullBasePtr Load( const std::string& filename );
+        static HitTestPtr Create( const std::string& filename, IObject* data, bool staticF, HitTestShape htsDefault = c_htsSphere );
+#endif
 
         HitTest(IObject*        data,
                 float           radius,
@@ -811,7 +840,7 @@ class HitTest : public Transform44
 
         void    UpdateBB(void);
 
-        void    Collide(HitTest*            pHitTest,
+        void    Collide(HitTestPtr            pHitTest,
                         CollisionQueue*     pQueue);
 
         HitTestShape    GetShape(void) const
@@ -873,12 +902,12 @@ class HitTest : public Transform44
             return m_data;
         }
 
-        HitTest*        GetLastTest(void) const
+        HitTestPtr        GetLastTest(void) const
         {
             return m_lastTest;
         }
 
-        void            SetLastTest(HitTest*    ht)
+        void            SetLastTest(HitTestPtr    ht)
         {
             m_lastTest = ht;
         }
@@ -920,7 +949,7 @@ class HitTest : public Transform44
             m_id = id;
         }
 
-        HitTest*        GetNoHit(void) const
+        HitTestPtr        GetNoHit(void) const
         {
             return m_noHit;
         }
@@ -935,7 +964,7 @@ class HitTest : public Transform44
             m_pvUseTrueShapeOther = pvUseTrueShapeOther;
         }
 
-        void            SetNoHit(HitTest*   ht)
+        void            SetNoHit(HitTestPtr   ht)
         {
             m_noHit = ht;
         }
@@ -952,18 +981,18 @@ class HitTest : public Transform44
 
         static bool     HullCollide(float*        tCollision,
                                     float         tMax,
-                                    HitTest*      phtHullA,
+                                    HitTestPtr      phtHullA,
                                     HitTestShape* phtsA,
-                                    HitTest*      phtHullB,
+                                    HitTestPtr      phtHullB,
                                     HitTestShape* phtsB,
                                     const Vector& dP,
                                     const Vector& dV);  //Sense for velocity is reversed from position
         static bool     IntervalCollide(float               tStart,
                                         float               tStop,
                                         float               maxDeltaT,
-                                        HitTest*            phtHullA,
+                                        HitTestPtr            phtHullA,
                                         HitTestShape        htsA,
-                                        HitTest*            phtHullB,
+                                        HitTestPtr            phtHullB,
                                         HitTestShape        htsB,
                                         const Vector&       dP,
                                         const Vector&       dV,               //Sense for velocity is reversed from position
@@ -1023,7 +1052,7 @@ class HitTest : public Transform44
         void*           m_pvUseTrueShapeOther;    //then always use the true shape for purposes of collision detection & not the given shape 
 
         KDroot*         m_pkdrRoot;
-        HitTest*        m_noHit;
+        HitTestPtr        m_noHit;
         HitTestID       m_id;
         BoundingBox     m_boundingBox;
         Vector          m_stopPosition;
@@ -1035,7 +1064,7 @@ class HitTest : public Transform44
         Time            m_timeStop;
 
         Endpoint        m_endpoints[c_nAxes][2];
-        HitTest*        m_lastTest;
+        HitTestPtr        m_lastTest;
 
         HitTestShape    m_shape;
         HitTestShape    m_shapeTrue;

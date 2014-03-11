@@ -18,12 +18,18 @@
 #include "pch.h"
 #include <fstream>
 
+#ifdef WIN
 char UTL::s_artworkPath[MAX_PATH] = "";
-const Rotation c_rotationZero(0.0f, 0.0f, 1.0f, 0.0f);
+#else
+std::string UTL::s_artworkPath;
+#endif
 
 void ZAssertImpl(bool bSucceeded, const char* psz, const char* pszFile, int line, const char* pszModule)
 {
-  throw "Not Implemented";
+  if( !bSucceeded )
+  {
+    throw "ZAssert Failed";
+  }
 }
 
 Rotation::Rotation(void)
@@ -108,8 +114,11 @@ HRESULT UTL::getFile(    const char*    name,
 {
     HRESULT rc = E_FAIL;
     assert (name && extension && artwork && *s_artworkPath);
-    
+#ifdef WIN
     strcpy(artwork, s_artworkPath);
+#else
+    strcpy(artwork, s_artworkPath.c_str());
+#endif
     {
         char*       pArtwork = artwork + strlen(artwork);
         const char* pName = name;
@@ -137,3 +146,25 @@ HRESULT UTL::getFile(    const char*    name,
 
     return rc;
 }
+
+#ifdef WIN
+void UTL::SetArtPath(const char* szArtwork)
+{
+
+  int cbsz = lstrlen(szArtwork);
+  assert(cbsz > 0 && cbsz < MAX_PATH);
+  bool fTrailingBS = szArtwork[cbsz - 1] == '\\';
+  lstrcpy(s_artworkPath, szArtwork);
+  if (!fTrailingBS)
+  {
+    s_artworkPath[cbsz] = '\\';
+    s_artworkPath[cbsz + 1] = 0;
+  }
+}
+#else
+void UTL::SetArtPath(const std::string& szArtwork)
+{
+  UTL::s_artworkPath = szArtwork;
+}
+#endif
+
