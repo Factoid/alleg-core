@@ -12,6 +12,8 @@
 #include "pch.h"
 #include <float.h>
 #include <math.h>
+#include <fstream>
+
 
 void    HitTest::SetBB(Time     start,
                        Time     stop,
@@ -245,15 +247,19 @@ class   ConvexVertex
         {
             m_position = p;
         }
-
+#ifdef WIN
         const ConvexVertex** GetAdjacencies(void) const
         {
             return  m_adjacencies;
         }
-
+#endif
     private:
         Vector                  m_position;
+#ifdef WIN
          const ConvexVertex**   m_adjacencies;
+#else
+        std::vector<ConvexVertex*> adjacencies;
+#endif
 
     friend class HitTest;
     friend class BoundingHull;
@@ -296,6 +302,10 @@ class   BoundingCone : public HitTest
 class   SingleHull
 {
     public:
+#ifndef WIN
+        SingleHull() : m_center() {}
+#endif
+#ifdef WIN
         SingleHull(int              nVertices, const Vector&    center)
         :
             m_nVertices(nVertices),
@@ -309,6 +319,7 @@ class   SingleHull
                                        sizeof(ConvexVertex) * nVertices +
                                        sizeof(ConvexVertex*) * (nAdjacencies + nVertices)]);
         }
+#endif
 
         const ConvexVertex*   GetExtremeVertex(const Vector& direction) const
         {
@@ -316,7 +327,19 @@ class   SingleHull
                                  ((direction.y < 0.0) ? 0 : 2) +
                                  ((direction.z < 0.0) ? 0 : 4)];
         }
-
+#ifdef WIN
+        void load( std::ifstream& file )
+        {
+          int nVerts, nAdj;
+          file >> nVerts >> nAdj >> center.x >> center.y >> center.z;
+          center.x *= -1;
+          verts.resize(nVerts);
+          for( auto v : verts )
+          {
+            v.load( file );
+          }
+        }
+#endif
         void                    CalculateExtremeVertices(void)
         {
 
@@ -341,7 +364,7 @@ class   SingleHull
                 while (true)
                 {
                     const ConvexVertex*     pcvNext = NULL;
-
+#ifdef WIN
                     const ConvexVertex**    ppcvAdjacent = pcv->m_adjacencies;
                     do
                     {
@@ -353,7 +376,17 @@ class   SingleHull
                         }
                     }
                     while (*(++ppcvAdjacent) != NULL);
-
+#else
+                    for( auto v : pcv->adjacencies )
+                    {
+                      double dot = direction * v->m_position;
+                      if( dot > dotMax )
+                      {
+                        dotMax = dot;
+                        pcvNext = v;
+                      }
+                    }
+#endif
                     if (pcvNext)
                         pcv = pcvNext;
                     else
@@ -371,6 +404,7 @@ class   SingleHull
         }
 
     private:
+#ifdef WIN
         const ConvexVertex*   vertex0(void) const
         {
             return ((const ConvexVertex*)(((char*)this) + sizeof(*this)));
@@ -379,10 +413,16 @@ class   SingleHull
         {
             return ((const ConvexVertex**)(vertex0() + m_nVertices));
         }
+#endif
 
+#ifdef WIN
         int                 m_nVertices;
+#endif
         const ConvexVertex* m_pcvExtremes[8];
         Vector              m_center;
+#ifndef WIN
+        std::vector<ConvexVertex> verts;
+#endif
 
         friend class BoundingHull;
         friend class HitTest;
@@ -398,44 +438,71 @@ class   MultiHull : public MultiHullBase
         :
             MultiHullBase(ellipseEquation, originalRadius),
             m_nHulls(nHulls),
+#ifndef WIN
+            hulls(nHulls),
+#endif
             //m_ellipseEquation(ellipseEquation),
             m_ellipseRadiusMultiplier(ellipseRadiusMultiplier)
         {
         }
-
+#ifdef WIN
         ~MultiHull(void)
         {
             for (int i = 0; (i < m_nHulls); i++)
                 delete GetSingleHull(i);
         }
+#endif
 
+#ifdef WIN
         void* operator new(size_t size, int nHulls)
         {
             return (void*)(::new char [size +
                                        sizeof(SingleHull*) * nHulls]);
         }
+#endif
 
+#ifndef WIN
+        void load( std::ifstream& file )
+        {
+          for( auto h : hulls )          
+          {
+            h.load( file );
+          }
+        }
+#endif
         int             GetNhulls(void) const
         {
             return m_nHulls;
         }
 
+#ifdef WIN
         SingleHull*     GetSingleHull(int hullID) const
         {
             assert (hullID >= 0);
             assert (hullID < m_nHulls);
             return hull0()[hullID];
         }
+#else
+        const SingleHull* GetSingleHull(int hullID) const
+        {
+          return &hulls[hullID];
+        }
+#endif
 
     private:
+#ifdef WIN
         SingleHull**    hull0(void) const
         {
             return ((SingleHull**)(((char*)this) + sizeof(*this)));
         }
+#endif
 
         int             m_nHulls;
         float           m_ellipseRadiusMultiplier;  //>= m_originalRadius
         //Vector          m_ellipseEquation;          //(x/ee.x)^2 + (y/ee.y)^2 + (z/ee.z)^2 <= 1
+#ifndef WIN
+        std::vector<SingleHull> hulls;
+#endif
 
         friend class    BoundingHull;
         friend class    HitTest;
@@ -532,6 +599,7 @@ class   BoundingHull : public HitTest
                     
                 const ConvexVertex*     pcvNext = NULL;
 
+#ifdef WIN
                 const ConvexVertex**    ppcvAdjacent = pcv->m_adjacencies;
                 do
                 {
@@ -546,6 +614,17 @@ class   BoundingHull : public HitTest
                     }
                 }
                 while (*(++ppcvAdjacent) != NULL);
+#else
+                for( auto v : pcv->adjacencies )
+                {
+                  double dot = direction * v->m_position;
+                  if( dot > dotMax )
+                  {
+                    dotMax = dot;
+                    pcvNext = v;
+                  }
+                }
+#endif
 
                 if (pcvNext)
                     pcv = pcvNext;
@@ -904,12 +983,32 @@ HitTestPtr    HitTest::Create(const char*   pszFileName,
 
 #else
 
-typedef std::map<std::string,std::shared_ptr<MultiHullBase*>> CachedHulls;
+typedef std::map<std::string,MultiHullBasePtr> CachedHulls;
 CachedHulls cachedMultiHulls;
 
 MultiHullBasePtr HitTest::Load( const std::string& filename )
 {
-  return nullptr;
+  if( filename.empty() ) return nullptr;
+  auto i = cachedMultiHulls.find( filename );
+  if( i != cachedMultiHulls.end() ) return i->second;
+
+  std::string path;
+  if( !UTL::getFile( filename, ".cvh", path, true, true ) ) return nullptr;
+
+  std::ifstream file( path.c_str() );
+  if( !file.good() ) return nullptr;
+
+  float radius;
+  Vector ee;
+  float erm;
+  int nHulls;
+  
+  file >> radius >> ee.x >> ee.y >> ee.z >> erm >> nHulls;
+  
+  MultiHullBasePtr mHull = MultiHullBasePtr( new MultiHull( nHulls, radius, ee, erm ) );
+  mHull->load( file );
+  cachedMultiHulls[filename] = mHull;
+  return mHull;
 }
 
 HitTestPtr HitTest::Create( const std::string& filename, IObject* data, bool staticF, HitTestShape htsDefault )

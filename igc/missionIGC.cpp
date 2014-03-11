@@ -2582,9 +2582,15 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 //------------------------------------------------------------------------------
 bool    DumpIGCFile (const char* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void (*munge)(int size, char* data))
 {
+#ifdef WIN
     char        szFilename[MAX_PATH + 1];
     HRESULT     hr = UTL::getFile(name, ".igc", szFilename, true, true);
     FILE*       file = fopen (szFilename, "wb");
+#else
+    std::string path;
+    if( !UTL::getFile(name, ".igc", path, true, true ) ) return false;
+    FILE* file = fopen( path.c_str(), "wb" );
+#endif
     if (file)
     {
         DumpIGCFile (file, pMission, iMaskExportTypes, munge);
@@ -2598,9 +2604,15 @@ bool    DumpIGCFile (const char* name, ImissionIGC* pMission, __int64 iMaskExpor
 //------------------------------------------------------------------------------
 bool    LoadIGCFile (const char* name, ImissionIGC* pMission, void (*munge)(int size, char* data))
 {
+#ifdef WIN
     char        szFilename[MAX_PATH + 1];
     HRESULT     hr = UTL::getFile(name, ".igc", szFilename, true, true);
     FILE*       file = fopen(szFilename, "rb");
+#else
+    std::string path;
+    if( !UTL::getFile(name,".igc", path, true, true ) ) return false;
+    FILE* file = fopen( path.c_str(), "rb" );
+#endif
     if (file)
     {
         LoadIGCFile (file, pMission, munge);
@@ -2620,9 +2632,15 @@ bool    LoadIGCFile (const char* name, ImissionIGC* pMission, void (*munge)(int 
 //------------------------------------------------------------------------------
 bool    DumpIGCStaticCore (const char* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void (*munge)(int size, char* data))
 {
+#ifdef WIN
     char        szFilename[MAX_PATH + 1];
     HRESULT     hr = UTL::getFile(name, ".igc", szFilename, true, true);
     FILE*       file = fopen (szFilename, "wb");
+#else
+    std::string path;
+    if( !UTL::getFile(name, ".igc", path, true, true ) ) return false;
+    FILE* file = fopen( path.c_str(), "wb" );
+#endif
     if (file)
     {
         IGC_FILE_VERSION_TYPE   iStaticCoreVersion = static_cast<IGC_FILE_VERSION_TYPE> (time (0));
@@ -2686,9 +2704,16 @@ int     LoadIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVer
 #endif
     }
 
+#ifdef WIN
     char        szFilename[MAX_PATH + 1];
     HRESULT     hr = UTL::getFile(name, ".igc", szFilename, true, true);
     FILE*       file = fopen(szFilename, "rb");
+#else
+    std::string path;
+    if( !UTL::getFile(name,".igc", path, true, true ) ) return false;
+    FILE* file = fopen( path.c_str(), "rb" );
+#endif
+
     if (file)
     {
         IGC_FILE_VERSION_TYPE   iStaticCoreVersion;
@@ -2905,16 +2930,22 @@ int     LoadIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVer
     {
 		// Imago try to load a text-based core if no .igc is present 
 		ZString strName = ZString(name) + "\\Constants";
-		char        szFilename[MAX_PATH + 1];
 #ifdef WIN
+		char        szFilename[MAX_PATH + 1];
 		HRESULT     hr = UTL::getFile(strName, ".csv", szFilename, true, true);
-#else
-    HRESULT hr = UTL::getFile(strName.c_str(),".csv",szFilename,true,true);
-#endif
 		if (hr == S_OK) {
+#else
+    std::string path;
+    if( UTL::getFile(strName,".csv",path,true,true) )
+    {
+#endif
             
             //NYI: Version
+#ifdef WIN
 		    FILE*       file = fopen(szFilename, "rb");
+#else
+        FILE* file = fopen(path.c_str(),"rb");
+#endif
             fclose (file);
 
 			if (!fGetVersionOnly)

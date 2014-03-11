@@ -106,6 +106,7 @@ void UTL::putName(char* name, const char* newVal)
     }
 }
 
+#ifdef WIN
 HRESULT UTL::getFile(    const char*    name,
                          const char*    extension,
                      OUT char*          artwork,
@@ -146,6 +147,19 @@ HRESULT UTL::getFile(    const char*    name,
 
     return rc;
 }
+#else
+bool UTL::getFile( const std::string& name, const std::string& ext, std::string& outPath, bool downloadF, bool createF )
+{
+  outPath = s_artworkPath + name + ext;
+  std::ifstream f(outPath);
+  if( f.good() )
+  {
+    f.close();
+    return true;
+  }
+  return false;
+}
+#endif
 
 #ifdef WIN
 void UTL::SetArtPath(const char* szArtwork)

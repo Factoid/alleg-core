@@ -211,11 +211,15 @@ class UTL
 #else
         static void SetArtPath( const std::string& artwork );
 #endif
+#ifdef WIN
         static HRESULT getFile(    const char*    name,
                                    const char*    extension,
                                OUT char*          artwork,
                                    bool           downloadF,
                                    bool           createF);
+#else
+        static bool getFile( const std::string& name, const std::string& ext, std::string& outPath, bool downloadF, bool createF );
+#endif
 
         //  Writes a blob to disk; returns true iff successful
         static bool SaveFile(      const char * szFilename, 
@@ -547,6 +551,10 @@ class MultiHullBase
         {
             return m_ellipseEquation;
         }
+
+#ifndef WIN
+        virtual void load( std::ifstream& file ) = 0;
+#endif
 
     protected:
         FrameList           m_frames;
