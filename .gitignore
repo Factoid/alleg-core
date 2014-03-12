@@ -1,5 +1,6 @@
 *.o
 *.swp
 *.so
+core
 docs/
 *.test
