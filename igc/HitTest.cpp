@@ -253,6 +253,22 @@ class   ConvexVertex
             return  m_adjacencies;
         }
 #endif
+#ifndef WIN
+        void load( std::ifstream& file, std::vector<ConvexVertex>& verts )
+        {
+          int nAdj;
+          file >> m_position.x >> m_position.y >> m_position.z >> nAdj;
+          m_position.x *= -1;
+          adjacencies.resize(nAdj);
+
+          int id;
+          for( int i = 0; i < nAdj; ++i )
+          {
+            file >> id;
+            adjacencies[i] = &verts[id];
+          }
+        }
+#endif
     private:
         Vector                  m_position;
 #ifdef WIN
@@ -327,16 +343,16 @@ class   SingleHull
                                  ((direction.y < 0.0) ? 0 : 2) +
                                  ((direction.z < 0.0) ? 0 : 4)];
         }
-#ifdef WIN
+#ifndef WIN
         void load( std::ifstream& file )
         {
           int nVerts, nAdj;
-          file >> nVerts >> nAdj >> center.x >> center.y >> center.z;
-          center.x *= -1;
+          file >> nVerts >> nAdj >> m_center.x >> m_center.y >> m_center.z;
+          m_center.x *= -1;
           verts.resize(nVerts);
           for( auto v : verts )
           {
-            v.load( file );
+            v.load( file, verts );
           }
         }
 #endif
@@ -412,6 +428,11 @@ class   SingleHull
         const ConvexVertex**  adjacency0(void) const
         {
             return ((const ConvexVertex**)(vertex0() + m_nVertices));
+        }
+#else
+        const ConvexVertex* vertex0() const
+        {
+          return &verts[0];
         }
 #endif
 

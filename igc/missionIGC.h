@@ -29,7 +29,7 @@ template<class T> void empty_list( T& list )
   while( !list.empty() )
   {
     list.front()->Terminate();
-    list.pop_front();
+//    list.pop_front();
   }
 }
 #endif
