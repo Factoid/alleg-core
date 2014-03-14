@@ -2553,10 +2553,9 @@ IshipIGC*   CreateDrone(ImissionIGC*     pmission,
     }
 
     ds.nParts = 0;
-
-    IshipIGC* ship = (IshipIGC*)(pmission->CreateObject(pmission->GetLastUpdate(),            // Make the IGC ship
-                                                        OT_ship, &ds,
-                                                        sizeof(DataShipIGC)));
+    
+    // Make the IGC ship
+    IshipIGC* ship = (IshipIGC*)(pmission->CreateObject(pmission->GetLastUpdate(), OT_ship, &ds, sizeof(DataShipIGC)));
 
     assert (ship);
 
@@ -3054,11 +3053,7 @@ void    CreateAsteroid(ImissionIGC*         pmission,
                                  pmission->GetFloatConstant(c_fcidRadiusUniverse) * 0.75f,
                                  pmission->GetFloatConstant(c_fcidLensMultiplier));
 
-
-    IObject * o = pmission->CreateObject(pmission->GetLastUpdate(),
-                                         OT_asteroid,
-                                         &da,
-                                         sizeof(da));
+    IObject * o = pmission->CreateObject(pmission->GetLastUpdate(), OT_asteroid, &da, sizeof(da));
     assert (o);
     o->Release();
 }
@@ -3103,10 +3098,7 @@ static IstationIGC* CreatePedestalAndFlag(ImissionIGC*     pmission,
         strcpy(ds.name, ppedestal->GetName());
     }
 
-    IstationIGC*    pstation = (IstationIGC*)(pmission->CreateObject(now,
-                                                                     OT_station,
-                                                                     &ds,
-                                                                     sizeof(ds)));
+    IstationIGC*    pstation = (IstationIGC*)(pmission->CreateObject(now, OT_station, &ds, sizeof(ds)));
     assert(pstation);
 
     DataTreasureIGC dt;
@@ -3123,8 +3115,7 @@ static IstationIGC* CreatePedestalAndFlag(ImissionIGC*     pmission,
     dt.v0 = Vector::GetZero();
     dt.time0 = now;
 
-    ItreasureIGC* t = (ItreasureIGC *)(pmission->CreateObject(now, OT_treasure,
-                                                              &dt, sizeof(dt)));
+    ItreasureIGC* t = (ItreasureIGC *)(pmission->CreateObject(now, OT_treasure, &dt, sizeof(dt)));
 
     assert (t);
     t->Release();

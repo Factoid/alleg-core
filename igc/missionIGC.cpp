@@ -3648,7 +3648,6 @@ void                CmissionIGC::Import(Time    now,
             else
             {
                 IbaseIGC*   b = CreateObject(now, type, (void*)(pdata + sizeof(int) + sizeof(ObjectType)), size);
-
                 assert (b);
                 b->Release();
             }
@@ -3659,8 +3658,7 @@ void                CmissionIGC::Import(Time    now,
     }
 }
 
-IbaseIGC*           CmissionIGC::CreateObject(Time now, ObjectType objecttype,
-                                              const void* data, int dataSize)
+IbaseIGC* CmissionIGC::CreateObject(Time now, ObjectType objecttype, const void* data, int dataSize)
 {
 #ifdef WIN
     #define OBJECT(CLS)   case OT_##CLS## :\
@@ -4202,10 +4200,7 @@ void                        CmissionIGC::UpdateSides(Time now,
         ds.nKills = ds.nEjections = ds.nDeaths = ds.nBaseKills = ds.nBaseCaptures = ds.nFlags = ds.nArtifacts = 0;
         ds.squadID = NA;
 
-        IObject*    o = CreateObject(now,
-                                     OT_side,
-                                     &ds,
-                                     sizeof(ds));
+        IObject*    o = CreateObject(now, OT_side, &ds, sizeof(ds));
         assert (o);
         ((IsideIGC*)o)->SetActiveF(true);
 
@@ -4795,8 +4790,7 @@ void    CmissionIGC::GenerateTreasure(Time         now,
 
         dt.v0 = Vector::GetZero();
 
-        IObject*    o = CreateObject(now, OT_treasure,
-                                     &dt, sizeof(dt));
+        IObject*    o = CreateObject(now, OT_treasure, &dt, sizeof(dt));
         assert (o);
         o->Release();
     }

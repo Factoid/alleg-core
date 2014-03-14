@@ -597,11 +597,7 @@ VOID CmapMakerIGC::GenerateSides(CMapData * pMapData)
         ds.conquest = 100 / pMapData->GetTeams();
         ds.nKills = ds.nDeaths = 0;
 
-        IObject*    o = pMapData->GetMission()->CreateObject(
-                                                pMapData->GetTime(),
-                                                OT_side,
-                                                &ds,
-                                                sizeof(ds));
+        IObject*    o = pMapData->GetMission()->CreateObject(pMapData->GetTime(), OT_side, &ds, sizeof(ds));
         assert (o);
         o->Release();
     }
@@ -659,11 +655,7 @@ IclusterIGC * CmapMakerIGC::GenerateTeamCluster(CMapData * pMapData,
     //
     this->GenerateTeamClusterScreenPosition(pMapData, &dc, sID);
 
-    IclusterIGC * o = (IclusterIGC *) pMapData->GetMission()->CreateObject(
-                                                    pMapData->GetTime(),
-                                                    OT_cluster,
-                                                    &dc,
-                                                    sizeof(dc));
+    IclusterIGC * o = (IclusterIGC *) pMapData->GetMission()->CreateObject( pMapData->GetTime(), OT_cluster, &dc, sizeof(dc));
     assert(o);
     return(o);
 }
@@ -711,11 +703,7 @@ IclusterIGC * CmapMakerIGC::GenerateNeutralCluster(CMapData * pMapData,
     //
     this->GenerateNeutralClusterScreenPosition(pMapData, &dc, sID);
 
-    IclusterIGC * o = (IclusterIGC *) pMapData->GetMission()->CreateObject(
-                                                    pMapData->GetTime(),
-                                                    OT_cluster,
-                                                    &dc,
-                                                    sizeof(dc));
+    IclusterIGC * o = (IclusterIGC *) pMapData->GetMission()->CreateObject(pMapData->GetTime(),OT_cluster,&dc, sizeof(dc));
     assert(o);
     return(o);
 }
@@ -770,10 +758,7 @@ VOID CmapMakerIGC::GenerateWarp(CMapData * pMapData,
 
     pdw->warpDef.radius = 100;
 
-    IObject * o = pMapData->GetMission()->CreateObject(pMapData->GetTime(),
-                                                       OT_warp,
-                                                       pdw,
-                                                       sizeof(*pdw));
+    IObject * o = pMapData->GetMission()->CreateObject(pMapData->GetTime(), OT_warp, pdw, sizeof(*pdw));
     assert(o);
     o->Release();
 }
@@ -1008,11 +993,7 @@ VOID CmapMakerIGC::GenerateStarbase(CMapData*       pMapData,
     ds.stationTypeID = pst->GetObjectID();
     strcpy(ds.name, pst->GetName());
 
-    IObject * o = pMapData->GetMission()->CreateObject(
-                                        pMapData->GetTime(),
-                                        OT_station,
-                                        &ds,
-                                        sizeof(ds));
+    IObject * o = pMapData->GetMission()->CreateObject( pMapData->GetTime(), OT_station, &ds, sizeof(ds));
     assert(o);
     o->Release();
 }
@@ -1884,10 +1865,7 @@ VOID CmapMakerBrawlIGC::PopulateCluster(CMapData*    pMapData,
         ds.stationTypeID = pst->GetObjectID();
         strcpy(ds.name, pst->GetName());
 
-        IstationIGC*    pstation = (IstationIGC*)pMapData->GetMission()->CreateObject(pMapData->GetTime(),
-                                                                                       OT_station,
-                                                                                       &ds,
-                                                                                       sizeof(ds));
+        IstationIGC*    pstation = (IstationIGC*)pMapData->GetMission()->CreateObject(pMapData->GetTime(), OT_station, &ds, sizeof(ds));
         assert(pstation);
 
         pstation->Release();

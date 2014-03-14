@@ -544,8 +544,7 @@ void    CprobeIGC::Update(Time now)
 
                         dataProjectile.lifespan = lifespan;
 
-                        IprojectileIGC*  p = (IprojectileIGC*)(m_pMission->CreateObject(m_nextFire, OT_projectile, 
-                                                                                        &dataProjectile, sizeof(dataProjectile)));
+                        IprojectileIGC*  p = (IprojectileIGC*)(m_pMission->CreateObject(m_nextFire, OT_projectile, &dataProjectile, sizeof(dataProjectile)));
                         assert (p);
                         {
 #ifdef WIN

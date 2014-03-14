@@ -2,6 +2,7 @@
 #include <igc/igc.h>
 #include <igc/missionIGC.h>
 #include <iostream>
+#include <thread>
 
 class DummyIgcSite : public IIgcSite
 {
@@ -13,58 +14,32 @@ int main( int argc, char** argv )
   std::cout << "Creating mission\n";
   DummyIgcSite dummySite;
   CmissionIGC mission;
+  MissionParams params;
+  
   mission.Initialize( Clock::now(), &dummySite );
-
+  mission.SetMissionParams( &params );
   LoadIGCStaticCore( "cc_14", &mission, false, nullptr );
-  std::cout << "Part Types\n";
-  for( auto p : *mission.GetPartTypes() )
+  mission.EnterGame();
+
+  DataShipIGC sd;
+  memset(&sd,0,sizeof(sd));
+  sd.shipID = mission.GenerateNewShipID();
+  sd.sideID = NA;
+  sd.hullID = 210;
+  sd.pilotType = c_ptPlayer;
+  sd.abmOrders = 0;
+  sd.baseObjectID = NA;
+  strcpy(sd.name,"foo");
+
+  Time t = Clock::now();
+  IshipIGC* ship = (IshipIGC*)mission.CreateObject(t, OT_ship, &sd, sizeof(sd));
+  std::cout << "Created ship\n";
+  
+  for( int i = 0; i < 10; ++i )
   {
-    std::cout << "  " << p->GetName() << " " << p->GetModelName() << " $" << p->GetPrice() << "\n";
-  }
-  std::cout << "Drone Types\n";
-  for( auto p : *mission.GetDroneTypes() )
-  {
-    std::cout << "  " << p->GetName() << " " << p->GetModelName() << " $" << p->GetPrice() << "\n";
-  }
-  std::cout << "Developments\n";
-  for( auto p : *mission.GetDevelopments() )
-  {
-    std::cout << "  " << p->GetName() << " " << p->GetModelName() << " $" << p->GetPrice() << "\n";
-  }
-  std::cout << "Station Types\n";
-  for( auto p : *mission.GetStationTypes() )
-  {
-    std::cout << "  " << p->GetName() << " " << p->GetModelName() << " $" << p->GetPrice() << "\n";
-  }
-  std::cout << "Hull Types\n";
-  for( auto p : *mission.GetHullTypes() )
-  {
-    std::cout << "  " << p->GetName() << " " << p->GetModelName() << " $" << p->GetPrice() << "\n";
-  }
-  std::cout << "Expendable Types\n";
-  for( auto p : *mission.GetExpendableTypes() )
-  {
-    std::cout << "  " << p->GetName() << " " << p->GetModelName() << "\n";
-  }
-  std::cout << "Treasures\n";
-  for( auto p : *mission.GetTreasureSets() )
-  {
-    std::cout << "  " << p->GetName() << "\n";
-  }
-  std::cout << "Projectile Types\n";
-  for( auto p : *mission.GetProjectileTypes() )
-  {
-    std::cout << p->GetModelTexture() << " " << p->GetModelName() << " " << p->GetPower() << " " << p->GetSpeed() << "\n";
-  }
-  std::cout << "Ammo Pack\n";
-  {
-    auto p = mission.GetAmmoPack();
-    std::cout << "  " << p->GetName() << " " << p->GetModelName() << " $" << p->GetPrice() << "\n";
-  }
-  std::cout << "Fuel Pack\n";
-  {
-    auto p = mission.GetFuelPack();
-    std::cout << "  " << p->GetName() << " " << p->GetModelName() << " $" << p->GetPrice() << "\n";
+    t += Duration(0.1f);
+    std::cout << "Tick!\n";
+    mission.Update(t);
   }
 
   std::cout << "Shutting down\n";

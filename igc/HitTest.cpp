@@ -490,6 +490,10 @@ class   MultiHull : public MultiHullBase
             h.load( file );
           }
         }
+        float GetEllipseRadiusMultiplier() const 
+        {
+          return m_ellipseRadiusMultiplier;
+        }
 #endif
         int             GetNhulls(void) const
         {
@@ -532,6 +536,7 @@ class   MultiHull : public MultiHullBase
 class   BoundingHull : public HitTest
 {
     public:
+#ifdef WIN
         BoundingHull(IObject*           d,
                      bool               staticF,
                      const MultiHull*   pMultiHull)
@@ -543,16 +548,29 @@ class   BoundingHull : public HitTest
             for (int i = pMultiHull->GetNhulls() - 1; (i >= 0); i--)
                 pcvRecent[i] = pMultiHull->GetSingleHull(i)->vertex0();
         }
+#else
+        BoundingHull(IObject* d, bool staticF, MultiHullBasePtr pMultiHull) : HitTest(d, pMultiHull->GetOriginalRadius(), staticF, pMultiHull->GetNhulls()), m_pMultiHull(pMultiHull), pcvRecent(pMultiHull->GetNhulls())
+        {
+            for (int i = pMultiHull->GetNhulls() - 1; (i >= 0); i--)
+                pcvRecent[i] = pMultiHull->GetSingleHull(i)->vertex0();
+        }
+#endif
 
+#ifdef WIN
         void* operator new(size_t size, const MultiHull* pMultiHull)
         {
             return (void*)(::new char [size +
                                        sizeof(ConvexVertex*) * pMultiHull->GetNhulls()]);
         }
+#endif
 
         virtual void    UpdateStaticBB(void)
         {
+#ifdef WIN
             HitTest::UpdateStaticBB(m_desiredRadius * m_pMultiHull->m_ellipseRadiusMultiplier);
+#else
+            HitTest::UpdateStaticBB(m_desiredRadius * m_pMultiHull->GetEllipseRadiusMultiplier());
+#endif
         }
 
         Vector    GetCenter(HitTestShape  hts) const
@@ -668,7 +686,7 @@ class   BoundingHull : public HitTest
                 m_shape = s;
 
                 if (m_shape == c_htsEllipse)
-                    m_radius = m_desiredRadius * m_pMultiHull->m_ellipseRadiusMultiplier;
+                    m_radius = m_desiredRadius * m_pMultiHull->GetEllipseRadiusMultiplier();
                 else
                     m_radius = m_desiredRadius;
             }
@@ -677,14 +695,14 @@ class   BoundingHull : public HitTest
         virtual void    SetRadius(float r)
         {
             m_desiredRadius = r;
-            m_scale = r / m_pMultiHull->m_originalRadius;
+            m_scale = r / m_pMultiHull->GetOriginalRadius();
             m_ellipseEquation = m_scale * m_pMultiHull->GetEllipseEquation();
 
             //Add a fudge factor to the bounding sphere for an ellipse
             //which is generally larger than the bounding sphere for either
             //a sphere or a convex hull.
             if (m_shape == c_htsEllipse)
-                m_radius = r * m_pMultiHull->m_ellipseRadiusMultiplier;
+                m_radius = r * m_pMultiHull->GetEllipseRadiusMultiplier();
             else
                 m_radius = r;
         }
@@ -720,9 +738,28 @@ class   BoundingHull : public HitTest
         float               m_desiredRadius;
         float               m_scale;
         Vector              m_ellipseEquation;
+#ifdef WIN
         const MultiHull*    m_pMultiHull;
-};
+#else
+        MultiHullBasePtr m_pMultiHull;
+        std::vector<const ConvexVertex*> pcvRecent;
+#endif
 
+};
+/*
+class   BoundingHull : public HitTest
+{
+public:
+        BoundingHull(IObject* d, bool staticF, MultiHullBasePtr pMultiHull) : HitTest(d, pMultiHull->GetOriginalRadius(), staticF, pMultiHull->GetNhulls()), m_pMultiHull(pMultiHull), pcvRecent(pMultiHull->GetNhulls())
+        {
+            for (int i = pMultiHull->GetNhulls() - 1; (i >= 0); i--)
+                pcvRecent[i] = pMultiHull->GetSingleHull(i)->vertex0();
+        }
+
+private:
+
+};
+*/
 class   CachedMultiHull
 {
     public:
@@ -1034,7 +1071,37 @@ MultiHullBasePtr HitTest::Load( const std::string& filename )
 
 HitTestPtr HitTest::Create( const std::string& filename, IObject* data, bool staticF, HitTestShape htsDefault )
 {
-  return nullptr;
+    HitTestPtr    pHitTest = NULL;
+
+    if (!filename.empty())
+    {
+        //An unsafe upcast ... but we know better.
+        MultiHullBasePtr pMultiHull = Load(filename);
+        if (pMultiHull)
+        {
+            pHitTest = new BoundingHull(data,staticF,pMultiHull);
+        }
+    }
+
+    if (!pHitTest)
+    {
+        switch (htsDefault)
+        {
+            case c_htsSphere:
+                pHitTest = (HitTestPtr)(new BoundingSphere(data, staticF));
+            break;
+            case c_htsPoint:
+                pHitTest = (HitTestPtr)(new BoundingPoint(data, staticF));
+            break;
+            case c_htsCone:
+                pHitTest = (HitTestPtr)(new BoundingCone(data, staticF));
+            break;
+            default:
+                assert (false);
+        }
+    }
+
+    return pHitTest;
 }
 
 #endif

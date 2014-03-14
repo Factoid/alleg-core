@@ -247,10 +247,7 @@ void            CsideIGC::CreateBuckets(void)
                     //It is something we might be able to build and it will actually
                     //do something useful
                     DataBucketIGC   db = {d, this};
-                    IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate,
-                                                                               OT_bucket,
-                                                                               &db,
-                                                                               sizeof(db)));
+                    IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate, OT_bucket, &db, sizeof(db)));
                     assert (b);
 
                     b->Release();   //Creating the bucket adds it to the side's list of buckets
@@ -279,10 +276,7 @@ void            CsideIGC::CreateBuckets(void)
                         //It is something we might be able to build and it will actually
                         //do something useful
                         DataBucketIGC   db = {d, this};
-                        IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate,
-                                                                                   OT_bucket,
-                                                                                   &db,
-                                                                                   sizeof(db)));
+                        IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate, OT_bucket, &db, sizeof(db)));
                         assert (b);
                         b->Release();   //Creating the bucket adds it to the side's list of buckets
                     }
@@ -306,10 +300,7 @@ void            CsideIGC::CreateBuckets(void)
                         //It is something we might be able to build and it will actually
                         //do something useful
                         DataBucketIGC   db = {s, this};
-                        IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate,
-                                                                                   OT_bucket,
-                                                                                   &db,
-                                                                                   sizeof(db)));
+                        IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate, OT_bucket, &db, sizeof(db)));
                         assert (b);
                         b->Release();   //Creating the bucket adds it to the side's list of buckets
                     }
@@ -331,10 +322,7 @@ void            CsideIGC::CreateBuckets(void)
                         //It is something we might be able to build and it will actually
                         //do something useful
                         DataBucketIGC   db = {h, this};
-                        IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate,
-                                                                                   OT_bucket,
-                                                                                   &db,
-                                                                                   sizeof(db)));
+                        IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate, OT_bucket, &db, sizeof(db)));
                         assert (b);
                         b->Release();   //Creating the bucket adds it to the side's list of buckets
                     }
@@ -356,10 +344,7 @@ void            CsideIGC::CreateBuckets(void)
                         //It is something we might be able to build and it will actually
                         //do something useful
                         DataBucketIGC   db = {p, this};
-                        IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate,
-                                                                                   OT_bucket,
-                                                                                   &db,
-                                                                                   sizeof(db)));
+                        IbucketIGC*     b = (IbucketIGC*)(m_pMission->CreateObject(m_lastUpdate, OT_bucket, &db, sizeof(db)));
                         assert (b);
 
                         if (IlauncherTypeIGC::IsLauncherType(p->GetEquipmentType()))

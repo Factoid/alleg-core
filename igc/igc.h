@@ -2833,8 +2833,7 @@ class ImissionIGC : public IstaticIGC
 
         virtual IIgcSite*               GetIgcSite(void) const = 0;
 
-        virtual IbaseIGC*               CreateObject(Time now, ObjectType objectID,
-                                                     const void* data, int dataSize) = 0;
+        virtual IbaseIGC*               CreateObject(Time now, ObjectType objectID, const void* data, int dataSize) = 0;
 
         virtual ImodelIGC*              GetModel(ObjectType type, ObjectID id) const = 0;
         virtual IbaseIGC*               GetBase(ObjectType type, ObjectID id) const = 0;

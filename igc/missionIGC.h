@@ -698,11 +698,8 @@ class   CmissionIGC : public ImissionIGC
             return m_pIgcSite;
         }
 
-        virtual IbaseIGC*                       CreateObject(Time now, ObjectType objecttype,
-                                                             const void* data, int dataSize);
-
+        virtual IbaseIGC*                       CreateObject(Time now, ObjectType objecttype, const void* data, int dataSize);
         virtual ImodelIGC*                      GetModel(ObjectType type, ObjectID id) const;
-
         virtual IbaseIGC*                       GetBase(ObjectType type, ObjectID id) const;
 
         virtual DamageTrack*                    CreateDamageTrack(void)
@@ -835,10 +832,7 @@ class   CmissionIGC : public ImissionIGC
                 {
                     DataBucketIGC db = {pdTeamMoney, psl};
 #endif
-                    IbucketIGC*     b = (IbucketIGC*)(CreateObject(m_lastUpdate,
-                                                                   OT_bucket,
-                                                                   &db,
-                                                                   sizeof(db)));
+                    IbucketIGC*     b = (IbucketIGC*)(CreateObject(m_lastUpdate, OT_bucket, &db, sizeof(db)));
                     assert (b);
 
                     b->SetPrice((Money)(m_missionParams.fGoalTeamMoney * GetFloatConstant(c_fcidWinTheGameMoney)));

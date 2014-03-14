@@ -303,8 +303,7 @@ void        CweaponIGC::FireWeapon(Time now)
                         }
                     }
 
-                    IprojectileIGC*  p = (IprojectileIGC*)(m_pMission->CreateObject(m_nextFire, OT_projectile, 
-                                                                                    &dataProjectile, sizeof(dataProjectile)));
+                    IprojectileIGC*  p = (IprojectileIGC*)(m_pMission->CreateObject(m_nextFire, OT_projectile, &dataProjectile, sizeof(dataProjectile)));
                     if (p)
                     {
                         if (m_pshipGunner)

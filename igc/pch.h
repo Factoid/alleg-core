@@ -492,6 +492,7 @@ class   FrameDataUTL
 typedef Slist_utl<FrameDataUTL>    FrameList;
 typedef Slink_utl<FrameDataUTL>    FrameLink;
 
+class SingleHull;
 class MultiHullBase
 {
     public:
@@ -554,6 +555,9 @@ class MultiHullBase
 
 #ifndef WIN
         virtual void load( std::ifstream& file ) = 0;
+        virtual int GetNhulls() const = 0;
+        virtual const SingleHull* GetSingleHull(int i) const = 0;
+        virtual float GetEllipseRadiusMultiplier() const = 0;
 #endif
 
     protected:
