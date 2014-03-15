@@ -1224,9 +1224,10 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     delete ppl;
                 }
 #else
-                for( auto part : partsOld )
+                while( !partsOld.empty() )
                 {
-                  part->Terminate();
+                  partsOld.front()->Terminate();
+                  partsOld.pop_front();
                 }
 #endif
             }

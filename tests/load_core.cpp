@@ -4,6 +4,15 @@
 #include <iostream>
 #include <thread>
 
+std::ostream& operator<<( std::ostream& os, const Vector& v ) {
+  os << v.x << ", " << v.y << ", " << v.z;
+  return os;
+}
+
+std::ostream& operator<<( std::ostream& os, const Orientation& o ) {
+  return os;
+}
+
 class DummyIgcSite : public IIgcSite
 {
 };
@@ -16,29 +25,54 @@ int main( int argc, char** argv )
   CmissionIGC mission;
   MissionParams params;
   
-  mission.Initialize( Clock::now(), &dummySite );
+  Time t = Clock::now();
+  mission.Initialize( t, &dummySite );
   mission.SetMissionParams( &params );
   LoadIGCStaticCore( "cc_14", &mission, false, nullptr );
   mission.EnterGame();
 
-  DataShipIGC sd;
-  memset(&sd,0,sizeof(sd));
-  sd.shipID = mission.GenerateNewShipID();
-  sd.sideID = NA;
-  sd.hullID = 210;
-  sd.pilotType = c_ptPlayer;
-  sd.abmOrders = 0;
-  sd.baseObjectID = NA;
-  strcpy(sd.name,"foo");
+  DataSideIGC dSide;
+  memset(&dSide,0,sizeof(dSide));
+  dSide.civilizationID = 18;
+  dSide.sideID = 0;
+  dSide.gasAttributes.Initialize();
+  dSide.color = Color(1.0f,0.0f,0.0f);
+  strcpy(dSide.name,"bar");
+  IsideIGC* civ = (IsideIGC*)mission.CreateObject(t, OT_side, &dSide, sizeof(dSide));
 
-  Time t = Clock::now();
-  IshipIGC* ship = (IshipIGC*)mission.CreateObject(t, OT_ship, &sd, sizeof(sd));
+  DataShipIGC dShip;
+  memset(&dShip,0,sizeof(dShip));
+  dShip.shipID = mission.GenerateNewShipID();
+  dShip.sideID = 0;
+  dShip.hullID = 210;
+  dShip.pilotType = c_ptPlayer;
+  dShip.abmOrders = 0;
+  dShip.baseObjectID = NA;
+  strcpy(dShip.name,"foo");
+
+  IshipIGC* ship = (IshipIGC*)mission.CreateObject(t, OT_ship, &dShip, sizeof(dShip));
   std::cout << "Created ship\n";
+  for( auto p : *ship->GetHullType()->GetPreferredPartTypes() )
+  {
+    std::cout << "Ship wants a " << p->GetName() << " " << p->GetEquipmentType() << "\n";
+    Mount maxMounts = (p->GetEquipmentType() == ET_Weapon ) ? ship->GetHullType()->GetMaxWeapons() : 1;
+    for( Mount i = 0; i < maxMounts; ++i )
+    {
+      std::cout << "Creating and adding part\n";
+      ship->CreateAndAddPart(p,i, 0x7fff);
+      std::cout << "Part added\n";
+    }
+  }
   
   for( int i = 0; i < 10; ++i )
   {
     t += Duration(0.1f);
     std::cout << "Tick!\n";
+    std::cout << "Pos: " << ship->GetPosition() << " Forward: " << ship->GetOrientation().GetForward() << " Ammo: " << ship->GetAmmo() << "\n";
+    for( auto p : *ship->GetParts() )
+    {
+      std::cout << "  Part: " << p->GetEquipmentType() << "\n";
+    }
     mission.Update(t);
   }
 
