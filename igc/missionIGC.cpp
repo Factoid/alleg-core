@@ -3505,7 +3505,7 @@ void     CmissionIGC::Update(Time now)
 #ifdef WIN
                 Time    timeUpdate = startTime + (deltaT * (((float)i) / ((float)n)));
 #else
-                Time    timeUpdate = startTime + Duration(deltaT * (((float)i) / ((float)n)));
+                Time    timeUpdate = startTime + Seconds(deltaT * (((float)i) / ((float)n)));
 #endif
                 {
                     //Update all clusters (which update all the models in clusters, etc.)

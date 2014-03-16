@@ -516,7 +516,11 @@ VOID CmapMakerIGC::GenerateMission(Time now,
                 if ((pwarp->GetObjectID() < pwarp->GetDestination()->GetObjectID()) &&
                     (randomInt(0, pmp->iRandomEncounters) > 1))
                 {
+#ifdef WIN
                     assert (nWarps < pwarpList->n());
+#else
+                    assert( nWarps < pwarpList->size() );
+#endif
                     pwarps[nWarps++] = pwarp;
                 }
             }

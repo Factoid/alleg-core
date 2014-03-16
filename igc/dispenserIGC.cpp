@@ -117,7 +117,7 @@ void        CdispenserIGC::Update(Time   now)
 #ifdef WIN
             m_timeLoaded = now + m_expendableType->GetLoadTime();
 #else
-            m_timeLoaded = now + Duration(m_expendableType->GetLoadTime());
+            m_timeLoaded = now + Seconds(m_expendableType->GetLoadTime());
 #endif
 
             m_pMission->GetIgcSite()->FireExpendable(m_ship,

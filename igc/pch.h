@@ -23,7 +23,7 @@
 #include <bitset>
 #include <map>
 #include <random>
-//#include <cassert>
+#include <cassert>
 #include <mutex>
 #include <chrono>
 #include <cstring>
@@ -32,6 +32,8 @@
 #include <cstdarg>
 #include "zlib/zassert.h"
 
+#define IMPLIES(x, y) (!(x) || (y))
+#define IFF(x, y) (!!(x) == !!(y))
 inline int randomInt( int a, int b )
 {
     static std::random_device rd;
@@ -177,10 +179,21 @@ struct POINT
   LONG y;
 };
 
-typedef std::chrono::duration<float> Duration;
+using Seconds = std::chrono::duration<float>;
 using Clock = std::chrono::high_resolution_clock;
-using Time = std::chrono::time_point<Clock,Duration>;
+using Time = std::chrono::time_point<Clock>;
 using ms = std::chrono::milliseconds;
+
+template<class T> Time operator+ ( const Time& t, const std::chrono::duration<float,T>& s )
+{
+  return t + std::chrono::duration_cast<Time::duration>(s);
+}
+
+template<class T> Time& operator+= ( Time& t, const std::chrono::duration<float,T>& s )
+{
+  t += std::chrono::duration_cast<Time::duration>(s);
+  return t;
+}
 
 struct COLORVALUE {
     float r;

@@ -72,7 +72,7 @@ class CmagazineIGC : public ImagazineIGC
 #ifdef WIN
             m_timeLoaded = m_ship->GetLastUpdate() + ((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_missileType->GetLoadTime());
 #else
-            m_timeLoaded = m_ship->GetLastUpdate() + Duration((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_missileType->GetLoadTime() );
+            m_timeLoaded = m_ship->GetLastUpdate() + Seconds((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_missileType->GetLoadTime() );
 #endif
             m_ship->ChangeSignature(m_missileType->GetLauncherDef()->signature);
         }
@@ -138,7 +138,7 @@ class CmagazineIGC : public ImagazineIGC
 #ifdef WIN
             m_timeLoaded = now + m_missileType->GetLoadTime();
 #else
-            m_timeLoaded = now + Duration(m_missileType->GetLoadTime());
+            m_timeLoaded = now + Seconds(m_missileType->GetLoadTime());
 #endif
         }
 
@@ -156,7 +156,7 @@ class CmagazineIGC : public ImagazineIGC
 #ifdef WIN
                 m_timeLoaded = m_ship->GetLastUpdate() + ((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_missileType->GetLoadTime());
 #else
-                m_timeLoaded = m_ship->GetLastUpdate() + Duration((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_missileType->GetLoadTime());
+                m_timeLoaded = m_ship->GetLastUpdate() + Seconds((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_missileType->GetLoadTime());
 #endif
         }
 

@@ -89,7 +89,7 @@ HRESULT CprojectileIGC::Initialize(ImissionIGC* pMission, Time now, const void* 
 #ifdef WIN
                 ht->SetTimeStop(m_timeExpire = now + dataProjectile->lifespan); //intentional assignment
 #else
-                ht->SetTimeStop(m_timeExpire = now + Duration(dataProjectile->lifespan)); //intentional assignment
+                ht->SetTimeStop(m_timeExpire = now + Seconds(dataProjectile->lifespan)); //intentional assignment
 #endif
                 assert (m_timeExpire != now);
             }

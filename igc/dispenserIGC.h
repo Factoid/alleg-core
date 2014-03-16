@@ -73,7 +73,7 @@ class CdispenserIGC : public IdispenserIGC
 #ifdef WIN
             m_timeLoaded = m_ship->GetLastUpdate() + ((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_expendableType->GetLoadTime());
 #else
-            m_timeLoaded = m_ship->GetLastUpdate() + Duration(1.0f/m_pMission->GetFloatConstant(c_fcidMountRate) + m_expendableType->GetLoadTime());
+            m_timeLoaded = m_ship->GetLastUpdate() + Seconds(1.0f/m_pMission->GetFloatConstant(c_fcidMountRate) + m_expendableType->GetLoadTime());
 #endif
         }
         virtual void             Deactivate(void)
@@ -139,7 +139,7 @@ class CdispenserIGC : public IdispenserIGC
 #ifdef WIN
             m_timeLoaded = now + m_expendableType->GetLoadTime();
 #else
-            m_timeLoaded = now + Duration(m_expendableType->GetLoadTime());
+            m_timeLoaded = now + Seconds(m_expendableType->GetLoadTime());
 #endif
         }
 
@@ -157,7 +157,7 @@ class CdispenserIGC : public IdispenserIGC
 #ifdef WIN
             m_timeLoaded = m_ship->GetLastUpdate() + ((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_expendableType->GetLoadTime());
 #else
-            m_timeLoaded = m_ship->GetLastUpdate() + Duration((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_expendableType->GetLoadTime());
+            m_timeLoaded = m_ship->GetLastUpdate() + Seconds((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_expendableType->GetLoadTime());
 #endif
         }
 

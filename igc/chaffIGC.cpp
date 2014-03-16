@@ -59,7 +59,8 @@ HRESULT CchaffIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
 
     SetMass(0.0f);
 
-    m_timeExpire = time0 + Duration(m_pChaffTypeData->lifespan);
+    float f = m_pChaffTypeData->lifespan;
+    m_timeExpire = time0 + Seconds(m_pChaffTypeData->lifespan);
 
     SetCluster(dataChaff->pcluster);
 

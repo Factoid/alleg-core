@@ -469,6 +469,7 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
             else
                 mLink = (mLink && (mLink != models->last())) ? mLink->next() : models->first();
         }
+        assert (mLink);
 #else
         auto mLink = std::find(models->begin(),models->end(),pmodelCurrent);
         if( ttMask & c_ttPrevious )
@@ -479,7 +480,6 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
           ++mLink;
         }
 #endif
-        assert (mLink);
         float   capacity;
         if ((abmAbilities & c_aabmMineHe3) != 0)
             capacity = pside->GetMission()->GetFloatConstant(c_fcidCapacityHe3);

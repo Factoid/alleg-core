@@ -3,7 +3,6 @@
 // Asserts
 //
 //////////////////////////////////////////////////////////////////////////////
-
 #ifndef _assert_h_
 #define _assert_h_
 #ifdef WIN
@@ -15,10 +14,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef WIN
 #ifdef assert
 #error "Don't use assert.h, zlib provides assert functionality."
 #endif
-
+#endif
 //////////////////////////////////////////////////////////////////////////////
 //
 // Asserts
@@ -89,7 +89,9 @@ extern bool g_bOutput;
 
 #define ZUnimplemented()  ZError("Unimplemented member called")
 
+#ifdef WIN
 #define assert(exp)   ZAssert(exp)
+#endif
 #define ShouldBe(exp) ZWarning(exp)
 #define VerifyHR(exp) ZSucceeded(exp)
 
@@ -119,4 +121,3 @@ extern bool g_bOutput;
 #endif
 
 #endif
-

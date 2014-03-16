@@ -49,7 +49,7 @@ class   CasteroidIGC : public TmodelIGC<IasteroidIGC>
             if (((m_asteroidDef.aabmCapabilities & c_aabmMineHe3) != 0) &&
                 (m_asteroidDef.ore < m_asteroidDef.oreMax))
             {
-                Duration d = now - GetMyLastUpdate();
+                Seconds d = Seconds(now - GetMyLastUpdate());
                 float   dOre = d.count() * GetMyMission()->GetFloatConstant(c_fcidHe3Regeneration);
 
                 dOre *= (m_asteroidDef.oreMax - m_asteroidDef.ore);
@@ -74,7 +74,7 @@ class   CasteroidIGC : public TmodelIGC<IasteroidIGC>
 #ifdef WIN
 				else if (abs(m_inhibitCounter - Time::Now()) > 3.0)
 #else
-        else if ( Duration(m_inhibitCounter - Clock::now()).count() > 3.0 )
+        else if ( Seconds(m_inhibitCounter - Clock::now()).count() > 3.0 )
 #endif
 				{
 #ifdef WIN

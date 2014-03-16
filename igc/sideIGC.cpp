@@ -133,7 +133,11 @@ void            CsideIGC::DestroyBuckets(void)
 
 void            CsideIGC::CreateBuckets(void)
 {
+#ifdef WIN
     assert(!m_buckets.first());
+#else
+    assert(m_buckets.empty());
+#endif
 
     if (m_pMission->GetMissionParams()->bAllowDevelopments)
     {

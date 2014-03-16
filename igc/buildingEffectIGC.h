@@ -54,10 +54,10 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
                 m_timeShrink   = m_timeOpaque   + c_dtOpaque;
                 m_timeComplete = m_timeShrink   + c_dtShrink;
 #else
-                m_timeGrow     = m_timeEnvelope + Duration(c_dtEnvelope);
-                m_timeOpaque   = m_timeGrow     + Duration(c_dtGrow);
-                m_timeShrink   = m_timeOpaque   + Duration(c_dtOpaque);
-                m_timeComplete = m_timeShrink   + Duration(c_dtShrink);
+                m_timeGrow     = m_timeEnvelope + Seconds(c_dtEnvelope);
+                m_timeOpaque   = m_timeGrow     + Seconds(c_dtGrow);
+                m_timeShrink   = m_timeOpaque   + Seconds(c_dtOpaque);
+                m_timeComplete = m_timeShrink   + Seconds(c_dtShrink);
 #endif
             }
 

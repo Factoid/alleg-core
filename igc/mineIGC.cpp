@@ -114,7 +114,7 @@ HRESULT CmineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, 
 #ifdef WIN
             m_timeExpire = m_time0 + dataMineType->lifespan;
 #else
-            m_timeExpire = m_time0 + Duration(dataMineType->lifespan);
+            m_timeExpire = m_time0 + Seconds(dataMineType->lifespan);
 #endif
             assert (m_timeExpire != m_time0);
         }

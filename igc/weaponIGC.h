@@ -113,7 +113,7 @@ class CweaponIGC : public IweaponIGC
 #ifdef WIN
                 m_nextFire = m_ship->GetLastUpdate() + m_typeData->dtimeBurst;
 #else
-                m_nextFire = m_ship->GetLastUpdate() + Duration(m_typeData->dtimeBurst);
+                m_nextFire = m_ship->GetLastUpdate() + Seconds(m_typeData->dtimeBurst);
 #endif
 
                 m_fActive = true;

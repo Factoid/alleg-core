@@ -133,7 +133,7 @@ class CtreasureIGC : public TmodelIGC<ItreasureIGC>
 #ifdef WIN
             m_expire = now + m_data.lifespan;
 #else
-            m_expire = now + Duration(m_data.lifespan);
+            m_expire = now + Seconds(m_data.lifespan);
 #endif
         }
 

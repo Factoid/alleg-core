@@ -83,7 +83,7 @@ void        CclusterIGC::Terminate(void)
 
     m_kdrStatic.flush();
     m_kdrMoving.flush();
-
+#ifdef WIN
     assert (m_modelsPickable.n() == 0);
     assert (m_modelsCastRay.n() == 0);
 
@@ -94,6 +94,18 @@ void        CclusterIGC::Terminate(void)
     assert (m_treasures.n() == 0);
     assert (m_asteroids.n() == 0);
     assert (m_mines.n() == 0);
+#else
+    assert (m_modelsPickable.empty());
+    assert (m_modelsCastRay.empty());
+
+    assert (m_stations.empty());
+    assert (m_models.empty());
+    assert (m_probes.empty());
+    assert (m_warps.empty());
+    assert (m_treasures.empty());
+    assert (m_asteroids.empty());
+    assert (m_mines.empty());
+#endif
 
     assert (m_pClusterSite);
     m_pClusterSite->Terminate();
@@ -140,7 +152,7 @@ void        CclusterIGC::Update(Time now)
                         {
                             //Docked non-players on autopilot never are observers/parents
                             assert (pship->GetParentShip() == NULL);
-                            assert (pship->GetChildShips()->n() == 0);
+                            assert (pship->GetChildShips()->empty());
 
 							// mmf/yp 10/07 added this so drones launch when ordered to even if OkToLaunch might be false
 							// intentionally left c_cidMine out of the list otherwise miners would launch with their AI
@@ -362,7 +374,7 @@ void        CclusterIGC::Update(Time now)
 #ifdef WIN
                         Time    timeCollision = m_lastUpdate + (m_tOffset + entry.m_tCollision);
 #else
-                        Time  timeCollision = m_lastUpdate + Duration(m_tOffset + entry.m_tCollision);
+                        Time  timeCollision = m_lastUpdate + Seconds(m_tOffset + entry.m_tCollision);
 #endif
 
                         ImodelIGC*  pModelHitTest1 = (ImodelIGC*)(entry.m_pHitTest1->GetData());

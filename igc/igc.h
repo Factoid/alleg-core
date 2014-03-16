@@ -5611,8 +5611,8 @@ class PlayerScoreObject
             m_dtPlayed = 0.0f;
             m_dtCommanded = 0.0f;
 #else
-            m_dtPlayed = Duration::zero();
-            m_dtCommanded = Duration::zero();
+            m_dtPlayed = Seconds::zero();
+            m_dtCommanded = Seconds::zero();
 #endif
 
             m_bWin = m_bLose = false;
@@ -5972,8 +5972,8 @@ class PlayerScoreObject
         float                       m_dtPlayed;
         float                       m_dtCommanded;
 #else
-        Duration       m_dtPlayed;
-        Duration       m_dtCommanded;
+        Seconds m_dtPlayed;
+        Seconds m_dtCommanded;
 #endif
 
         float                       m_fCombatRating;

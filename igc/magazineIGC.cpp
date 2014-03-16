@@ -119,7 +119,7 @@ void        CmagazineIGC::Update(Time   now)
 #ifdef WIN
                 m_timeLoaded = now + m_missileType->GetLoadTime();
 #else
-                m_timeLoaded = now + Duration( m_missileType->GetLoadTime() );
+                m_timeLoaded = now + Seconds( m_missileType->GetLoadTime() );
 #endif
 
                 m_pMission->GetIgcSite()->FireMissile(m_ship,

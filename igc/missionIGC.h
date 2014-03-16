@@ -156,6 +156,7 @@ class   CstaticIGC
 #endif
           }
 
+#ifdef WIN
           assert (m_stationTypes.n() == 0);
           assert (m_hullTypes.n() == 0);
           assert (m_partTypes.n() == 0);
@@ -164,6 +165,16 @@ class   CstaticIGC
           assert (m_droneTypes.n() == 0);
           assert (m_civilizations.n() == 0);
           assert (m_treasureSets.n() == 0);
+#else
+          assert(m_stationTypes.empty());
+          assert(m_hullTypes.empty());
+          assert(m_partTypes.empty());
+          assert(m_projectileTypes.empty());
+          assert(m_developments.empty());
+          assert(m_droneTypes.empty());
+          assert(m_civilizations.empty());
+          assert(m_treasureSets.empty());
+#endif
 
           if (m_pptAmmoPack)
           {

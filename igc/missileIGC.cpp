@@ -96,7 +96,7 @@ HRESULT CmissileIGC::Initialize(ImissionIGC* pMission, Time now, const void* dat
 #ifdef WIN
             m_timeExpire = now + dataMissileType->lifespan;
 #else
-            m_timeExpire = now + Duration(dataMissileType->lifespan);
+            m_timeExpire = now + Seconds(dataMissileType->lifespan);
 #endif
             assert (m_timeExpire != now);
 
@@ -109,7 +109,7 @@ HRESULT CmissileIGC::Initialize(ImissionIGC* pMission, Time now, const void* dat
 #ifdef WIN
         m_timeActivate = now + dataMissileType->readyTime;
 #else
-        m_timeActivate = now + Duration(dataMissileType->readyTime);
+        m_timeActivate = now + Seconds(dataMissileType->readyTime);
 #endif
 
         SetCluster(dataMissile->pCluster);

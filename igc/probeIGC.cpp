@@ -150,7 +150,7 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
 #ifdef WIN
         m_timeExpire = m_time0 + dataProbeType->lifespan;
 #else
-        m_timeExpire = m_time0 + Duration(dataProbeType->lifespan);
+        m_timeExpire = m_time0 + Seconds(dataProbeType->lifespan);
 #endif
         assert (m_timeExpire != m_time0);
 
@@ -159,8 +159,8 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
                                 ? 5.0f        //5 second delay
                                 : 30.0f);     //30 second delay before we start to shoot
 #else
-                                ? Duration(5.0f)        //5 second delay
-                                : Duration(30.0f));     //30 second delay before we start to shoot
+                                ? Seconds(5.0f)        //5 second delay
+                                : Seconds(30.0f));     //30 second delay before we start to shoot
 #endif
 
         assert (GetSide());
@@ -388,7 +388,7 @@ void    CprobeIGC::Update(Time now)
 #ifdef WIN
                 Time    timeActivate = m_time0 + dt;
 #else
-                Time timeActivate = m_time0 + Duration(dt);
+                Time timeActivate = m_time0 + Seconds(dt);
 #endif
 
                 if ((GetMyLastUpdate() < timeActivate) &&
@@ -563,7 +563,7 @@ void    CprobeIGC::Update(Time now)
 #ifdef WIN
                         m_nextFire += dtimeBurst;
 #else
-                        m_nextFire += Duration(dtimeBurst);
+                        m_nextFire += Seconds(dtimeBurst);
 #endif
                     }
                     while (m_nextFire < now);

@@ -634,7 +634,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 #ifdef WIN
                 m_timeReloadAmmo = GetMyLastUpdate() + 0.5f / GetMyMission()->GetFloatConstant(c_fcidMountRate);
 #else
-                m_timeReloadAmmo = GetMyLastUpdate() + Duration( 0.5f / GetMyMission()->GetFloatConstant(c_fcidMountRate) );
+                m_timeReloadAmmo = GetMyLastUpdate() + Seconds( 0.5f / GetMyMission()->GetFloatConstant(c_fcidMountRate) );
 #endif
                 IIgcSite*   pigc = GetMyMission()->GetIgcSite();
                 if (!pigc->Reload(this, NULL, ET_Weapon))
@@ -668,7 +668,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 #ifdef WIN
                 m_timeReloadFuel = GetMyLastUpdate() + 0.5f / GetMyMission()->GetFloatConstant(c_fcidMountRate);
 #else
-                m_timeReloadFuel = GetMyLastUpdate() + Duration(0.5f / GetMyMission()->GetFloatConstant(c_fcidMountRate));
+                m_timeReloadFuel = GetMyLastUpdate() + Seconds(0.5f / GetMyMission()->GetFloatConstant(c_fcidMountRate));
 #endif
                 IIgcSite*   pigc = GetMyMission()->GetIgcSite();
                 if (!pigc->Reload(this, NULL, ET_Afterburner))
@@ -1886,7 +1886,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 #ifdef WIN
             if (GetMyLastUpdate() >= m_timeLastComplaint + m_dtTimeBetweenComplaints)
 #else
-            if( GetMyLastUpdate() >= m_timeLastComplaint + Duration(m_dtTimeBetweenComplaints) )
+            if( GetMyLastUpdate() >= m_timeLastComplaint + Seconds(m_dtTimeBetweenComplaints) )
 #endif
             {
                 //There is another side here at the asteroid ... complain
@@ -2075,7 +2075,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 #ifdef WIN
             if ((now > GetMyLastUpdate() + 10.0f) && !m_stayDocked) //Xynth #48 8/10 add staydocked bool
 #else
-            if( (now > GetMyLastUpdate() + Duration(10.0f)) && !m_stayDocked)
+            if( (now > GetMyLastUpdate() + Seconds(10.0f)) && !m_stayDocked)
 #endif
             {
                 IclusterIGC*    pcluster   = m_station->GetCluster();
@@ -2187,7 +2187,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 #ifdef WIN
                 if (m_maxMineTime > m_timeLastMineExplosion + 0.5f)
 #else
-                if (m_maxMineTime > m_timeLastMineExplosion + Duration(0.5f))
+                if (m_maxMineTime > m_timeLastMineExplosion + Seconds(0.5f))
 #endif
                 {
                     m_timeLastMineExplosion = m_maxMineTime;

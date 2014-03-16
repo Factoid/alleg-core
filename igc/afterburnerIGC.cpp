@@ -110,7 +110,7 @@ void    CafterburnerIGC::IncrementalUpdate(Time lastUpdate, Time now, bool bUseF
 #ifdef WIN
         float   dt = now - lastUpdate;
 #else
-        float dt = ((Duration)(now - lastUpdate)).count();
+        float dt = Seconds(now - lastUpdate).count();
 #endif
 
         if (m_mountedFraction < 1.0f)

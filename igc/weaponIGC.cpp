@@ -261,7 +261,7 @@ void        CweaponIGC::FireWeapon(Time now)
 #ifdef WIN
                         m_nextFire += (m_typeData->energyPerShot - (energy + energyDeficit)) / rechargeRate;
 #else
-                        m_nextFire += Duration((m_typeData->energyPerShot - (energy + energyDeficit)) / rechargeRate);
+                        m_nextFire += Seconds((m_typeData->energyPerShot - (energy + energyDeficit)) / rechargeRate);
 #endif
                     }
 
@@ -324,7 +324,7 @@ void        CweaponIGC::FireWeapon(Time now)
 #ifdef WIN
                     m_nextFire += dtimeBurst;
 #else
-                    m_nextFire += Duration(dtimeBurst);
+                    m_nextFire += Seconds(dtimeBurst);
 #endif
                 }
                 while ((nShots-- > 0) &&

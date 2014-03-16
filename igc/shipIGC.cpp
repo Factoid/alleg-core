@@ -225,7 +225,11 @@ void        CshipIGC::Terminate(void)
 
     if ((m_pilotType == c_ptBuilder) && ((m_stateM & buildingMaskIGC) != 0))
     {
+#ifdef WIN
         assert (m_commandIDs[c_cmdPlan] != NULL);
+#else
+        assert (m_commandIDs[c_cmdPlan] != c_cidNone);
+#endif
         assert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
         IbuildingEffectIGC* pbe = ((IasteroidIGC*)(ImodelIGC*)m_commandTargets[c_cmdPlan])->GetBuildingEffect();
 
@@ -1403,7 +1407,11 @@ void CshipIGC::SetBaseHullType(IhullTypeIGC* newVal)
         GetThingSite()->SetCluster(this, NULL);
     }
 
+#ifdef WIN
     assert (m_parts.n() == 0);
+#else
+    assert( m_parts.empty() );
+#endif
 
     //Move any gunless gunners to observer status
 #ifdef WIN
@@ -1446,7 +1454,7 @@ void CshipIGC::SetBaseHullType(IhullTypeIGC* newVal)
 #ifdef WIN
         m_timeToDie = GetLastUpdate() + GetMyMission()->GetFloatConstant(c_fcidLifepodEndurance);
 #else
-        m_timeToDie = GetLastUpdate() + Duration(GetMyMission()->GetFloatConstant(c_fcidLifepodEndurance));
+        m_timeToDie = GetLastUpdate() + Seconds(GetMyMission()->GetFloatConstant(c_fcidLifepodEndurance));
 #endif
     }
     //Try to load the ship's model
@@ -1777,7 +1785,7 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
 #ifdef WIN
 			if ((m_timeRanAway + c_dtCheckRunaway) <= timeStop)
 #else
-        if((m_timeRanAway + Duration(c_dtCheckRunaway)) <= timeStop )
+        if((m_timeRanAway + Seconds(c_dtCheckRunaway)) <= timeStop )
 #endif
             {
                 bool    bDamage = true;
@@ -2069,7 +2077,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
 #ifdef WIN
                     m_timeRequestRipcord = timeStart + 5.0f;
 #else
-                    m_timeRequestRipcord = timeStart + Duration(5.0f);
+                    m_timeRequestRipcord = timeStart + Seconds(5.0f);
 #endif
                 }
             }
@@ -3009,7 +3017,7 @@ void    CshipIGC::CalculateShip(Time timeUpdate, float    deltaT, Vector* pPosit
 #ifdef WIN
             Time nextTime = timeUpdate + (deltaT * (((float)i) / ((float)n)));
 #else
-            Time nextTime = timeUpdate + Duration(deltaT * (((float)i) / ((float)n)));
+            Time nextTime = timeUpdate + Seconds(deltaT * (((float)i) / ((float)n)));
 #endif
 
             ExecuteShipMove(thisTime, nextTime,
@@ -3073,7 +3081,7 @@ ShipUpdateStatus    CshipIGC::ProcessShipUpdate(Time                timeReferenc
 #ifdef WIN
                 Time nextTime = timeUpdate + (deltaT * (((float)i) / ((float)n)));
 #else
-                Time nextTime = timeUpdate + Duration(deltaT * (((float)i) / ((float)n)));
+                Time nextTime = timeUpdate + Seconds(deltaT * (((float)i) / ((float)n)));
 #endif
                 ExecuteTurretMove(thisTime,
                                   nextTime,
@@ -3125,7 +3133,7 @@ ShipUpdateStatus    CshipIGC::ProcessShipUpdate(const ClientActiveTurretUpdate& 
 #ifdef WIN
                 Time nextTime = shipupdate.time + (deltaT * (((float)i) / ((float)n)));
 #else
-                Time nextTime = shipupdate.time + Duration(deltaT * (((float)i) / ((float)n)));
+                Time nextTime = shipupdate.time + Seconds(deltaT * (((float)i) / ((float)n)));
 #endif
                 ExecuteTurretMove(thisTime,
                                   nextTime,
@@ -3411,7 +3419,11 @@ void    CshipIGC::SetParentShip(IshipIGC*   pshipParent)
                 }
 #endif
             }
+#ifdef WIN
             assert (m_shipsChildren.n() == 0);
+#else
+            assert( m_shipsChildren.empty() );
+#endif
             assert (pshipParent->GetParentShip() == NULL);
 
             if (pshipOldParent == NULL)
@@ -4008,7 +4020,7 @@ void    CshipIGC::ResetWaypoint(void)
                         m_timeRequestRipcord = GetMyLastUpdate() + 5.0f;
 #else
                         m_pclusterRequestRipcord.reset(pclusterTarget);
-                        m_timeRequestRipcord = GetMyLastUpdate() + Duration(5.0f);
+                        m_timeRequestRipcord = GetMyLastUpdate() + Seconds(5.0f);
 #endif
                     }
                 }
@@ -4267,8 +4279,11 @@ bool    CshipIGC::bShouldUseRipcord(IclusterIGC*  pcluster)
             pwlOneAway = pwlTwoAway;
             pwlTwoAway = pwl;
         }
-
+#ifdef WIN
         assert (pwlOneAway->n() > 0);
+#else
+        assert( !pwlOneAway->empty() );
+#endif
 #ifdef WIN
         WarpLinkIGC*    plink = pwlOneAway->first();
         IwarpIGC*       pwarp = plink->data();

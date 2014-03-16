@@ -202,7 +202,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
 #ifdef WIN
         m_expire = m_data.time0 + m_data.lifespan;
 #else
-        m_expire = (m_data.time0 + Duration(m_data.lifespan));
+        m_expire = (m_data.time0 + Seconds(m_data.lifespan));
 #endif
 
         SetPosition(*pposition);
