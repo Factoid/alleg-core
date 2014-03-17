@@ -745,9 +745,17 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	Time now = pMission->GetLastUpdate();
 
 	if (!(pMission->LoadTechBitsList()))
+#ifdef WIN
 		debugf("Warning: Failed to load Tech mask bit flags! (\\artwork\\%s\\BitsOfTechs.csv)\n",pMission->GetMissionParams()->szIGCStaticFile);
+#else
+		debugf("Warning: Failed to load Tech mask bit flags! (\\artwork\\%s\\BitsOfTechs.csv)\n",pMission->GetMissionParams()->szIGCStaticFile.c_str());
+#endif
 	if (!(pMission->LoadPartsBitsList()))
+#ifdef WIN
 		debugf("Warning: Failed to load Part mask bit flags! (\\artwork\\%s\\BitsOfParts.csv)\n",pMission->GetMissionParams()->szIGCStaticFile);
+#else
+		debugf("Warning: Failed to load Part mask bit flags! (\\artwork\\%s\\BitsOfParts.csv)\n",pMission->GetMissionParams()->szIGCStaticFile.c_str());
+#endif
 
 	//our running size
 	int iDatasize = 0;
@@ -2602,7 +2610,11 @@ bool    DumpIGCFile (const char* name, ImissionIGC* pMission, __int64 iMaskExpor
 }
 
 //------------------------------------------------------------------------------
+#ifdef WIN
 bool    LoadIGCFile (const char* name, ImissionIGC* pMission, void (*munge)(int size, char* data))
+#else
+bool    LoadIGCFile (const std::string& name, ImissionIGC* pMission, void (*munge)(int size, char* data))
+#endif
 {
 #ifdef WIN
     char        szFilename[MAX_PATH + 1];
@@ -4382,7 +4394,11 @@ void                    CmissionIGC::GenerateMission(Time                   now,
     }
 
     // check for custom map, and make sure it exists.
+#ifdef WIN
     if (pmp->szCustomMapFile[0] == '\0' || !LoadIGCFile(pmp->szCustomMapFile, this))
+#else
+    if (pmp->szCustomMapFile.empty() || !LoadIGCFile(pmp->szCustomMapFile, this))
+#endif
     {
         ImapMakerIGC::Create(now, pmp, this);
     }
@@ -4686,10 +4702,16 @@ void                    CmissionIGC::GenerateMission(Time                   now,
     }
 	// mmf log mission params server side via debugf's
 	// may want to revisit this and make it a member function
+#ifdef WIN
     debugf("Name: %s\n",pmp->strGameName);
     debugf("Core Name: %s\n",pmp->szIGCStaticFile);
-	debugf("Lives: %d\n",pmp->iLives);
 	debugf("Map Type: %s\n",pmp->szCustomMapFile);
+#else
+    debugf("Name: %s\n",pmp->strGameName.c_str());
+    debugf("Core Name: %s\n",pmp->szIGCStaticFile.c_str());
+	debugf("Map Type: %s\n",pmp->szCustomMapFile.c_str());
+#endif
+	debugf("Lives: %d\n",pmp->iLives);
 	debugf("Map Connectivity: %d\n",pmp->iRandomEncounters);
 	debugf("Resources: %d\n",pmp->iResources);
 	debugf("Total money: %f\n",pmp->fHe3Density);

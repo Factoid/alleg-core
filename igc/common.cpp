@@ -2974,10 +2974,16 @@ static Vector   RandomPosition(const ModelListIGC*  models, float   rThing, floa
         rThing = maxStationRadius;
 
     Vector          position;
-
+#ifdef WIN
     ModelLinkIGC*   pmlink;
+#else
+    bool done = true;
+#endif
     do
     {
+#ifndef WIN
+      done = true;
+#endif
         //Pick a random position for the asteroid
         //in a squashed disk
         position = Vector::RandomDirection();
@@ -3002,11 +3008,16 @@ static Vector   RandomPosition(const ModelListIGC*  models, float   rThing, floa
             {
                 //Too close ... try again
                 radius *= 1.02f;
+                done = false;
                 break;
             }
         }
     }
+#ifdef WIN
     while (pmlink);
+#else
+    while( !done );
+#endif
 
     return position;
 }

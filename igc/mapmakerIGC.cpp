@@ -567,7 +567,6 @@ VOID CmapMakerIGC::GenerateMission(Time now,
 //
 // Base class implementation of the map maker.
 //
-/*
 VOID CmapMakerIGC::GenerateSides(CMapData * pMapData)
 {
     static const float sideColors[c_cSidesMax][3] =
@@ -605,11 +604,12 @@ VOID CmapMakerIGC::GenerateSides(CMapData * pMapData)
         assert (o);
         o->Release();
     }
-
+#ifdef WIN
     assert (pMapData->GetMission()->GetSides()->n() == pMapData->GetTeams());
+#else
+    assert (pMapData->GetMission()->GetSides()->size() == pMapData->GetTeams());
+#endif
 }
-*/
-
 
 VOID CmapMakerIGC::GenerateTeamClusterScreenPosition(CMapData * pMapData,
                                                     DataClusterIGC * pdc,

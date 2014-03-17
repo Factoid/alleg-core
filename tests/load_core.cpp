@@ -49,19 +49,64 @@ go_bandit( []() {
     DummyIgcSite dummySite;
     CmissionIGC mission;
     MissionParams params;
+    params.strGameName = std::string("My Test Game").c_str();
+
     Time t = appStart = Clock::now();
 
     it( "can initialize", [&]() {
+      AssertThat( mission.GetIgcSite() == nullptr, IsTrue() );
+      AssertThat( mission.GetLastUpdate(), Equals(Time()) );
       mission.Initialize( t, &dummySite );
+      AssertThat( mission.GetIgcSite() == &dummySite, IsTrue() );
+      AssertThat( mission.GetLastUpdate(), Equals(appStart) );
     });
 
     it( "can set mission params", [&]() {
+      AssertThat( mission.GetMissionParams()->strGameName, Equals("Uninitialized Game Name") );
       mission.SetMissionParams( &params );
+      AssertThat( mission.GetMissionParams()->strGameName, Equals("My Test Game") );
+    });
+
+    it( "can load a core", [&]() {
+      LoadIGCStaticCore( "cc_14", &mission, false, nullptr );
     });
 
     it( "can set start time", [&]() {
+      AssertThat( Seconds(mission.GetMissionParams()->timeStart-t).count(), !EqualsWithDelta(0.0f,0.01f) );
       mission.SetStartTime( t );
       AssertThat( Seconds(mission.GetMissionParams()->timeStart-t).count(), EqualsWithDelta(0.0f,0.01f) );
+    });
+
+    it( "can generate sides", [&]() {
+      DataSideIGC dSide("Team 1");
+      dSide.civilizationID = 18;
+      dSide.sideID = 0;
+      dSide.gasAttributes.Initialize();
+      dSide.color = Color(1.0f,0.0f,0.0f);
+      IsideIGC* civ1 = (IsideIGC*)mission.CreateObject(t, OT_side, &dSide, sizeof(dSide));
+
+      dSide = DataSideIGC("Team 2");
+      dSide.civilizationID = 18;
+      dSide.sideID = 1;
+      dSide.gasAttributes.Initialize();
+      dSide.color = Color(0.0f,0.0f,1.0f);
+      IsideIGC* civ2 = (IsideIGC*)mission.CreateObject(t, OT_side, &dSide, sizeof(dSide));
+    });
+
+    it( "can generate mission", [&]() {
+      mission.GenerateMission( t, &params, nullptr, nullptr ); 
+    });
+
+    it( "can terminate", [&]() {
+      mission.Terminate();
+      AssertThat( *mission.GetTreasures(), IsEmpty() );
+      AssertThat( *mission.GetDroneTypes(), IsEmpty() );
+      AssertThat( *mission.GetStationTypes(), IsEmpty() );
+      AssertThat( *mission.GetExpendableTypes(), IsEmpty() );
+      AssertThat( *mission.GetPartTypes(), IsEmpty() );
+      AssertThat( *mission.GetProjectileTypes(), IsEmpty() );
+      AssertThat( *mission.GetDevelopments(), IsEmpty() );
+      AssertThat( *mission.GetCivilizations(), IsEmpty() );
     });
   });
 });

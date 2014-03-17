@@ -219,7 +219,7 @@ class CmapMakerIGC : public ImapMakerIGC
         //
         // Our own custom helper methods.
         //
-        //virtual VOID        GenerateSides(CMapData * pMapData);
+        virtual VOID        GenerateSides(CMapData * pMapData);
 
         virtual VOID        GenerateTeamClusterScreenPosition(
                                             CMapData * pMapData,

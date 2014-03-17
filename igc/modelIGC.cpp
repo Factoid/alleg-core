@@ -137,20 +137,32 @@ void   CmodelIGC::LoadCVH(const char*     pszFileName,
 
 HRESULT   CmodelIGC::LoadEffect(const Color& color, ModelAttributes attributes)
 {
+#ifdef WIN
     LoadCVH(NULL, NULL, attributes, c_htsSphere);
+#else
+    LoadCVH("", "", attributes, c_htsSphere );
+#endif
 
     return m_pThingSite->LoadEffect(color);
 }
 HRESULT CmodelIGC::LoadWarp(const char* textureName, const char* iconName, ModelAttributes attributes)
 {
+#ifdef WIN
     LoadCVH(NULL, iconName, attributes, c_htsCone);
+#else
+    LoadCVH("",iconName,attributes, c_htsCone);
+#endif
 
     return m_pThingSite->LoadAleph(textureName);
 }
 
 HRESULT CmodelIGC::LoadMine(const char* textureName, float strength, float radius, const char* iconName, ModelAttributes attributes)
 {
+#ifdef WIN
     LoadCVH(NULL, iconName, attributes, c_htsSphere);
+#else
+    LoadCVH("", iconName, attributes, c_htsSphere);
+#endif
 
     return m_pThingSite->LoadMine(textureName, strength, radius);
 }
@@ -287,7 +299,11 @@ void    CmodelIGC::SetCluster(IclusterIGC* newVal)
 HRESULT CmodelIGC::LoadDecal(const char* pszTextureName, const char* iconName, const Color& color, bool bDirectional, float width, ModelAttributes attributes,
                              HitTestShape   htsDefault)
 {
+#ifdef WIN
     LoadCVH(NULL, iconName, attributes, htsDefault);
+#else
+    LoadCVH("", iconName, attributes, htsDefault );
+#endif
 
     HRESULT rc = m_pThingSite->LoadDecal(pszTextureName, bDirectional, width);
 

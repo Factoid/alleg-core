@@ -1090,10 +1090,17 @@ struct MissionParams
     // AGCGameParameters.cpp, AGCGameParameters.h, and AGCIDL.h.
     //
     //------------------------------------------------------------------------------
+#ifdef WIN
     char        strGameName[c_cbGameName];              //Name of game
     char        szIGCStaticFile[c_cbFileName];          //Name of static IGC file
     char        szCustomMapFile[c_cbFileName];          //Name of custom Map file; used only if not blank
     char        strGamePassword[c_cbGamePassword];      //Password
+#else
+    std::string strGameName;
+    std::string szIGCStaticFile;
+    std::string szCustomMapFile;
+    std::string strGamePassword;
+#endif
     bool        bEjectPods          : 1;                //Are eject pods used
     bool        bInvulnerableStations : 1;              //Do station NOT take damage
     bool        bShowMap            : 1;                //Show all warps at the start of the game
@@ -1199,12 +1206,19 @@ struct MissionParams
 
     void    Reset(void)
     {
+#ifdef WIN
         ZeroMemory(this, sizeof(*this));
+#endif
         //
         // default to reasonable values
         //
+#ifdef WIN
         strcpy(strGameName, "Uninitialized Game Name");
         szIGCStaticFile[0] = '\0';
+#else
+        strGameName = "Uninitialized Game Name";
+        szIGCStaticFile.clear();
+#endif
         m_killPenalty                   = 0;
         m_killReward                    = 0;
 
@@ -1402,6 +1416,7 @@ struct MissionParams
         {
             return "StartingMoney must be between 0 and 9.";
         }
+#ifdef WIN
         else if (NULL == memchr(strGameName, 0, c_cbGameName))
         {
             return "invalid game name";
@@ -1418,6 +1433,7 @@ struct MissionParams
         {
             return "invalid IGC static file name";
         }
+#endif
         else if ((nTeams > 6) || (nTeams < 2))
         {
             return "Number of teams must be between 2 and 6.";
@@ -2019,6 +2035,26 @@ struct  DataMissileIGC
 
 struct  DataSideIGC
 {
+  DataSideIGC() : DataSideIGC( "Unknown Team") {}
+
+  DataSideIGC( const std::string& n )
+  {
+    strncpy( name, n.c_str(), c_cbName );
+    civilizationID = NA;
+    sideID = NA;
+    fTimeEndured = 0.0f;
+    nFlags = 0;
+    nArtifacts = 0;
+    nKills = 0;
+    nEjections = 0;
+    nDeaths = 0;
+    nBaseKills = 0;
+    nBaseCaptures = 0;
+    squadID = NA;
+    conquest = true;
+    territory = false;
+  }
+
     char                name[c_cbName];
     CivID               civilizationID;
     SideID              sideID;
@@ -6201,8 +6237,11 @@ class GameOverScoreObject
 //------------------------------------------------------------------------------
 bool    DumpIGCFile (const char* name, ImissionIGC* pMission, __int64 iMaskExportTypes,
                      void (*munge)(int size, char* data) = NULL);
+#ifdef WIN
 bool    LoadIGCFile (const char* name, ImissionIGC* pMission, void (*munge)(int size, char* data) = NULL);
-
+#else
+bool    LoadIGCFile (const std::string& name, ImissionIGC* pMission, void (*munge)(int size, char* data) = NULL);
+#endif
 //------------------------------------------------------------------------------
 // static data core files are dealt with by these functions. They are
 // almost identical to the normal igc file loaders, but there is a version
