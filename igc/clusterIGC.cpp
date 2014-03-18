@@ -121,7 +121,7 @@ void        CclusterIGC::Update(Time now)
 #ifdef WIN
         float   dt = now - m_lastUpdate;
 #else
-        float dt = (now - m_lastUpdate).count();
+        float dt = Seconds(now - m_lastUpdate).count();
 #endif
 
         bool    bStarted = m_pMission->GetMissionStage() == STAGE_STARTED;
@@ -504,7 +504,7 @@ void        CclusterIGC::Update(Time now)
 #ifdef WIN
                 float   dt = (e.time - m_lastUpdate) - m_tOffset;
 #else
-                float dt = (e.time - m_lastUpdate).count() - m_tOffset;
+                float dt = Seconds(e.time - m_lastUpdate).count() - m_tOffset;
 #endif
 
                 //Now, the painful part: applying damage to everything in the sector that could be hit

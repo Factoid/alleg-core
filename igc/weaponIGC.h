@@ -34,7 +34,7 @@ class CweaponIGC : public IweaponIGC
 #ifdef WIN
                 float dt = now - m_ship->GetLastUpdate();
 #else
-                float dt = (now - m_ship->GetLastUpdate()).count();
+                float dt = Seconds(now - m_ship->GetLastUpdate()).count();
 #endif
 
                 m_mountedFraction += dt * m_pMission->GetFloatConstant(c_fcidMountRate);

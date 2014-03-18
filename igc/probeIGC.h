@@ -233,7 +233,7 @@ class CprobeIGC : public TmodelIGC<IprobeIGC>
                    ((GetMyLastUpdate() - m_time0) >= dt) &&
                    ((GetMyLastUpdate() + (ripcordSpeed + 1.0f)) <= m_timeExpire);
 #else
-                   ((GetMyLastUpdate() - m_time0).count() >= dt) &&
+                   (Seconds(GetMyLastUpdate() - m_time0).count() >= dt) &&
                    ((GetMyLastUpdate() + Seconds(ripcordSpeed + 1.0f)) <= m_timeExpire);
 #endif
         }

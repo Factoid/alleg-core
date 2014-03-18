@@ -1153,7 +1153,11 @@ struct MissionParams
     float       fStartCountdown;                        //Countdown (seconds) between automatically restarting missions
     float       fRestartCountdown;                      //Countdown (seconds) between automatically restarting missions
 
+#ifdef WIN
     CivID       rgCivID[c_cSidesMax];                   //IDs within the szIGCCore data set
+#else
+    std::vector<CivID> rgCivID;
+#endif
     short       iGoalConquestPercentage;                //% of flagged stations that need to be held to win the game
     short       iGoalTerritoryPercentage;               //sole control of % of territories
     short       iGoalArtifactsPercentage;       //Not used
@@ -1264,6 +1268,7 @@ struct MissionParams
         fStartCountdown                 = 15.0f;
         fRestartCountdown               = 60.0f;
 
+#ifdef WIN
         //
         // Assign to NA for now, this cues the mission maker to reset it later
         //
@@ -1271,6 +1276,9 @@ struct MissionParams
         {
             rgCivID[iSide] = NA;
         }
+#else
+        rgCivID.clear();
+#endif
 
         fHe3Density                     = 1.0f;
         fStartingMoney                  = 1.0f;
@@ -2219,7 +2227,7 @@ public:
 
   void Export( Time timeBase, Time* timeNow ) const
   {
-    *timeNow = timeBase + std::chrono::milliseconds(timeOffset);
+    *timeNow = timeBase + Time::duration(timeOffset);
   }
 };
 #endif

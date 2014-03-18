@@ -374,7 +374,7 @@ void CstationIGC::Launch(IshipIGC* pship)
 #ifdef WIN
 		float	m_fDeltaTime = (float)(lastUpdate - lastLaunch);
 #else
-		float	m_fDeltaTime = (lastUpdate - lastLaunch).count();
+		float	m_fDeltaTime = Seconds(lastUpdate - lastLaunch).count();
 #endif
 		//debugf(" *** %s(%i) launch time cluster delta = %f\n\n", m_myStationType.GetName(), m_myStationType.GetObjectID(), m_fDeltaTime);
 		if (m_fDeltaTime <= 0.1f) {

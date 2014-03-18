@@ -102,7 +102,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
 #ifdef WIN
             float   dt = now - m_data.time0;
 #else
-            float   dt = (now - m_data.time0).count();
+            float   dt = Seconds(now - m_data.time0).count();
 #endif
 
             if (m_speed0 <= c_deceleration * dt)
@@ -232,7 +232,7 @@ void CtreasureIGC::Update(Time now)
 #ifdef WIN
             float   dt1 = GetMyLastUpdate() - m_data.time0;
 #else
-            float   dt1 = (GetMyLastUpdate() - m_data.time0).count();
+            float   dt1 = Seconds(GetMyLastUpdate() - m_data.time0).count();
 #endif
             float   v1 = m_speed0 - c_deceleration * dt1;
             if (v1 <= 0.0f)
@@ -263,7 +263,7 @@ void CtreasureIGC::Update(Time now)
 #ifdef WIN
                     float   dt2 = now - m_data.time0;
 #else
-                    float   dt2 = (now - m_data.time0).count();
+                    float   dt2 = Seconds(now - m_data.time0).count();
 #endif
                     float   v2 = m_speed0 - c_deceleration * dt2;
 
@@ -275,7 +275,7 @@ void CtreasureIGC::Update(Time now)
 #ifdef WIN
                     SetVelocity((p2 - p1) / (now - GetMyLastUpdate()));
 #else
-                    SetVelocity((p2 - p1) / (now - GetMyLastUpdate()).count());
+                    SetVelocity((p2 - p1) / Seconds(now - GetMyLastUpdate()).count());
 #endif
                 }
             }

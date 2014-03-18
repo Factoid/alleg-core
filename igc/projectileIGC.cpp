@@ -142,7 +142,7 @@ void    CprojectileIGC::Update(Time now)
 #ifdef WIN
                                                                  GetVelocity() * (m_timeExpire - GetMyLastUpdate()),
 #else
-                                                                 GetVelocity() * (m_timeExpire - GetMyLastUpdate()).count(),
+                                                                 GetVelocity() * Seconds(m_timeExpire - GetMyLastUpdate()).count(),
 #endif
 
                                                                  m_launcher);

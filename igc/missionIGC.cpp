@@ -3499,7 +3499,7 @@ void     CmissionIGC::Update(Time now)
             assert (now - m_lastUpdate < 600.0f);   //never 10 minutes at a time.
             float   deltaT = now - m_lastUpdate;
 #else
-            float deltaT = (now - m_lastUpdate).count();
+            float deltaT = Seconds(now - m_lastUpdate).count();
 #endif
 
             //Update the components in chunks of no more than 250ms each
@@ -3529,9 +3529,9 @@ void     CmissionIGC::Update(Time now)
                         l->data()->Update(timeUpdate);
                     }
 #else
-                    for( auto ship : m_clusters )
+                    for( auto cluster : m_clusters )
                     {
-                      ship->Update(timeUpdate);
+                      cluster->Update(timeUpdate);
                     }
 #endif
                 }

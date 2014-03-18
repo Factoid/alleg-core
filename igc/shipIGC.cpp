@@ -309,7 +309,7 @@ void    CshipIGC::Update(Time now)
 #ifdef WIN
         float   dt = (now - lastUpdate);
 #else
-        float dt = (now-lastUpdate).count();
+        float dt = Seconds(now-lastUpdate).count();
 #endif
 
         if (m_pmodelRipcord)
@@ -1684,7 +1684,7 @@ void    CshipIGC::ExecuteTurretMove(Time          timeStart,
 #ifdef WIN
     float   dT = timeStop - timeStart;
 #else
-    float dT = (timeStop-timeStart).count();
+    float dT = Seconds(timeStop-timeStart).count();
 #endif
     //Note: turret time can run forwards or backwards
 
@@ -2087,7 +2087,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
 #ifdef WIN
         float   dT = timeStop - timeStart;
 #else
-        float dT = (timeStop-timeStart).count();
+        float dT = Seconds(timeStop-timeStart).count();
 #endif
 
         //Special case up front: miners mine
@@ -2587,7 +2587,7 @@ void    CshipIGC::ExecuteShipMove(Time          timeStart,
 #ifdef WIN
         float   dT = timeStop - timeStart;
 #else
-        float dT = (timeStop-timeStart).count();
+        float dT = Seconds(timeStop-timeStart).count();
 #endif
         assert (dT > 0.0f);
 
@@ -2844,7 +2844,7 @@ ShipUpdateStatus    CshipIGC::ProcessShipUpdate(Time    timeReference,
 #ifdef WIN
     float   deltaT = GetMyLastUpdate() - timeUpdate;
 #else
-    float deltaT = (GetMyLastUpdate()-timeUpdate).count();
+    float deltaT = Seconds(GetMyLastUpdate()-timeUpdate).count();
 #endif
     if ((deltaT < 1.5f) && (deltaT > -1.5f))
     {
@@ -2878,7 +2878,7 @@ ShipUpdateStatus    CshipIGC::ProcessShipUpdate(const ClientShipUpdate& shipupda
 #ifdef WIN
     float   deltaT = GetMyLastUpdate() - shipupdate.time;
 #else
-    float deltaT = (GetMyLastUpdate() - shipupdate.time).count();
+    float deltaT = Seconds(GetMyLastUpdate() - shipupdate.time).count();
 #endif
     if ((deltaT < 1.5f) && (deltaT > -1.5f) && LegalPosition(shipupdate.position))
     {
@@ -2961,7 +2961,7 @@ ShipUpdateStatus    CshipIGC::ProcessShipUpdate(const ServerSingleShipUpdate& sh
 #ifdef WIN
     float   deltaT = GetMyLastUpdate() - shipupdate.time;
 #else
-    float   deltaT = (GetMyLastUpdate() - shipupdate.time).count();
+    float   deltaT = Seconds(GetMyLastUpdate() - shipupdate.time).count();
 #endif
     if ((deltaT < 1.5f) && (deltaT > -1.5f))
     {
@@ -3026,7 +3026,7 @@ void    CshipIGC::CalculateShip(Time timeUpdate, float    deltaT, Vector* pPosit
 #ifdef WIN
             *pPosition += *pVelocity * (nextTime - thisTime);
 #else
-            *pPosition += *pVelocity * (nextTime - thisTime).count();
+            *pPosition += *pVelocity * Seconds(nextTime - thisTime).count();
 #endif
 
             thisTime = nextTime;
@@ -3054,7 +3054,7 @@ ShipUpdateStatus    CshipIGC::ProcessShipUpdate(Time                timeReferenc
 #ifdef WIN
     float   deltaT = GetMyLastUpdate() - timeUpdate;
 #else
-    float   deltaT = (GetMyLastUpdate() - timeUpdate).count();
+    float   deltaT = Seconds(GetMyLastUpdate() - timeUpdate).count();
 #endif
     if ((deltaT < 1.5f) && (deltaT > -1.5f))
     {
@@ -3105,7 +3105,7 @@ ShipUpdateStatus    CshipIGC::ProcessShipUpdate(const ClientActiveTurretUpdate& 
 #ifdef WIN
     float   deltaT = GetMyLastUpdate() - shipupdate.time;
 #else
-    float   deltaT = (GetMyLastUpdate() - shipupdate.time).count();
+    float   deltaT = Seconds(GetMyLastUpdate() - shipupdate.time).count();
 #endif
     
     if ((deltaT < 1.5f) && (deltaT > -1.5f))

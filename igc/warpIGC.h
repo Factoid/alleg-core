@@ -181,7 +181,7 @@ class CwarpIGC : public TmodelIGC<IwarpIGC>
 #ifdef WIN
             float       fExplodeTime = timeExplosion - Time::Now ();
 #else
-            float fExplodeTime = (timeExplosion - Clock::now()).count();
+            float fExplodeTime = Seconds(timeExplosion - Clock::now()).count();
 #endif
             GetCluster ()->GetClusterSite ()->AddPulse (fExplodeTime, GetPosition (), pmt->GetBlastRadius (), blastColor);
             IwarpIGC*   pDestination = GetDestination();

@@ -67,7 +67,7 @@ void        CshieldIGC::Update(Time now)
 #ifdef WIN
     float dt = now - lastUpdate;
 #else
-    float dt = (now-lastUpdate).count();
+    float dt = Seconds(now-lastUpdate).count();
 #endif
 
 

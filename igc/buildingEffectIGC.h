@@ -203,7 +203,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 #ifdef WIN
                     float   f = (now - m_timeShrink) / c_dtShrink;
 #else
-                    float f = (now - m_timeShrink).count() / c_dtShrink;
+                    float f = Seconds(now - m_timeShrink).count() / c_dtShrink;
 #endif
                     position = m_positionStop;
                     radius = m_radiusStation * f + m_radiusMax * (1.0f - f);
@@ -217,7 +217,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 #ifdef WIN
                     float   f = (now - m_timeOpaque) / c_dtOpaque;
 #else
-                    float f = (now - m_timeOpaque).count() / c_dtOpaque;
+                    float f = Seconds(now - m_timeOpaque).count() / c_dtOpaque;
 #endif
 
                     position = m_positionStop;
@@ -232,7 +232,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 #ifdef WIN
                     float   f = (now - m_timeGrow) / c_dtGrow;
 #else
-                    float   f = (now - m_timeGrow).count() / c_dtGrow;
+                    float   f = Seconds(now - m_timeGrow).count() / c_dtGrow;
 #endif
 
                     position = m_positionStop;
@@ -246,7 +246,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 #ifdef WIN
                     float   dt = (now - m_timeEnvelope);
 #else
-                    float dt = (now-m_timeEnvelope).count();
+                    float dt = Seconds(now-m_timeEnvelope).count();
 #endif
                     float   f = (dt > 0.0f) ? (dt / c_dtEnvelope) : 0.0f;
 

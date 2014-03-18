@@ -377,7 +377,7 @@ void    CmissileIGC::Update(Time now)
 #ifdef WIN
             float dt = now - ((m_timeActivate > GetMyLastUpdate()) ? m_timeActivate : GetMyLastUpdate());
 #else
-            float dt = (now - ((m_timeActivate > GetMyLastUpdate()) ? m_timeActivate : GetMyLastUpdate())).count();
+            float dt = Seconds(now - ((m_timeActivate > GetMyLastUpdate()) ? m_timeActivate : GetMyLastUpdate())).count();
 #endif
 
             if (m_target && (m_target->GetCluster() != GetCluster()))
@@ -416,7 +416,7 @@ void    CmissileIGC::Update(Time now)
 #ifdef WIN
                 SetPosition(myPosition - deltaV * (m_timeActivate - GetMyLastUpdate()));
 #else
-                SetPosition(myPosition - deltaV * (m_timeActivate - GetMyLastUpdate()).count());
+                SetPosition(myPosition - deltaV * Seconds(m_timeActivate - GetMyLastUpdate()).count());
 #endif
             }
 

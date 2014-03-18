@@ -199,7 +199,7 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
 #ifdef WIN
             float   dt = now - GetMyLastUpdate();
 #else
-            float   dt = (now - GetMyLastUpdate()).count();
+            float   dt = Seconds(now - GetMyLastUpdate()).count();
 #endif
 
             if (dt > 0.0f)

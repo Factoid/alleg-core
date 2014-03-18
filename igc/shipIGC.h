@@ -2623,7 +2623,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 #ifdef WIN
                 e = (m_timeToDie - GetLastUpdate()) / GetMyMission()->GetFloatConstant(c_fcidLifepodEndurance);
 #else
-                e = (m_timeToDie - GetLastUpdate()).count() / GetMyMission()->GetFloatConstant(c_fcidLifepodEndurance);
+                e = Seconds(m_timeToDie - GetLastUpdate()).count() / GetMyMission()->GetFloatConstant(c_fcidLifepodEndurance);
 #endif
                 if (e < 0.0f)
                     e = 0.0f;

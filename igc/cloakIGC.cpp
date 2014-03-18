@@ -65,7 +65,7 @@ void        CcloakIGC::Update(Time now)
     Time    lastUpdate = m_ship->GetLastUpdate();
     assert (now >= lastUpdate);
 
-    float dt = (now - lastUpdate).count();
+    float dt = Seconds(now - lastUpdate).count();
     if (m_mountedFraction < 1.0f)
     {
         m_mountedFraction += dt * m_pMission->GetFloatConstant(c_fcidMountRate);

@@ -18,6 +18,18 @@ std::ostream& operator<<( std::ostream& os, const Orientation& o ) {
 
 class DummyIgcSite : public IIgcSite
 {
+public:
+  Time ServerTimeFromClientTime( Time clTime )
+  {
+    std::cout << "IGCSite::ServerTimeFromClientTime()\n";
+    return IIgcSite::ServerTimeFromClientTime( clTime );
+  }
+
+  void Preload( const char* mn, const char* tn )
+  {
+    std::cout << "IGCSite::Preload( " << (mn == nullptr ? "" : mn) << ", " << (tn == nullptr ? "" : tn) << ")\n" << std::flush;
+    IIgcSite::Preload( mn, tn );
+  }
 };
 
 Time appStart;
@@ -48,8 +60,6 @@ go_bandit( []() {
   describe( "ImissionIGC", []() {
     DummyIgcSite dummySite;
     CmissionIGC mission;
-    MissionParams params;
-    params.strGameName = std::string("My Test Game").c_str();
 
     Time t = appStart = Clock::now();
 
@@ -63,12 +73,24 @@ go_bandit( []() {
 
     it( "can set mission params", [&]() {
       AssertThat( mission.GetMissionParams()->strGameName, Equals("Uninitialized Game Name") );
+      MissionParams params;
+      params.strGameName = std::string("My Test Game");
+      params.nTeams = 2;
+      params.rgCivID = { 18, 18 };
       mission.SetMissionParams( &params );
       AssertThat( mission.GetMissionParams()->strGameName, Equals("My Test Game") );
     });
 
     it( "can load a core", [&]() {
       LoadIGCStaticCore( "cc_14", &mission, false, nullptr );
+      AssertThat( mission.GetStaticCore() == nullptr, IsFalse() );
+      AssertThat( *mission.GetDroneTypes(), !IsEmpty() );
+      AssertThat( *mission.GetStationTypes(), !IsEmpty() );
+      AssertThat( *mission.GetExpendableTypes(), !IsEmpty() );
+      AssertThat( *mission.GetPartTypes(), !IsEmpty() );
+      AssertThat( *mission.GetProjectileTypes(), !IsEmpty() );
+      AssertThat( *mission.GetDevelopments(), !IsEmpty() );
+      AssertThat( *mission.GetCivilizations(), !IsEmpty() );
     });
 
     it( "can set start time", [&]() {
@@ -77,13 +99,15 @@ go_bandit( []() {
       AssertThat( Seconds(mission.GetMissionParams()->timeStart-t).count(), EqualsWithDelta(0.0f,0.01f) );
     });
 
-    it( "can generate sides", [&]() {
+    it_skip( "can generate sides", [&]() {
+      AssertThat( mission.GetStaticCore() != nullptr, IsTrue() );
       DataSideIGC dSide("Team 1");
       dSide.civilizationID = 18;
       dSide.sideID = 0;
       dSide.gasAttributes.Initialize();
       dSide.color = Color(1.0f,0.0f,0.0f);
       IsideIGC* civ1 = (IsideIGC*)mission.CreateObject(t, OT_side, &dSide, sizeof(dSide));
+      AssertThat( *mission.GetSides(), Contains(civ1) );
 
       dSide = DataSideIGC("Team 2");
       dSide.civilizationID = 18;
@@ -91,22 +115,73 @@ go_bandit( []() {
       dSide.gasAttributes.Initialize();
       dSide.color = Color(0.0f,0.0f,1.0f);
       IsideIGC* civ2 = (IsideIGC*)mission.CreateObject(t, OT_side, &dSide, sizeof(dSide));
+      AssertThat( *mission.GetSides(), Contains(civ2) );
+    });
+
+    it( "can update sides", [&]() {
+      const char sideNames[c_cSidesMax][c_cbSideName] = { "foo", "bar" };
+      AssertThat( mission.GetMissionParams()->nTeams, Equals(2) );
+      mission.UpdateSides( t, mission.GetMissionParams(), sideNames );
+      AssertThat( mission.GetSide(0)->GetName(), Equals("foo") );
+      AssertThat( mission.GetSide(1)->GetName(), Equals("bar") );
     });
 
     it( "can generate mission", [&]() {
-      mission.GenerateMission( t, &params, nullptr, nullptr ); 
+      AssertThat( mission.GetStaticCore() != nullptr, IsTrue() );
+      AssertThat( *mission.GetSides(), !IsEmpty() );
+      mission.GenerateMission( t, mission.GetMissionParams(), nullptr, nullptr );
+      AssertThat( *mission.GetClusters(), !IsEmpty() );
+      AssertThat( *mission.GetWarps(), !IsEmpty() );
+      AssertThat( *mission.GetStations(), !IsEmpty() );
+      AssertThat( *mission.GetAsteroids(), !IsEmpty() );
+      AssertThat( *mission.GetTreasures(), !IsEmpty() );
+//      AssertThat( *mission.GetShips(), !IsEmpty() );
+      AssertThat( *mission.GetSides(), !IsEmpty() );
+    });
+
+    it( "can enter game", [&]() {
+      if( mission.GetMissionParams()->IsProsperityGame() )
+      {
+        AssertThat( *mission.GetSide(0)->GetBuckets(), IsEmpty());
+      }
+      mission.EnterGame();
+      if( mission.GetMissionParams()->IsProsperityGame() )
+      {
+        AssertThat( *mission.GetSide(0)->GetBuckets(), !IsEmpty());
+      }
+      for( auto tre : *mission.GetTreasures() )
+      {
+        AssertThat( tre->GetLastUpdate(), Equals(t) );
+      }
+      for( auto st : *mission.GetStations() )
+      {
+        AssertThat( st->GetLastUpdate(), Equals(t) );
+      }
+    });
+
+    it( "can update time", [&]() {
+      AssertThat( mission.GetMissionStage(), Equals(STAGE_NOTSTARTED) );
+      mission.SetMissionStage(STAGE_STARTED);
+      AssertThat( mission.GetMissionStage(), Equals(STAGE_STARTED) );
+      Seconds interval(0.1f);
+      while( (t - appStart) < Seconds(60.0f) )
+      {
+        t += interval;
+        mission.Update(t);
+      }
+      AssertThat( (mission.GetLastUpdate() - t), Equals( Time::duration(0) ) );
+      AssertThat( (mission.GetLastUpdate() - appStart ), Equals( Seconds(60.0f) ) );
     });
 
     it( "can terminate", [&]() {
       mission.Terminate();
+      AssertThat( *mission.GetClusters(), IsEmpty() );
+      AssertThat( *mission.GetWarps(), IsEmpty() );
+      AssertThat( *mission.GetStations(), IsEmpty() );
+      AssertThat( *mission.GetAsteroids(), IsEmpty() );
       AssertThat( *mission.GetTreasures(), IsEmpty() );
-      AssertThat( *mission.GetDroneTypes(), IsEmpty() );
-      AssertThat( *mission.GetStationTypes(), IsEmpty() );
-      AssertThat( *mission.GetExpendableTypes(), IsEmpty() );
-      AssertThat( *mission.GetPartTypes(), IsEmpty() );
-      AssertThat( *mission.GetProjectileTypes(), IsEmpty() );
-      AssertThat( *mission.GetDevelopments(), IsEmpty() );
-      AssertThat( *mission.GetCivilizations(), IsEmpty() );
+      AssertThat( *mission.GetShips(), IsEmpty() );
+      AssertThat( *mission.GetSides(), IsEmpty() );
     });
   });
 });

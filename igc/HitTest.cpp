@@ -54,7 +54,7 @@ void    HitTest::SetBB(Time     start,
 #ifdef WIN
                 m_tStart = m_timeStart - start;
 #else
-                m_tStart = (m_timeStart - start).count();
+                m_tStart = Seconds(m_timeStart - start).count();
 #endif
 
                 //Back the object up so that it is in the correct position at time 0.
@@ -69,7 +69,7 @@ void    HitTest::SetBB(Time     start,
 #ifdef WIN
             m_tStop = ((m_timeStop < stop) ? m_timeStop : stop) - start;
 #else
-            m_tStop = (((m_timeStop < stop) ? m_timeStop : stop) - start).count();
+            m_tStop = Seconds(((m_timeStop < stop) ? m_timeStop : stop) - start).count();
 #endif
             m_stopPosition = GetPosition() + m_velocity * m_tStop;
         }

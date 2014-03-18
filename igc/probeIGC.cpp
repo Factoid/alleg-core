@@ -175,7 +175,7 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
 #ifdef WIN
         if ((dataProbeType->dtRipcord >= 0.0f) && ((GetMyLastUpdate() - m_time0) >= dataProbeType->dtRipcord))
 #else
-        if ((dataProbeType->dtRipcord >= 0.0f) && ((GetMyLastUpdate() - m_time0).count() >= dataProbeType->dtRipcord))
+        if ((dataProbeType->dtRipcord >= 0.0f) && (Seconds(GetMyLastUpdate() - m_time0).count() >= dataProbeType->dtRipcord))
 #endif
         {
             pMission->GetIgcSite()->ActivateTeleportProbe(this);
@@ -429,7 +429,7 @@ void    CprobeIGC::Update(Time now)
 #ifdef WIN
                 float   dtUpdate = m_nextFire - lastUpdate;
 #else
-                float dtUpdate = (m_nextFire - lastUpdate).count();
+                float dtUpdate = Seconds(m_nextFire - lastUpdate).count();
 #endif
                 //If we have a target ... find the closest enemy ship who is a valid target
                 ExpendableAbilityBitMask    eabm = m_probeType->GetCapabilities();

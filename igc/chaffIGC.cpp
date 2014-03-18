@@ -49,7 +49,7 @@ HRESULT CchaffIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
     Time    time0 = pMission->GetIgcSite()->ClientTimeFromServerTime(dataChaff->time0);
 
     SetRadius(1.0f);
-    SetPosition(dataChaff->p0 + (now - time0).count() * dataChaff->v0);
+    SetPosition(dataChaff->p0 + Seconds(now - time0).count() * dataChaff->v0);
     SetVelocity(dataChaff->v0);
 
     {
@@ -76,7 +76,7 @@ void    CchaffIGC::Terminate(void)
 
 void    CchaffIGC::Update(Time now)
 {
-    float   dtLeft = (m_timeExpire - now).count();
+    float   dtLeft = Seconds(m_timeExpire - now).count();
     if (dtLeft <= 0.0f)
         Terminate();
     else

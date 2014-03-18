@@ -170,7 +170,7 @@ void        CweaponIGC::FireWeapon(Time now)
 #ifdef WIN
             float   energyDeficit = (m_nextFire - now) *            //this is how much we are in the hole because we
 #else
-            float energyDeficit = (m_nextFire - now).count() *
+            float energyDeficit = Seconds(m_nextFire - now).count() *
 #endif
                                     rechargeRate;                   //are shooting sooner than "now" (must be < 0)
 
@@ -283,7 +283,7 @@ void        CweaponIGC::FireWeapon(Time now)
 #ifdef WIN
                     Vector  position = myPosition + myVelocity * (m_nextFire - lastUpdate);
 #else
-                    Vector  position = myPosition + myVelocity * (m_nextFire - lastUpdate).count();
+                    Vector  position = myPosition + myVelocity * Seconds(m_nextFire - lastUpdate).count();
 #endif
                     dataProjectile.lifespan = lifespan;
                     if (ptarget)

@@ -88,7 +88,7 @@ void    CmodelIGC::Update(Time now)
 #ifdef WIN
     float   dt = (now - m_lastUpdate);
 #else
-    float dt = (now - m_lastUpdate).count();
+    float dt = Seconds(now - m_lastUpdate).count();
 #endif
     m_lastUpdate = now;
 

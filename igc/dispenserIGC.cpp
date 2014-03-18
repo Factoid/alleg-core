@@ -84,7 +84,7 @@ void        CdispenserIGC::Update(Time   now)
 #ifdef WIN
         float   dt = now - m_ship->GetLastUpdate();
 #else
-        float dt = (now - m_ship->GetLastUpdate()).count();
+        float dt = Seconds(now - m_ship->GetLastUpdate()).count();
 #endif
         assert (dt >= 0.0f);
 

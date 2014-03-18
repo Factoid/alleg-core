@@ -175,7 +175,7 @@ class CmagazineIGC : public ImagazineIGC
 #ifdef WIN
                 return 1.0f - max(0.0f, (m_timeLoaded - Time::Now()) / m_missileType->GetLoadTime());
 #else
-                return 1.0f - std::max(0.0f, (m_timeLoaded - Clock::now()).count() / m_missileType->GetLoadTime() );
+                return 1.0f - std::max(0.0f, Seconds(m_timeLoaded - Clock::now()).count() / m_missileType->GetLoadTime() );
 #endif
             }
         }
