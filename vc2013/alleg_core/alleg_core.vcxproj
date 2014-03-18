@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B46913CF-3B3C-465D-8034-430CDA6E6237}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>alleg_core</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;ALLEG_CORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Adrian\Documents\Visual Studio 2013\Projects\boost_1_55_0;C:\Users\Adrian\Documents\Visual Studio 2013\Projects\alleg_core;C:\Users\Adrian\Documents\Visual Studio 2013\Projects\alleg_core\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ALLEG_CORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\igc\afterburnerIGC.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\Adrian\Documents\Visual Studio 2013\Projects\alleg_core\zlib\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\..\igc\asteroidIGC.cpp" />
+    <ClCompile Include="..\..\igc\bucketIGC.cpp" />
+    <ClCompile Include="..\..\igc\buoyIGC.cpp" />
+    <ClCompile Include="..\..\igc\chaffIGC.cpp" />
+    <ClCompile Include="..\..\igc\chaffTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\civilizationIGC.cpp" />
+    <ClCompile Include="..\..\igc\cloakIGC.cpp" />
+    <ClCompile Include="..\..\igc\clusterIGC.cpp" />
+    <ClCompile Include="..\..\igc\CollisionEntry.cpp" />
+    <ClCompile Include="..\..\igc\CollisionQueue.cpp" />
+    <ClCompile Include="..\..\igc\common.cpp" />
+    <ClCompile Include="..\..\igc\developmentIGC.cpp" />
+    <ClCompile Include="..\..\igc\dispenserIGC.cpp" />
+    <ClCompile Include="..\..\igc\droneTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\Endpoint.cpp" />
+    <ClCompile Include="..\..\igc\HitTest.cpp" />
+    <ClCompile Include="..\..\igc\hullTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\KDnode.cpp" />
+    <ClCompile Include="..\..\igc\KDroot.cpp" />
+    <ClCompile Include="..\..\igc\launcherTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\magazineIGC.cpp" />
+    <ClCompile Include="..\..\igc\mapmakerIGC.cpp" />
+    <ClCompile Include="..\..\igc\matrix.cpp" />
+    <ClCompile Include="..\..\igc\mineIGC.cpp" />
+    <ClCompile Include="..\..\igc\mineTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\missileIGC.cpp" />
+    <ClCompile Include="..\..\igc\missileTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\missionIGC.cpp" />
+    <ClCompile Include="..\..\igc\modelIGC.cpp" />
+    <ClCompile Include="..\..\igc\orientation.cpp" />
+    <ClCompile Include="..\..\igc\packIGC.cpp" />
+    <ClCompile Include="..\..\igc\partTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\pch.cpp" />
+    <ClCompile Include="..\..\igc\private.cpp" />
+    <ClCompile Include="..\..\igc\probeIGC.cpp" />
+    <ClCompile Include="..\..\igc\probeTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\projectileIGC.cpp" />
+    <ClCompile Include="..\..\igc\projectileTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\quaternion.cpp" />
+    <ClCompile Include="..\..\igc\shieldIGC.cpp" />
+    <ClCompile Include="..\..\igc\shipIGC.cpp" />
+    <ClCompile Include="..\..\igc\sideIGC.cpp" />
+    <ClCompile Include="..\..\igc\stationIGC.cpp" />
+    <ClCompile Include="..\..\igc\stationTypeIGC.cpp" />
+    <ClCompile Include="..\..\igc\treasureIGC.cpp" />
+    <ClCompile Include="..\..\igc\treasureSetIGC.cpp" />
+    <ClCompile Include="..\..\igc\vector.cpp" />
+    <ClCompile Include="..\..\igc\warpIGC.cpp" />
+    <ClCompile Include="..\..\igc\weaponIGC.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\igc\afterburnerIGC.h" />
+    <ClInclude Include="..\..\igc\asteroidIGC.h" />
+    <ClInclude Include="..\..\igc\bucketIGC.h" />
+    <ClInclude Include="..\..\igc\buildingEffectIGC.h" />
+    <ClInclude Include="..\..\igc\buoyIGC.h" />
+    <ClInclude Include="..\..\igc\chaffIGC.h" />
+    <ClInclude Include="..\..\igc\chaffTypeIGC.h" />
+    <ClInclude Include="..\..\igc\civilizationIGC.h" />
+    <ClInclude Include="..\..\igc\cloakIGC.h" />
+    <ClInclude Include="..\..\igc\clusterIGC.h" />
+    <ClInclude Include="..\..\igc\developmentIGC.h" />
+    <ClInclude Include="..\..\igc\dispenserIGC.h" />
+    <ClInclude Include="..\..\igc\droneTypeIGC.h" />
+    <ClInclude Include="..\..\igc\hullTypeIGC.h" />
+    <ClInclude Include="..\..\igc\igc.h" />
+    <ClInclude Include="..\..\igc\launcherTypeIGC.h" />
+    <ClInclude Include="..\..\igc\magazineIGC.h" />
+    <ClInclude Include="..\..\igc\mapmakerIGC.h" />
+    <ClInclude Include="..\..\igc\mineIGC.h" />
+    <ClInclude Include="..\..\igc\mineTypeIGC.h" />
+    <ClInclude Include="..\..\igc\missileIGC.h" />
+    <ClInclude Include="..\..\igc\missileTypeIGC.h" />
+    <ClInclude Include="..\..\igc\missionIGC.h" />
+    <ClInclude Include="..\..\igc\modelIGC.h" />
+    <ClInclude Include="..\..\igc\packIGC.h" />
+    <ClInclude Include="..\..\igc\partTypeIGC.h" />
+    <ClInclude Include="..\..\igc\pch.h" />
+    <ClInclude Include="..\..\igc\private.h" />
+    <ClInclude Include="..\..\igc\probeIGC.h" />
+    <ClInclude Include="..\..\igc\probeTypeIGC.h" />
+    <ClInclude Include="..\..\igc\projectileIGC.h" />
+    <ClInclude Include="..\..\igc\projectileTypeIGC.h" />
+    <ClInclude Include="..\..\igc\shieldIGC.h" />
+    <ClInclude Include="..\..\igc\shipIGC.h" />
+    <ClInclude Include="..\..\igc\sideIGC.h" />
+    <ClInclude Include="..\..\igc\sounds.h" />
+    <ClInclude Include="..\..\igc\stationIGC.h" />
+    <ClInclude Include="..\..\igc\stationTypeIGC.h" />
+    <ClInclude Include="..\..\igc\treasureIGC.h" />
+    <ClInclude Include="..\..\igc\treasureSetIGC.h" />
+    <ClInclude Include="..\..\igc\warpIGC.h" />
+    <ClInclude Include="..\..\igc\weaponIGC.h" />
+    <ClInclude Include="..\..\zlib\zlib\zassert.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\igc\igc.def" />
+    <None Include="..\..\igc\Makefile" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

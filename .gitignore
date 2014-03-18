@@ -5,3 +5,6 @@ Doxyfile
 core
 docs/
 *.test
+*.obj
+Debug/
+Release/

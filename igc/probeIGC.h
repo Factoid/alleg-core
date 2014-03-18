@@ -256,7 +256,7 @@ class CprobeIGC : public TmodelIGC<IprobeIGC>
         virtual float            GetTimeFraction(void) const
         {
             Time    timeNow = GetMyLastUpdate();
-            float   f = (m_timeExpire - timeNow) / (m_timeExpire - m_time0);
+            float   f = Seconds(m_timeExpire - timeNow).count() / Seconds(m_timeExpire - m_time0).count();
             if (f < 0.0f)
                 f = 0.0f;
             else if (f > 1.0f)

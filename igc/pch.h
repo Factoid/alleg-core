@@ -68,7 +68,9 @@ typedef std::string ZString;
 typedef const char* PCC;
 typedef int INT;
 typedef uint32_t UINT;
+#ifndef _WINDOWS
 typedef int64_t __int64;
+#endif
 typedef void VOID;
 typedef unsigned char BYTE;
 typedef char CHAR;
@@ -160,12 +162,13 @@ public:
   }
 };
 */
-
+#ifndef _WINDOWS
 inline void _itoa( int n, char* str, int base )
 {
   auto int_str = std::to_string(n);
   strcpy(str,int_str.c_str());
 }
+#endif
 
 class IObject {
 public:

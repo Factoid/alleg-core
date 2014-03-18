@@ -33,6 +33,7 @@ void retailf(const char* , ...);
 
 extern int g_outputdebugstring; // mmf added to support Radar's -debug command line
 extern bool g_bOutput;
+#undef _DEBUG
 
 #ifdef _DEBUG
     //
