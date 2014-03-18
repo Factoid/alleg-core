@@ -21,13 +21,13 @@ class DummyIgcSite : public IIgcSite
 public:
   Time ServerTimeFromClientTime( Time clTime )
   {
-    std::cout << "IGCSite::ServerTimeFromClientTime()\n";
+//    std::cout << "IGCSite::ServerTimeFromClientTime()\n";
     return IIgcSite::ServerTimeFromClientTime( clTime );
   }
 
   void Preload( const char* mn, const char* tn )
   {
-    std::cout << "IGCSite::Preload( " << (mn == nullptr ? "" : mn) << ", " << (tn == nullptr ? "" : tn) << ")\n" << std::flush;
+//    std::cout << "IGCSite::Preload( " << (mn == nullptr ? "" : mn) << ", " << (tn == nullptr ? "" : tn) << ")\n" << std::flush;
     IIgcSite::Preload( mn, tn );
   }
 };
@@ -171,6 +171,54 @@ go_bandit( []() {
       }
       AssertThat( (mission.GetLastUpdate() - t), Equals( Time::duration(0) ) );
       AssertThat( (mission.GetLastUpdate() - appStart ), Equals( Seconds(60.0f) ) );
+    });
+
+    it( "can launch a ship from a station", [&]() {
+      IsideIGC* side0 = mission.GetSide(0);
+      AssertThat( side0 == nullptr, IsFalse() );
+      AssertThat( *side0->GetShips(), IsEmpty() );
+      AssertThat( side0->GetStations()->size(), Equals(1) );
+
+      DataShipIGC shipData;
+      shipData.shipID = mission.GenerateNewShipID();
+      shipData.hullID = 210; // The Factoid scout
+      shipData.sideID = side0->GetObjectID();
+      shipData.nKills = 0;
+      shipData.nDeaths = 0;
+      shipData.pilotType = c_ptPlayer;
+      shipData.nEjections = 0;
+      strcpy(shipData.name,"Factoid");
+      shipData.nParts = 0;
+      shipData.baseObjectID = NA;
+       
+      IshipIGC* ship = (IshipIGC*)mission.CreateObject(mission.GetLastUpdate(),OT_ship,&shipData,sizeof(shipData));
+      AssertThat( ship == nullptr, IsFalse() );
+
+      IstationIGC* station = side0->GetStation(0);
+      AssertThat( station == nullptr, IsFalse() );
+      station->RepairAndRefuel(ship);
+      station->Launch(ship);
+      AssertThat( ship->GetAmmo(), !Equals(0) );
+      std::cout << "Ammo: " << ship->GetAmmo() << "\n";
+      AssertThat( ship->GetEnergy(), !Equals(0.0f) );
+      std::cout << "Energy: " << ship->GetEnergy() << "\n";
+      AssertThat( ship->GetFuel(), !Equals(0.0f) );
+      std::cout << "Fuel: " << ship->GetFuel() << "\n";
+      std::cout << "Pos: " << ship->GetPosition() << "\n";
+      std::cout << "Vel: " << ship->GetVelocity() << "\n";
+      std::cout << "Station: " << station->GetPosition() << "\n";
+      std::cout << "Station Size: " << station->GetRadius() << "\n";
+      Seconds interval(0.1f);
+      Time startT = t;
+      while( (t - startT) < Seconds(10.0f) )
+      {
+        t += interval;
+        std::cout << "Tick! ";
+        mission.Update(t);
+      }
+      std::cout << "\n";
+      std::cout << "Pos: " << ship->GetPosition() << "\n";
+      std::cout << "Velocity: " << ship->GetVelocity() << "\n";
     });
 
     it( "can terminate", [&]() {
