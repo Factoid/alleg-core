@@ -9,3 +9,5 @@ docs/
 Debug/
 Release/
 *.sdf
+*.suo
+*.opensdf
