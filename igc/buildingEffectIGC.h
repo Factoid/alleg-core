@@ -33,7 +33,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 
     public:
     // IbaseIGC
-	    virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+	    virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
         {
             TmodelIGC<IbuildingEffectIGC>::Initialize(pMission, now, data, dataSize);
 
@@ -63,7 +63,6 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 
             assert (sizeof(DataBuildingEffectIGC) != sizeof(DataBuildingEffectExport));
             IclusterIGC*    pcluster;
-            const Color*    pcolor;
             if (dataSize == sizeof(DataBuildingEffectIGC))
             {
                 DataBuildingEffectIGC*  dataBuilding = (DataBuildingEffectIGC*)data;
@@ -94,8 +93,6 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
                 m_pasteroid->SetBuildingEffect(this);
 
                 pcluster = dataBuilding->pcluster;
-
-                pcolor = &(m_pshipBuilder->GetSide()->GetColor());
             }
             else
             {
@@ -110,8 +107,6 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 #endif
                 assert (m_pasteroid);
                 m_pasteroid->SetBuildingEffect(this);
-
-                pcolor = &(dataBuilding->color);
             }
 
             LoadEffect(Color(50.0f/255.0f, 28.0f/255.0f, 146.0f/255.0f), //*pcolor,

@@ -19,9 +19,9 @@
 // CdispenserIGC
 CdispenserIGC::CdispenserIGC(void)
 :
-    m_ship(NULL),
     m_partType(NULL),
     m_expendableType(NULL),
+    m_ship(NULL),
     m_mountID(c_mountNA)
 {
 }
@@ -30,7 +30,7 @@ CdispenserIGC::~CdispenserIGC(void)
 {
 }
 
-HRESULT     CdispenserIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CdispenserIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     assert (pMission);
     m_pMission = pMission;

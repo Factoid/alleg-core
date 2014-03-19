@@ -41,7 +41,7 @@ class       MyHullType : public IhullTypeIGC
         }
 
         //IbaseIGC
-        virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, int length);
+        virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length);
         virtual void            Terminate(void);
         virtual void            Update(Time   now);
 
@@ -1001,7 +1001,6 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                             }
 
                             //has the quantity changed (for parts where that matters)?
-                            ObjectType  type = ppart->GetObjectType();
                             if (ppartLC->amount != ppart->GetAmount())
                             {
                                 ppart->SetAmount(ppartLC->amount);
@@ -1170,8 +1169,8 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                                     short   ammo = ppart->GetAmount();
                                     if (ammo < maxAmmo)
                                     {
-                                        PartLinkIGC*    pplNext;
 #ifdef WIN
+                                        PartLinkIGC*    pplNext;
                                         for (PartLinkIGC*   pplOther = partsOld.first(); (pplOther != NULL); pplOther = pplNext)
                                         {
                                             pplNext = pplOther->next();

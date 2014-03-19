@@ -19,9 +19,9 @@
 // CmissileIGC
 CmissileIGC::CmissileIGC(void)
 :
+    m_missileType(NULL),
     m_launcher(NULL),
-    m_target(NULL),
-    m_missileType(NULL)
+    m_target(NULL)
 {
 }
 
@@ -29,7 +29,7 @@ CmissileIGC::~CmissileIGC(void)
 {
 }
 
-HRESULT CmissileIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT CmissileIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     TmodelIGC<ImissileIGC>::Initialize(pMission, now, data, dataSize);
 

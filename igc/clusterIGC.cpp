@@ -25,7 +25,7 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CclusterIGC
-HRESULT CclusterIGC::Initialize(ImissionIGC* pMission, Time   now, const void* data, int dataSize)
+HRESULT CclusterIGC::Initialize(ImissionIGC* pMission, Time   now, const void* data, unsigned int dataSize)
 {
     assert (pMission);
     m_pMission = pMission;
@@ -133,11 +133,11 @@ void        CclusterIGC::Update(Time now)
                 for (StationLinkIGC*   l = m_stations.first(); (l != NULL); l = l->next())
                 {
                     IstationIGC*    pstation = l->data();
+                    ShipLinkIGC*    pslNext;
 #else
                 for( auto pstation : m_stations )
                 {
 #endif
-                    ShipLinkIGC*    pslNext;
 #ifdef WIN
                     for (ShipLinkIGC*   psl = pstation->GetShips()->first(); (psl != NULL); psl = pslNext)
                     {
@@ -221,8 +221,8 @@ void        CclusterIGC::Update(Time now)
                 float   costDrone = m_pMission->GetFloatConstant(c_fcidDroneCost);
 
                 //Have miners and builders do any pre-plotted moves. Allow ships to suicide.
-                ShipLinkIGC*        lNext;
 #ifdef WIN
+                ShipLinkIGC*        lNext;
                 for (ShipLinkIGC*   l = m_ships.first(); (l != NULL); l = lNext)
                 {
                     IshipIGC*   s = l->data();
@@ -254,8 +254,8 @@ void        CclusterIGC::Update(Time now)
 
                 {
                     //Have all ships on autopilot plot their moves. Allow ships to suicide.
-                    ShipLinkIGC*        lNext;
 #ifdef WIN
+                    ShipLinkIGC*        lNext;
                     for (ShipLinkIGC*   l = m_ships.first(); (l != NULL); l = lNext)
                     {
                         IshipIGC*   s = l->data();
@@ -859,69 +859,77 @@ IbuildingEffectIGC*      CclusterIGC::CreateBuildingEffect(Time           now,
 
 bool CclusterIGC::IsFriendlyCluster(IsideIGC* pside, ClusterQuality cqlty) //Spunky #288
 {
-	int balanceOfPower = 0;
-	//carrier or ASS in sector = not friendly - Spunky #290
+  int balanceOfPower = 0;
+  //carrier or ASS in sector = not friendly - Spunky #290
 #ifdef WIN
-	ShipLinkIGC* pshipl = GetShips()->first();
-	if (pshipl)
-	{
-		do
-		{
-			IshipIGC* pship = pshipl->data();
-#else
-  for( auto pship : *(GetShips()) )
+  ShipLinkIGC* pshipl = GetShips()->first();
+  if (pshipl)
   {
-#endif
-			if (pship->GetParentShip() == NULL)
-				if (pship->GetSide() != pside && pship->SeenBySide(pside) && !IsideIGC::AlliedSides(pside, pship->GetSide()))
-				{
-					if (pship->GetHullType()->HasCapability(c_habmIsRipcordTarget | c_habmIsLtRipcordTarget))
-						return false;
-					if (pship->GetBaseHullType()->GetScannerRange() > 800 && cqlty & cqNoEye)
-						return false;
-					balanceOfPower--;
-				}
-				else if (pship->GetSide() == pside || IsideIGC::AlliedSides(pside, pship->GetSide()))
-					balanceOfPower++;
-#ifdef WIN
-			pshipl = pshipl->next();
-		} while (pshipl);
-#endif
-	}
-	if (balanceOfPower < 0 && cqlty & cqPositiveBOP)
-		return false;
-		
-	
-	//Spunky #333
-	bool ourBaseInCluster = false;
-#ifdef WIN
-	StationLinkIGC* psl = GetStations()->first();
-  if (psl)
-	{
-		do
-		{
-			IstationIGC*    ps = psl->data();
+    do
+    {
+      IshipIGC* pship = pshipl->data();
 #else
-  for( auto ps : *(GetStations()) )
-  {
+      for( auto pship : *(GetShips()) )
+      {
 #endif
-			if (!ps->GetStationType()->HasCapability(c_sabmPedestal) && ps->SeenBySide(pside))
-			{
-				if (pside != ps->GetSide() && !IsideIGC::AlliedSides(pside, ps->GetSide())) // #ALLY FIXED 7/10/09 imago
-					return false;
-				else 
-					ourBaseInCluster = true;
-			}
+        if (pship->GetParentShip() == NULL)
+        {
+          if (pship->GetSide() != pside && pship->SeenBySide(pside) && !IsideIGC::AlliedSides(pside, pship->GetSide()))
+          {
+            if (pship->GetHullType()->HasCapability(c_habmIsRipcordTarget | c_habmIsLtRipcordTarget))
+            {
+              return false;
+            }
+            if (pship->GetBaseHullType()->GetScannerRange() > 800 && cqlty & cqNoEye)
+            {
+              return false;
+            }
+            balanceOfPower--;
+          }
+          else if (pship->GetSide() == pside || IsideIGC::AlliedSides(pside, pship->GetSide()))
+          {
+            balanceOfPower++;
+          }
+        }
 #ifdef WIN
-			psl = psl->next();
-		}
-		while (psl != NULL);
+        pshipl = pshipl->next();
+      } while (pshipl);
 #endif
-	}
-	
-	if (cqlty & cqIncludeNeutral || ourBaseInCluster)
-		return true;
-	else
-		return false;
-}
+    }
+    if (balanceOfPower < 0 && cqlty & cqPositiveBOP)
+      return false;
+
+
+    //Spunky #333
+    bool ourBaseInCluster = false;
+#ifdef WIN
+    StationLinkIGC* psl = GetStations()->first();
+    if (psl)
+    {
+      do
+      {
+        IstationIGC*    ps = psl->data();
+#else
+        for( auto ps : *(GetStations()) )
+        {
+#endif
+          if (!ps->GetStationType()->HasCapability(c_sabmPedestal) && ps->SeenBySide(pside))
+          {
+            if (pside != ps->GetSide() && !IsideIGC::AlliedSides(pside, ps->GetSide())) // #ALLY FIXED 7/10/09 imago
+              return false;
+            else 
+              ourBaseInCluster = true;
+          }
+#ifdef WIN
+          psl = psl->next();
+        }
+        while (psl != NULL);
+#endif
+      }
+
+      if (cqlty & cqIncludeNeutral || ourBaseInCluster)
+        return true;
+      else
+        return false;
+    }
 

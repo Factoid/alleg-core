@@ -34,7 +34,7 @@ class       ChullTypeIGC : public IhullTypeIGC
 
     public:
     // IbaseIGC
-        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize);
         virtual void    Terminate(void);
 
         virtual int     Export(void* data) const;

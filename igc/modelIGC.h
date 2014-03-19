@@ -82,7 +82,7 @@ class   CmodelIGC
     public:
 
     // IbaseIGC
-        HRESULT         Initialize(ImissionIGC* pMission, Time now, const void*  data, int dataSize)
+        HRESULT         Initialize(ImissionIGC* pMission, Time now, const void*  data, unsigned int dataSize)
         {
 			m_lastUpdate = now;
             m_pMission = pMission;
@@ -443,7 +443,7 @@ template<class T> class TmodelIGC : public T
         }
 
     // IbaseIGC
-        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
         {
             return m_model.Initialize(pMission, now, data, dataSize);
         }

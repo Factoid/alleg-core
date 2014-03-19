@@ -39,8 +39,7 @@ class   CstaticIGC
 {
     public:
         CstaticIGC(void);
-
-        ~CstaticIGC(void)
+        virtual ~CstaticIGC(void)
         {
         }
 
@@ -443,8 +442,10 @@ class   CmissionIGC : public ImissionIGC
     public:
         CmissionIGC(void)
         :
-            m_pIgcSite(NULL),
             m_dwPrivate(0),
+            m_missionID(0),
+            m_pStatic(NULL),
+            m_pIgcSite(NULL),
             m_nextBuoyID(0),
             m_nextShipID(0),
             m_nextAsteroidID(0),
@@ -454,8 +455,6 @@ class   CmissionIGC : public ImissionIGC
             m_nextMissileID(0),
             m_nextStationID(0),
             m_stageMission(STAGE_NOTSTARTED),
-            m_missionID(0),
-            m_pStatic(NULL),
             m_bHasGenerated(false),
             m_nReplayCount(0)
         {
@@ -709,7 +708,7 @@ class   CmissionIGC : public ImissionIGC
             return m_pIgcSite;
         }
 
-        virtual IbaseIGC*                       CreateObject(Time now, ObjectType objecttype, const void* data, int dataSize);
+        virtual IbaseIGC*                       CreateObject(Time now, ObjectType objecttype, const void* data, unsigned int dataSize);
         virtual ImodelIGC*                      GetModel(ObjectType type, ObjectID id) const;
         virtual IbaseIGC*                       GetBase(ObjectType type, ObjectID id) const;
 
@@ -1045,7 +1044,9 @@ class   CmissionIGC : public ImissionIGC
 };
 
 // Read missions from plain-text Imago 8/3/08 NYI: XML
+#ifdef WINDOWS
 #pragma warning(disable:4530)
+#endif
 #include <iostream>
 #include <string>
 #include <fstream>

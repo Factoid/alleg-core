@@ -357,7 +357,7 @@ static bool OkToRemove(const ClusterListIGC*    pclusters, IwarpIGC* pwarp)
         for (int i = pclusters->n() - 1; (i >= 0); i--)
             bVisited[i] = false;
 #else
-        for( int i = 0; i < pclusters->size(); ++i )
+        for( unsigned int i = 0; i < pclusters->size(); ++i )
         {
           bVisited[i] = false;
         }
@@ -503,7 +503,7 @@ VOID CmapMakerIGC::GenerateMission(Time now,
 
         //Actually allocate twice as much space as we need since we are only storing a single instance for
         //both sides of the aleph
-        int nWarps = 0;
+        unsigned int nWarps = 0;
         {
 #ifdef WIN
             for (WarpLinkIGC*   pwl = pwarpList->first(); (pwl != NULL); pwl = pwl->next())
@@ -1723,7 +1723,7 @@ VOID CmapMakerStarIGC::GenerateNeutralClusterScreenPosition(
 VOID CmapMakerStarIGC::LinkClusters(CMapData * pMapData)
 {
     {
-        SectorID    sidCenter = pMapData->GetTotalClusters() - 1;
+//        SectorID    sidCenter = pMapData->GetTotalClusters() - 1;
 
         for (SideID i = 0; (i < pMapData->GetTeams()); i++)
         {
@@ -1949,6 +1949,7 @@ VOID CmapMakerPinWheelIGC::LinkClusters(CMapData * pMapData)
 {
     SectorID sID, cTotalClusters, sWrapID, sFirstNA;
 
+    sFirstNA = NA;
     cTotalClusters = pMapData->GetTotalClusters();
     if (0 != pMapData->GetNeutralClustersPerTeam())
     {
@@ -1971,7 +1972,9 @@ VOID CmapMakerPinWheelIGC::LinkClusters(CMapData * pMapData)
         }
 
         if (pMapData->GetTeams() > 2)
+        {
             CmapMakerIGC::LinkClusters(pMapData, sWrapID, sFirstNA);
+        }
         this->CrossLinkClusters(pMapData, pMapData->GetTeamClustersPerTeam());
     }
     else
@@ -2463,7 +2466,7 @@ VOID CmapMakerGridIGC::LinkClusters(CMapData * pMapData)
     }
 
     {
-        SectorID    sidCenter = pMapData->GetTotalClusters() - 1;
+//        SectorID    sidCenter = pMapData->GetTotalClusters() - 1;
 
         for (SideID i = 0; (i < pMapData->GetTeams()); i++)
         {

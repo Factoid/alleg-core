@@ -597,10 +597,10 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
     }
 
 	//Spunky - check current sector for cowardliness #288, #293
-	if  (ttMask & c_ttCowardly && !pcluster->IsFriendlyCluster(pside, cqNone)
-		|| ttMask & c_ttCowardlyNeutOK && !pcluster->IsFriendlyCluster(pside, cqIncludeNeutral)
-		|| ttMask & c_ttNoEye && !pcluster->IsFriendlyCluster(pside, cqNoEye)
-		|| ttMask & c_ttPositiveBOP && !pcluster->IsFriendlyCluster(pside, cqPositiveBOP))
+	if  ( (ttMask & c_ttCowardly && !pcluster->IsFriendlyCluster(pside, cqNone))
+		|| (ttMask & c_ttCowardlyNeutOK && !pcluster->IsFriendlyCluster(pside, cqIncludeNeutral))
+		|| (ttMask & c_ttNoEye && !pcluster->IsFriendlyCluster(pside, cqNoEye))
+		|| (ttMask & c_ttPositiveBOP && !pcluster->IsFriendlyCluster(pside, cqPositiveBOP)))
 		pmodelTarget = NULL; 
 	
 	if (pmodelTarget || (ttMask & c_ttAnyCluster) == 0 ||
@@ -1305,7 +1305,6 @@ GotoPositionMask Waypoint::DoApproach(IshipIGC*        pship,
     Vector  goalBest;
     float   error2Best = FLT_MAX;
     float   offset2Best;
-    int     bayBest;
 	ImissionIGC*         pmission = pship->GetMission();  // mmf 10/07 added so we can get at bExperimental game type
     const MissionParams* pmp = pmission->GetMissionParams(); // mmf 10/07
 
@@ -1375,7 +1374,6 @@ GotoPositionMask Waypoint::DoApproach(IshipIGC*        pship,
             goalBest = goal;
             error2Best = error2;
             offset2Best = offset2;
-            bayBest = i;
         }
     }
 

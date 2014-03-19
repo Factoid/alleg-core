@@ -19,8 +19,8 @@
 // CmineIGC
 CmineIGC::CmineIGC(void)
 :
-    m_launcher(NULL),
     m_mineType(NULL),
+    m_launcher(NULL),
     m_bCreateNow (false)
 {
 }
@@ -29,7 +29,7 @@ CmineIGC::~CmineIGC(void)
 {
 }
 
-HRESULT CmineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT CmineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     ZRetailAssert (data && (dataSize > sizeof(DataMineBase)));
     {

@@ -37,7 +37,7 @@ class       MyStationType : public IstationTypeIGC
         }
 
         //IbaseIGC
-        virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, int length);
+        virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length);
         virtual void            Terminate(void);
         virtual void            Update(Time   now);
 
@@ -169,7 +169,7 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
         }
         */
     // IbaseIGC
-	    virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int length);
+	    virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length);
 	    virtual void    Terminate(void)
         {
             AddRef();

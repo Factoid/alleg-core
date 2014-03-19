@@ -1,6 +1,6 @@
 DEP_INCLUDE+=-I../ -I../utility/ -I../zlib/
 CC=g++
-CFLAGS=-std=gnu++11 -ggdb -O0 -fmax-errors=10 -fPIC
+CFLAGS=-std=gnu++11 -ggdb -O0 -fmax-errors=10 -fPIC -Wall -Werror -Wno-unused-function
 
 sources = $(wildcard *.cpp)
 objects = $(sources:.cpp=.o)

@@ -32,7 +32,7 @@ CprojectileIGC::~CprojectileIGC(void)
 {
 }
 
-HRESULT CprojectileIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT CprojectileIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     TmodelIGC<IprojectileIGC>::Initialize(pMission, now, data, dataSize);
 

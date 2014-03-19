@@ -26,7 +26,7 @@ CcloakIGC::CcloakIGC(void)
 {
 }
 
-HRESULT     CcloakIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CcloakIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     m_pMission = pMission;
 

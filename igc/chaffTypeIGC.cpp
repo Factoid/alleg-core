@@ -17,7 +17,7 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CchaffTypeIGC
-HRESULT     CchaffTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CchaffTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     assert (pMission);
     m_pMission = pMission;

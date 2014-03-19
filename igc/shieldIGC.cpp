@@ -26,7 +26,7 @@ CshieldIGC::CshieldIGC(void)
 {
 }
 
-HRESULT     CshieldIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CshieldIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     m_pMission = pMission;
 

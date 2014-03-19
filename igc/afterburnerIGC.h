@@ -24,7 +24,7 @@ class CafterburnerIGC : public IafterburnerIGC
         CafterburnerIGC(void);
 
 // IbaseIGC
-        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize);
         virtual void    Terminate(void);
         virtual void    Update(Time now);
 

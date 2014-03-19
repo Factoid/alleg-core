@@ -21,13 +21,13 @@ CafterburnerIGC::CafterburnerIGC(void)
 :
     m_partType(NULL),
     m_ship(NULL),
-    m_fActive(false),
     m_power(0.0f),
-    m_mountID(c_mountNA)
+    m_mountID(c_mountNA),
+    m_fActive(false)
 {
 }
 
-HRESULT     CafterburnerIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CafterburnerIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     m_pMission = pMission;
 

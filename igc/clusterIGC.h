@@ -26,17 +26,17 @@ class       CclusterIGC : public IclusterIGC
     public:
         CclusterIGC(void)
         :
-            m_pClusterSite(NULL),
-            m_nExplosions(0),
             m_kdrStatic(true),
             m_kdrMoving(false),
+            m_pClusterSite(NULL),
             m_collisionID(0),
-            m_fPendingTreasures(0.0f)
+            m_fPendingTreasures(0.0f),
+            m_nExplosions(0)
         {
         }
 
     // IbaseIGC
-        virtual HRESULT                 Initialize(ImissionIGC* pMission, Time now, const void* data, int length);
+        virtual HRESULT                 Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length);
         virtual void                    Terminate(void);
         virtual void                    Update(Time now);
 

@@ -467,7 +467,7 @@ class   MultiHull : public MultiHullBase
         {
         }
 #ifdef WIN
-        ~MultiHull(void)
+        virtual ~MultiHull(void)
         {
             for (int i = 0; (i < m_nHulls); i++)
                 delete GetSingleHull(i);
@@ -523,12 +523,11 @@ class   MultiHull : public MultiHullBase
 #endif
 
         int             m_nHulls;
-        float           m_ellipseRadiusMultiplier;  //>= m_originalRadius
-        //Vector          m_ellipseEquation;          //(x/ee.x)^2 + (y/ee.y)^2 + (z/ee.z)^2 <= 1
 #ifndef WIN
         std::vector<SingleHull> hulls;
 #endif
-
+        float           m_ellipseRadiusMultiplier;  //>= m_originalRadius
+        //Vector          m_ellipseEquation;          //(x/ee.x)^2 + (y/ee.y)^2 + (z/ee.z)^2 <= 1
         friend class    BoundingHull;
         friend class    HitTest;
 };
@@ -605,8 +604,9 @@ class   BoundingHull : public HitTest
 
             return extreme;
         }
-
+#ifdef WINDOWS
         #pragma optimize ("p", on)
+#endif
         Vector  GetHullExtreme(int  hullID, const Vector&  direction)
         {
             assert (hullID >= 0);
@@ -674,7 +674,9 @@ class   BoundingHull : public HitTest
                 }
             }
         }
+#ifdef WINDOWS
         #pragma optimize ("", on)
+#endif
 
         virtual void            SetShape(HitTestShape   shape)
         {
@@ -1568,7 +1570,7 @@ static int  Johnson3(const Vector   p[3],
     //  subset1[i]          ({Pi})
     //  subset2[i][j]       ({Pi, Pj})  i != j
     //  subset3             ({P0, P1, P2})
-    static const int   subset1[3] =        { 0,  1,  2};
+//    static const int   subset1[3] =        { 0,  1,  2};
     static const int   subset2[3][3] =    {{-1,  3,  4},
                                            { 3, -1,  5},
                                            { 4,  5, -1}};
@@ -1797,7 +1799,7 @@ static int  Johnson4(const Vector   p[4],
     //  subset2[i][j]       ({Pi, Pj}),     i != j
     //  subset3[i]          ({Pj, Pk, Pl}), i != j; i != k; i != l
     //  subset4             ({P0, P1, P2, P3})
-    static const int   subset1[4] =        { 0,  1,  2,  3};
+//    static const int   subset1[4] =        { 0,  1,  2,  3};
 
     static const int   subset2[4][4] =    {{-1,  4,  5,  6},
                                     { 4, -1,  7,  8},

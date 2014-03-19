@@ -29,7 +29,7 @@ CpackIGC::~CpackIGC(void)
 {
 }
 
-HRESULT     CpackIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CpackIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     assert (pMission);
     m_pMission = pMission;

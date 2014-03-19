@@ -33,9 +33,9 @@ void    KDnode::allocHitTestsEndpoints(int n)
 
 KDnode::KDnode(KDnode*          parent)
 :
-    m_parent(parent),
     m_pivotAxis(-1),
     m_pivotValue(0.0f),
+    m_parent(parent),
     m_nHitTests(0),
     m_maxHitTests(0),
     m_ppHitTests(NULL)
@@ -146,8 +146,6 @@ static bool findPivot(int               nHitTests,
     assert (pCost);
 
     bool    optimalF = false;
-
-    int nEndpoints = nHitTests << 1;
 
     //costBias is used to guarantee that the pivot is worthwhile. Must be
     //in the range [nHitTests, nHitTests * 2].

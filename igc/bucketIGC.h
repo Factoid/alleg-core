@@ -23,17 +23,17 @@ class       CbucketIGC : public IbucketIGC
     public:
         CbucketIGC(void)
         :
+            m_lastPercentCompleteNotified(0),
             m_investedMilliseconds(0),
             m_investedMoney(0),
-            m_lastPercentCompleteNotified(0),
-            m_pbucketPredecessor(NULL),
-			m_isBuildingForFree(false)
+			      m_isBuildingForFree(false),
+            m_pbucketPredecessor(NULL)
         {
         }
 
     public:
     // IbaseIGC
-        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize);
         virtual void    Terminate(void);
 
         virtual void    Update(Time now)
@@ -96,7 +96,7 @@ class       CbucketIGC : public IbucketIGC
             return OT_bucket;
         }
 
-        virtual short                   GetObjectID(void) const
+        virtual ObjectID GetObjectID(void) const
         {
             const short c_bucketMultiplier = 0x7fff / (1 + OT_bucketEnd - OT_bucketStart);
             assert (c_bucketMultiplier >= 500);

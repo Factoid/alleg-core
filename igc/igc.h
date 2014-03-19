@@ -23,7 +23,7 @@ const int   c_maxLandPlanes = 6;
 const int   c_maxShipLandSlots = 2;
 const int   c_maxShipLaunchSlots = 2;
 
-typedef int ExplosionType;
+typedef unsigned int ExplosionType;
 const ExplosionType c_etMine            = 1;
 const ExplosionType c_etMissile         = 2;
 const ExplosionType c_etProjectile      = 2;    //Intentional duplication
@@ -34,7 +34,7 @@ const ExplosionType c_etSmallStation    = 5;
 const ExplosionType c_etAsteroid        = 6;
 const ExplosionType c_etLargeStation    = 7;
 
-typedef char    DamageResult;
+typedef unsigned char    DamageResult;
 const DamageResult  c_drKilled          = 1;
 const DamageResult  c_drHullDamage      = 2;
 const DamageResult  c_drShieldDamage    = 3;
@@ -45,7 +45,7 @@ const int   c_tsmaskSelected    = 0x01;
 const int   c_tsmaskSubject     = 0x02;
 const int   c_tsmaskLegalObject = 0x04;
 
-typedef short   FloatConstantID;
+typedef unsigned short FloatConstantID;
 const FloatConstantID   c_fcidLensMultiplier           = 0;
 const FloatConstantID   c_fcidRadiusUniverse           = 1;
 const FloatConstantID   c_fcidOutOfBounds              = 2;
@@ -456,7 +456,7 @@ const float fNA = -1; // To support supression of compiler warnings.  Floats sho
 typedef long            MissionID;
 
 //*ID are unique IDs for something
-typedef short           ObjectID;
+typedef unsigned short           ObjectID;
 typedef ObjectID        BucketID;
 typedef ObjectID        PartID;
 typedef ObjectID        ShipID;
@@ -812,8 +812,8 @@ enum ClusterQuality
 // ships have a capacity, and mounted parts use up that capacity (drain)
 typedef float HitPoints;
 typedef int   Money;
-typedef char  Mount;
-typedef char  Command;
+typedef unsigned char  Mount;
+typedef unsigned char  Command;
 typedef short RankID;
 
 const Mount c_maxCargo = 5;
@@ -2101,7 +2101,7 @@ struct  DataCivilizationIGC
     StationTypeID       initialStationTypeID;
 };
 
-typedef char    TreasureCode;
+typedef unsigned char TreasureCode;
 const TreasureCode  c_tcPart        = 1;
 const TreasureCode  c_tcPowerup     = 2;
 const TreasureCode  c_tcDevelopment = 3;
@@ -2877,7 +2877,7 @@ class ImissionIGC : public IstaticIGC
 
         virtual IIgcSite*               GetIgcSite(void) const = 0;
 
-        virtual IbaseIGC*               CreateObject(Time now, ObjectType objectID, const void* data, int dataSize) = 0;
+        virtual IbaseIGC*               CreateObject(Time now, ObjectType objectID, const void* data, unsigned int dataSize) = 0;
 
         virtual ImodelIGC*              GetModel(ObjectType type, ObjectID id) const = 0;
         virtual IbaseIGC*               GetBase(ObjectType type, ObjectID id) const = 0;
@@ -2984,7 +2984,7 @@ class ImissionIGC : public IstaticIGC
 class IbaseIGC : public IObject
 {
     public:
-        virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, int length) = 0;
+        virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length) = 0;
         virtual void            Terminate(void) = 0;
         virtual void            Update(Time   now)          {}
 
@@ -5598,10 +5598,10 @@ class PlayerScoreObject
     public:
         PlayerScoreObject(bool  bPlayer)
         :
+            m_fCombatRating(0.0f),
             m_bPlayer(bPlayer),
             m_bConnected(false),
-            m_bCommanding(false),
-            m_fCombatRating(0.0f)
+            m_bCommanding(false)
         {
                 Reset(true);
         }

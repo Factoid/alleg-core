@@ -20,7 +20,7 @@ const float c_deceleration = 10.0f;
 
 /////////////////////////////////////////////////////////////////////////////
 // CtreasureIGC
-HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     //Does this treasure already exist? If so, abort which will prevent it from being terminated
     if (pMission->GetTreasure(((DataTreasureIGC*)data)->objectID))

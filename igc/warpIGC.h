@@ -33,7 +33,7 @@ class CwarpIGC : public TmodelIGC<IwarpIGC>
         }
 
     // IbaseIGC
-	    virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int length);
+	    virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length);
 	    virtual void    Terminate(void)
         {
             AddRef();
@@ -52,8 +52,8 @@ class CwarpIGC : public TmodelIGC<IwarpIGC>
         }
         virtual void            Update(Time   now)
         {
-            WarpBombLink*   plink;
 #ifdef WIN
+            WarpBombLink*   plink;
             while ((plink = m_bombs.first()) &&               //Intentional =
                    (plink->data().timeExplosion <= now))
             {

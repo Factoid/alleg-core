@@ -19,11 +19,11 @@
 // CmagazineIGC
 CmagazineIGC::CmagazineIGC(void)
 :
-    m_ship(NULL),
     m_partType(NULL),
     m_missileType(NULL),
-    m_mountID(c_mountNA),
-    m_lock(0.0f)
+    m_ship(NULL),
+    m_lock(0.0f),
+    m_mountID(c_mountNA)
 {
 }
 
@@ -31,7 +31,7 @@ CmagazineIGC::~CmagazineIGC(void)
 {
 }
 
-HRESULT     CmagazineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CmagazineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     assert (pMission);
     m_pMission = pMission;

@@ -18,7 +18,7 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CwarpIGC
-HRESULT     CwarpIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CwarpIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     TmodelIGC<IwarpIGC>::Initialize(pMission, now, data, dataSize);
 

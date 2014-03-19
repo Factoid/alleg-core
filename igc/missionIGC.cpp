@@ -304,7 +304,7 @@ static std::map<std::string,AsteroidAbilityBitMask> asteroidBitmaskStrings = {
 template<class T> AbilityBitMask GetAbilities( const std::string& strAbilities, T abilityMap )
 {
   AbilityBitMask bm;
-  
+  throw "Not Implemented";  
   return bm;
 }
 #endif
@@ -3409,8 +3409,8 @@ void    CmissionIGC::Terminate(void)
         //Ships are not terminated ... they are mearly moved to the NULL mission
         //So do it before nuking the clusters since that would nuke the ships in the
         //cluster.
-        ShipLinkIGC*  l;
 #ifdef WIN
+        ShipLinkIGC*  l;
         debugf("moving %x ships to NULL mission\n",m_ships.n());
         while ((l = m_ships.first()) != NULL)
         {
@@ -3550,7 +3550,7 @@ static int  ExportList(__int64              maskTypes,
                        const BaseListIGC*   plist,
                        char**               ppdata)
 {
-    int offset = 0;
+//    int offset = 0;
     int size = 0;
 
 #ifdef WIN
@@ -3670,7 +3670,7 @@ void                CmissionIGC::Import(Time    now,
     }
 }
 
-IbaseIGC* CmissionIGC::CreateObject(Time now, ObjectType objecttype, const void* data, int dataSize)
+IbaseIGC* CmissionIGC::CreateObject(Time now, ObjectType objecttype, const void* data, unsigned int dataSize)
 {
 #ifdef WIN
     #define OBJECT(CLS)   case OT_##CLS## :\
@@ -4241,7 +4241,7 @@ void                        CmissionIGC::UpdateSides(Time now,
 #ifdef WIN
     assert (GetSides()->n() == pmp->nTeams);
 #else
-    assert (GetSides()->size() == pmp->nTeams);
+    assert (GetSides()->size() == (unsigned short)pmp->nTeams);
 #endif
 }
 // #ALLY
@@ -4454,13 +4454,13 @@ void                    CmissionIGC::GenerateMission(Time                   now,
 #ifdef WIN
 						for (int index = 0; (index < pwarps->n()); index++)
 #else
-						for (int index = 0; (index < pwarps->size()); index++)
+						for (unsigned int index = 0; (index < pwarps->size()); index++)
 #endif
 						{
 #ifdef WIN
 							int swap = randomInt(0, pwarps->n() - 1);
 #else
-							int swap = randomInt(0, pwarps->size() - 1);
+							unsigned int swap = randomInt(0, pwarps->size() - 1);
 #endif
 							if (swap != index)
 							{

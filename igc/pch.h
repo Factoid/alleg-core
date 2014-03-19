@@ -515,10 +515,11 @@ class MultiHullBase
         MultiHullBase(const Vector&    ellipseEquation,
                       float            originalRadius)
         :
-            m_ellipseEquation(ellipseEquation),
-            m_originalRadius(originalRadius)
+            m_originalRadius(originalRadius),
+            m_ellipseEquation(ellipseEquation)
         {
         }
+        virtual ~MultiHullBase() {}
 
         const Vector&  GetFrameOffset(const char*  pszFrameName) const
         {
@@ -732,18 +733,14 @@ class HitTest : public Transform44
                 HitTestShape    shape)
         :
             m_cRefs(1),
-            m_id(NULL),
             m_data(data),
-            m_radius(radius),
-            m_shape(shape),
-            m_shapeTrue(shape),
-            m_noHit(NULL),
             m_pvUseTrueShapeSelf(NULL),
             m_pvUseTrueShapeOther(NULL),
-            m_deadF(true),
-            m_deletedF(false),
-            m_staticF(staticF),
+            m_pkdrRoot(NULL),
+            m_noHit(NULL),
+            m_id(NULL),
             m_velocity(Vector::GetZero()),
+            m_radius(radius),
 #ifdef WIN
             m_timeStart(0),
             m_timeStop(0),
@@ -751,7 +748,11 @@ class HitTest : public Transform44
             m_timeStart(std::chrono::seconds(0)),
             m_timeStop(std::chrono::seconds(0)),
 #endif
-            m_pkdrRoot(NULL)
+            m_shape(shape),
+            m_shapeTrue(shape),
+            m_deletedF(false),
+            m_deadF(true),
+            m_staticF(staticF)
         {
             assert (data);
             data->AddRef();
@@ -771,7 +772,7 @@ class HitTest : public Transform44
             //No addref on m_data ... this hit test is part of m_data
         }
 
-        ~HitTest(void)
+        virtual ~HitTest(void)
         {
             assert (m_data);
             m_data->Release();

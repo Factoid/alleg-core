@@ -1,7 +1,9 @@
 #ifndef _TVector_H_
 #define _TVector_H_
 
+#ifdef _WINDOWS
 #pragma warning(disable:4291) //no matching operator delete found; memory will not be freed if initialization throws an exception
+#endif
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -186,7 +186,7 @@ void    CshipIGC::ReInitialize(DataShipIGC * dataShip, Time now)
     }
 }
 
-HRESULT     CshipIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CshipIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     ZRetailAssert (data && (dataSize >= sizeof(DataShipIGC)));
 

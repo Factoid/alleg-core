@@ -18,7 +18,7 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CstationIGC
-HRESULT     CstationIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CstationIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     TmodelIGC<IstationIGC>::Initialize(pMission, now, data, dataSize);
 

@@ -30,7 +30,7 @@ class CmineIGC : public TmodelIGC<ImineIGC>
 
     public:
     // IbaseIGC
-	    virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+	    virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize);
 	    virtual void    Terminate(void);
         virtual void    Update(Time now);
         virtual int     Export(void*    data) const;
@@ -87,8 +87,6 @@ class CmineIGC : public TmodelIGC<ImineIGC>
                         const Vector&   pMe = GetPosition();
 
                         const Vector&   pHim = pmodel->GetPosition();
-
-                        Vector  pEnter = pHim + tCollision * dV;
 
                         //What time do we leave the minefield?
                         //R^2(t) = |pHim + t * vHim - pMe|^2 = (myRadius + hisRadius)^2

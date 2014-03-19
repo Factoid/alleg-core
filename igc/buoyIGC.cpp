@@ -30,7 +30,7 @@ CbuoyIGC::~CbuoyIGC(void)
 {
 }
 
-HRESULT CbuoyIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT CbuoyIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     TmodelIGC<IbuoyIGC>::Initialize(pMission, now, data, dataSize);
 

@@ -17,7 +17,7 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CprojectileTypeIGC
-HRESULT     CprojectileTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT     CprojectileTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     assert (pMission);
     m_pMission = pMission;

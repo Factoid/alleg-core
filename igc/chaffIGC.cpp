@@ -31,7 +31,7 @@ CchaffIGC::~CchaffIGC(void)
 {
 }
 
-HRESULT CchaffIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
+HRESULT CchaffIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize)
 {
     TmodelIGC<IchaffIGC>::Initialize(pMission, now, data, dataSize);
 
@@ -59,7 +59,6 @@ HRESULT CchaffIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
 
     SetMass(0.0f);
 
-    float f = m_pChaffTypeData->lifespan;
     m_timeExpire = time0 + Seconds(m_pChaffTypeData->lifespan);
 
     SetCluster(dataChaff->pcluster);

@@ -23,12 +23,12 @@ class       CsideIGC : public IsideIGC
     public:
         CsideIGC(void)
         :
-            m_activeF(false), // sides are inactive until mission creation is over
 #ifdef WIN
-            m_dwPrivate(NULL)
+            m_dwPrivate(NULL),
 #else
-            m_dwPrivate(0)
+            m_dwPrivate(0),
 #endif
+            m_activeF(false) // sides are inactive until mission creation is over
         {
         }
 
@@ -39,7 +39,7 @@ class       CsideIGC : public IsideIGC
     public:
 
     // IbaseIGC
-        virtual HRESULT                 Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+        virtual HRESULT                 Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize);
         virtual void                    Terminate(void);
         virtual void                    Update(Time now)
         {

@@ -25,7 +25,7 @@ class CpackIGC : public IpackIGC
         ~CpackIGC(void);
 
 // IbaseIGC
-        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int dataSize);
         virtual void    Terminate(void);
 
         virtual ObjectType  GetObjectType(void) const

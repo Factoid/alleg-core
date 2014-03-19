@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////////////////////
 typedef DWORD TransformType;
 
-#define TransformUnknown    -1
-#define TransformIdentity    0
-#define TransformTranslate   1
-#define TransformScale       2
-#define TransformRotate      4
-#define TransformPerspective 8
+const TransformType TransformUnknown  = -1;
+const TransformType TransformIdentity =  0;
+const TransformType TransformTranslate = 1;
+const TransformType TransformScale     = 2;
+const TransformType TransformRotate    = 4;
+const TransformType TransformPerspective=8;
 
 //////////////////////////////////////////////////////////////////////////////
 //
