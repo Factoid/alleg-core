@@ -1661,6 +1661,10 @@ typedef Slink_utl<IbaseIGC*>            BaseLinkIGC;
 struct  ControlData
 {
     float   jsValues[4];    //yaw, pitch, roll, throttle
+    ControlData()
+    {
+      Reset();
+    }
 
     inline void    Reset(void)
     {

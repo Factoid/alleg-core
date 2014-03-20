@@ -57,6 +57,10 @@ go_bandit( []() {
 
   });
 
+  describe( "Orientation", []() {
+    Orientation o;
+  });
+
   describe( "ImissionIGC", []() {
     DummyIgcSite dummySite;
     CmissionIGC mission;
@@ -203,11 +207,15 @@ go_bandit( []() {
       AssertThat( ship->GetFuel(), Equals(ship->GetHullType()->GetMaxFuel()) );
       Seconds interval(0.1f);
       Time startT = t;
+      ControlData cd;
+      cd.jsValues[c_axisThrottle] = 1.0f;
+      ship->SetControls(cd);
       while( (t - startT) < Seconds(10.0f) )
       {
         t += interval;
         mission.Update(t);
       }
+      AssertThat( ship->GetVelocity().LengthSquared(), IsGreaterThan(1.0f) );
     });
 
     it( "can fly into an asteroid", [&]() {

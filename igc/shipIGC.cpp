@@ -2585,207 +2585,207 @@ void    CshipIGC::ExecuteShipMove(Time          timeStart,
                                   Vector*       pVelocity,
                                   Orientation*  pOrientation)
 {
-    if (timeStop > timeStart)
-    {
-        //Adjust ship's heading, velocity, etc. based on its control settings.
+  if (timeStop > timeStart)
+  {
+    //Adjust ship's heading, velocity, etc. based on its control settings.
 #ifdef WIN
-        float   dT = timeStop - timeStart;
+    float   dT = timeStop - timeStart;
 #else
-        float dT = Seconds(timeStop-timeStart).count();
+    float dT = Seconds(timeStop-timeStart).count();
 #endif
-        assert (dT > 0.0f);
+    assert (dT > 0.0f);
 
-        float   thrust = m_myHullType.GetThrust();
-        float   thrust2 = thrust * thrust;
+    float   thrust = m_myHullType.GetThrust();
+    float   thrust2 = thrust * thrust;
 
-        //Conversion factor ... Newtons to deltaV
-        assert (GetMass() > 0.0f);
-        float   thrustToVelocity = dT / GetMass();
+    //Conversion factor ... Newtons to deltaV
+    assert (GetMass() > 0.0f);
+    float   thrustToVelocity = dT / GetMass();
 
-		//No maneuvering if ripcording
-        /*
+    //No maneuvering if ripcording
+    /*
+       {
+       float   tm = GetTorqueMultiplier() * thrustToVelocity;
+       float   maxDelta = tm * m_myHullType.GetTurnTorque(c_axisRoll);
+
+       if (maxDelta < m_turnRates[c_axisRoll])
+       m_turnRates[c_axisRoll] -= maxDelta;
+       else if (-maxDelta > m_turnRates[c_axisRoll])
+       m_turnRates[c_axisRoll] += maxDelta;
+       else
+       m_turnRates[c_axisRoll] = 0.0f;
+       }
+       else
+     */
+    if (!m_pmodelRipcord)
+    {
+      //constrain the desired yaw/pitch/roll rates to an sphere rather than a box
+      float   l = m_controls.jsValues[c_axisYaw]   * m_controls.jsValues[c_axisYaw] +
+        m_controls.jsValues[c_axisPitch] * m_controls.jsValues[c_axisPitch] +
+        m_controls.jsValues[c_axisRoll]  * m_controls.jsValues[c_axisRoll];
+
+      if (l > 1.0f)
+        l = 1.0f / sqrt(l);
+      else
+        l = 1.0f;
+
+      float   tm = GetTorqueMultiplier() * thrustToVelocity;
+      for (int i = 0; (i < 3); i++)
+      {
+        float   desiredRate = m_controls.jsValues[i] * l * m_myHullType.GetMaxTurnRate(i);
+        float   maxDelta = tm * m_myHullType.GetTurnTorque(i);
+
+        if (desiredRate < m_turnRates[i] - maxDelta)
+          m_turnRates[i] -= maxDelta;
+        else if (desiredRate > m_turnRates[i] + maxDelta)
+          m_turnRates[i] += maxDelta;
+        else
+          m_turnRates[i] = desiredRate;
+      }
+    }
+
+    pOrientation->Yaw(   m_turnRates[c_axisYaw] * dT);
+    pOrientation->Pitch(-m_turnRates[c_axisPitch] * dT);
+    pOrientation->Roll(  m_turnRates[c_axisRoll] * dT);
+
+    // Re-normalize the orientation matrix
+    pOrientation->Renormalize();
+
+    const Vector&   myBackward = pOrientation->GetBackward();
+
+    float   speed = pVelocity->Length();
+    float   maxSpeed = m_myHullType.GetMaxSpeed();
+
+    assert (maxSpeed > 0.0f);
+
+    //What would our velocity be if we simply let drag slow us down
+    Vector  drag;
+    {
+      // double   f = exp(-thrust * thrustToVelocity / maxSpeed);
+      double   f = exp(double(double(-thrust) * double(thrustToVelocity) / (double)maxSpeed));  // mmf type cast changes
+
+      //New velocity = old velocity * f
+      //drag = thrust required to create this change in velocity
+      drag = *pVelocity * float((1.0 - f) / double(thrustToVelocity));
+    }
+
+    m_engineVector.x = m_engineVector.y = m_engineVector.z = 0.0f;    //Zero out the thrust
+
+    bool    afterF = (m_stateM & afterburnerButtonIGC) != 0;
+    float   thrustRatio = 0.0f;
+    {
+      IafterburnerIGC*    afterburner = (IafterburnerIGC*)(m_mountedOthers[ET_Afterburner]);
+
+      if (afterburner)
+      {
+        float   abThrust = afterburner->GetMaxThrustWithGA(); //TheRock 15-8-2009
+        if (afterF) {
+          thrustRatio = abThrust / thrust;
+        }
+        afterburner->IncrementalUpdate(timeStart, timeStop, false);
+
+        float power = afterburner->GetPower();
+        if (power != 0.0f)
         {
-            float   tm = GetTorqueMultiplier() * thrustToVelocity;
-            float   maxDelta = tm * m_myHullType.GetTurnTorque(c_axisRoll);
+          //Factor the afterburner thrust into drag (so that it will factor into the engine thrust)
+          drag += (power * abThrust) * myBackward;
+        }
+      }
+    }
 
-            if (maxDelta < m_turnRates[c_axisRoll])
-                m_turnRates[c_axisRoll] -= maxDelta;
-            else if (-maxDelta > m_turnRates[c_axisRoll])
-                m_turnRates[c_axisRoll] += maxDelta;
-            else
-                m_turnRates[c_axisRoll] = 0.0f;
+    //no maneuvering while ripcording
+    if (!m_pmodelRipcord)
+    {
+      Vector  localThrust;
+      if (m_stateM & (leftButtonIGC | rightButtonIGC |
+            upButtonIGC | downButtonIGC |
+            forwardButtonIGC | backwardButtonIGC))
+      {
+        //Under manual control: find out which direction to thrust in
+        //get the throttle setting, but ramp between 0.2 and 1.0 (instead of 0.0 & 1.0)
+        int   x = ((m_stateM & leftButtonIGC)     ? -1 : 0) + ((m_stateM & rightButtonIGC)   ?  1 : 0);
+        int   y = ((m_stateM & downButtonIGC)     ? -1 : 0) + ((m_stateM & upButtonIGC)      ?  1 : 0);
+        int   z = ((m_stateM & backwardButtonIGC) ?  1 : 0) + ((m_stateM & forwardButtonIGC) ? -1 : 0);
+
+        if (x || y || z)
+        {
+          //thrusting in at least one direction
+          localThrust.x = (thrust * (float)x);
+          localThrust.y = (thrust * (float)y);
+          localThrust.z = (thrust * (float)z);
         }
         else
-        */
-        if (!m_pmodelRipcord)
+          localThrust = Vector::GetZero();
+      }
+      else
+      {
+        if ((m_stateM & coastButtonIGC) && !afterF)
+          localThrust = pOrientation->TimesInverse(drag);
+        else
         {
-            //constrain the desired yaw/pitch/roll rates to an sphere rather than a box
-				float   l = m_controls.jsValues[c_axisYaw]   * m_controls.jsValues[c_axisYaw] +
-                        m_controls.jsValues[c_axisPitch] * m_controls.jsValues[c_axisPitch] +
-                        m_controls.jsValues[c_axisRoll]  * m_controls.jsValues[c_axisRoll];
+          float   negDesiredSpeed;
+          if (afterF)
+            negDesiredSpeed = maxSpeed * (-1.0f - thrustRatio);
+          else
+            negDesiredSpeed = (-0.5f * (1.0f + m_controls.jsValues[c_axisThrottle])) *
+              ((speed > maxSpeed) ? speed : maxSpeed);
 
-            if (l > 1.0f)
-                l = 1.0f / sqrt(l);
-            else
-                l = 1.0f;
+          Vector  desiredVelocity = myBackward * negDesiredSpeed;
 
-            float   tm = GetTorqueMultiplier() * thrustToVelocity;
-            for (int i = 0; (i < 3); i++)
-            {
-                float   desiredRate = m_controls.jsValues[i] * l * m_myHullType.GetMaxTurnRate(i);
-                float   maxDelta = tm * m_myHullType.GetTurnTorque(i);
-
-                if (desiredRate < m_turnRates[i] - maxDelta)
-                    m_turnRates[i] -= maxDelta;
-                else if (desiredRate > m_turnRates[i] + maxDelta)
-                    m_turnRates[i] += maxDelta;
-                else
-                    m_turnRates[i] = desiredRate;
-            }
+          //Find out how much thrust is required to obtain our desired velocity,
+          //accounting for drag
+          // mmf added zero check and debugf
+          if (thrustToVelocity == 0.0f) debugf("shipIGC.cpp ~2394 thrustToVelocity = 0 about to devide by zero\n");
+          localThrust = pOrientation->TimesInverse((desiredVelocity - *pVelocity) / thrustToVelocity + drag);
         }
+      }
 
-        pOrientation->Yaw(   m_turnRates[c_axisYaw] * dT);
-        pOrientation->Pitch(-m_turnRates[c_axisPitch] * dT);
-        pOrientation->Roll(  m_turnRates[c_axisRoll] * dT);
+      {
+        //Clip the engine vector the the available thrust from the engine
+        float   sm = m_myHullType.GetSideMultiplier();
+        // mmf added zero checks and debugf
+        if (sm == 0.0f) debugf("shipIGC.cpp ~2403 sm = 0 about to devide by zero\n");
+        if ((m_myHullType.GetBackMultiplier()==0.0f)&&(localThrust.z<=0.0f))
+          debugf("shipIGC.cpp ~2405 backmultip = 0 about to devide by zero\n");
+        Vector  scaledThrust(localThrust.x / sm,
+            localThrust.y / sm,
+            localThrust.z <= 0.0f ? localThrust.z : (localThrust.z / m_myHullType.GetBackMultiplier()));
 
-        // Re-normalize the orientation matrix
-        pOrientation->Renormalize();
+        float   r2 = scaledThrust.LengthSquared();
 
-        const Vector&   myBackward = pOrientation->GetBackward();
-
-        float   speed = pVelocity->Length();
-        float   maxSpeed = m_myHullType.GetMaxSpeed();
-
-        assert (maxSpeed > 0.0f);
-
-        //What would our velocity be if we simply let drag slow us down
-        Vector  drag;
+        if (r2 == 0.0f)
+          m_engineVector = Vector::GetZero();
+        else if (r2 <= thrust2)
         {
-            // double   f = exp(-thrust * thrustToVelocity / maxSpeed);
-			double   f = exp(double(double(-thrust) * double(thrustToVelocity) / (double)maxSpeed));  // mmf type cast changes
-
-            //New velocity = old velocity * f
-            //drag = thrust required to create this change in velocity
-            drag = *pVelocity * float((1.0 - f) / double(thrustToVelocity));
+          //No clipping of engine thrust required
+          m_engineVector = localThrust * *pOrientation;
         }
-
-        m_engineVector.x = m_engineVector.y = m_engineVector.z = 0.0f;    //Zero out the thrust
-
-        bool    afterF = (m_stateM & afterburnerButtonIGC) != 0;
-        float   thrustRatio = 0.0f;
+        else
         {
-            IafterburnerIGC*    afterburner = (IafterburnerIGC*)(m_mountedOthers[ET_Afterburner]);
-
-            if (afterburner)
-            {
-                float   abThrust = afterburner->GetMaxThrustWithGA(); //TheRock 15-8-2009
-				if (afterF) {
-                    thrustRatio = abThrust / thrust;
-				}
-                afterburner->IncrementalUpdate(timeStart, timeStop, false);
-
-                float power = afterburner->GetPower();
-                if (power != 0.0f)
-                {
-                    //Factor the afterburner thrust into drag (so that it will factor into the engine thrust)
-                    drag += (power * abThrust) * myBackward;
-                }
-            }
+          //Trying to thrust too much ... clip it back.
+          m_engineVector = (localThrust * *pOrientation) * (thrust / (float)sqrt(r2));
         }
-
-        //no maneuvering while ripcording
-        if (!m_pmodelRipcord)
-        {
-            Vector  localThrust;
-            if (m_stateM & (leftButtonIGC | rightButtonIGC |
-                            upButtonIGC | downButtonIGC |
-                            forwardButtonIGC | backwardButtonIGC))
-            {
-                //Under manual control: find out which direction to thrust in
-                //get the throttle setting, but ramp between 0.2 and 1.0 (instead of 0.0 & 1.0)
-                int   x = ((m_stateM & leftButtonIGC)     ? -1 : 0) + ((m_stateM & rightButtonIGC)   ?  1 : 0);
-                int   y = ((m_stateM & downButtonIGC)     ? -1 : 0) + ((m_stateM & upButtonIGC)      ?  1 : 0);
-                int   z = ((m_stateM & backwardButtonIGC) ?  1 : 0) + ((m_stateM & forwardButtonIGC) ? -1 : 0);
-
-                if (x || y || z)
-                {
-                    //thrusting in at least one direction
-                    localThrust.x = (thrust * (float)x);
-                    localThrust.y = (thrust * (float)y);
-                    localThrust.z = (thrust * (float)z);
-                }
-                else
-                    localThrust = Vector::GetZero();
-            }
-            else
-            {
-                if ((m_stateM & coastButtonIGC) && !afterF)
-                    localThrust = pOrientation->TimesInverse(drag);
-                else
-                {
-                    float   negDesiredSpeed;
-                    if (afterF)
-                        negDesiredSpeed = maxSpeed * (-1.0f - thrustRatio);
-                    else
-                        negDesiredSpeed = (-0.5f * (1.0f + m_controls.jsValues[c_axisThrottle])) *
-                                          ((speed > maxSpeed) ? speed : maxSpeed);
-
-                    Vector  desiredVelocity = myBackward * negDesiredSpeed;
-
-                    //Find out how much thrust is required to obtain our desired velocity,
-                    //accounting for drag
-					// mmf added zero check and debugf
-					if (thrustToVelocity == 0.0f) debugf("shipIGC.cpp ~2394 thrustToVelocity = 0 about to devide by zero\n");
-                    localThrust = pOrientation->TimesInverse((desiredVelocity - *pVelocity) / thrustToVelocity + drag);
-                }
-            }
-
-            {
-                //Clip the engine vector the the available thrust from the engine
-                float   sm = m_myHullType.GetSideMultiplier();
-				// mmf added zero checks and debugf
-				if (sm == 0.0f) debugf("shipIGC.cpp ~2403 sm = 0 about to devide by zero\n");
-				if ((m_myHullType.GetBackMultiplier()==0.0f)&&(localThrust.z<=0.0f))
-					debugf("shipIGC.cpp ~2405 backmultip = 0 about to devide by zero\n");
-				Vector  scaledThrust(localThrust.x / sm,
-                                     localThrust.y / sm,
-                                     localThrust.z <= 0.0f ? localThrust.z : (localThrust.z / m_myHullType.GetBackMultiplier()));
-
-                float   r2 = scaledThrust.LengthSquared();
-
-                if (r2 == 0.0f)
-                    m_engineVector = Vector::GetZero();
-                else if (r2 <= thrust2)
-                {
-                    //No clipping of engine thrust required
-                    m_engineVector = localThrust * *pOrientation;
-                }
-                else
-                {
-                    //Trying to thrust too much ... clip it back.
-					m_engineVector = (localThrust * *pOrientation) * (thrust / (float)sqrt(r2));
-                }
-            }
-        }
-
-
-        *pVelocity += thrustToVelocity * (m_engineVector - drag);
-		// mmf added log msg for large velocity^2, mmf 10/07 increased threshold to 800^2 as some cores commonly have ships with speeds in the 500's
-		if ((*pVelocity * *pVelocity) > 640000.0f) {
-			debugf("mmf pVelocity^2 = %g ship = %s\n",(*pVelocity * *pVelocity),GetName());
-		}
-
-		// mmf other velocity checks were added for debugging, this one was definitely being tripped
-		// replaced assert with log msg
-		if (!(*pVelocity * *pVelocity >= 0.0f)) {
-			debugf("mmf pVelocity^2 < 0.0 ship = %s\n",GetName());
-			debugf("pVelocity x=%g y=%g z=%g\n",(*pVelocity).x,(*pVelocity).y,(*pVelocity).z);
-			debugf("Igc shipIGC.cpp debug build would have called assert and exited, commented out for now\n");
-			// cause an exception for debugging
-			// (*(int*)0) = 0;
-		}
-        // assert (*pVelocity * *pVelocity >= 0.0f); // mmf commented out
+      }
     }
+
+
+    *pVelocity += thrustToVelocity * (m_engineVector - drag);
+    // mmf added log msg for large velocity^2, mmf 10/07 increased threshold to 800^2 as some cores commonly have ships with speeds in the 500's
+    if ((*pVelocity * *pVelocity) > 640000.0f) {
+      debugf("mmf pVelocity^2 = %g ship = %s\n",(*pVelocity * *pVelocity),GetName());
+    }
+
+    // mmf other velocity checks were added for debugging, this one was definitely being tripped
+    // replaced assert with log msg
+    if (!(*pVelocity * *pVelocity >= 0.0f)) {
+      debugf("mmf pVelocity^2 < 0.0 ship = %s\n",GetName());
+      debugf("pVelocity x=%g y=%g z=%g\n",(*pVelocity).x,(*pVelocity).y,(*pVelocity).z);
+      debugf("Igc shipIGC.cpp debug build would have called assert and exited, commented out for now\n");
+      // cause an exception for debugging
+      // (*(int*)0) = 0;
+    }
+    // assert (*pVelocity * *pVelocity >= 0.0f); // mmf commented out
+  }
 }
 
 void    CshipIGC::ProcessFractions(const CompactShipFractions& fractions)
