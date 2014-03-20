@@ -57,8 +57,7 @@ go_bandit( []() {
 
   });
 
-  describe( "Orientation", []() {
-    Orientation o;
+  describe( "CVH Tests", []() {
   });
 
   describe( "ImissionIGC", []() {
@@ -227,7 +226,20 @@ go_bandit( []() {
       AssertThat( rock == nullptr, IsFalse() );
       ship->SetPosition( rock->GetPosition() + (rock->GetRadius() + 100) * rock->GetOrientation().GetForward() );
       ship->SetOrientation( Orientation( rock->GetOrientation().GetForward() * -1, rock->GetOrientation().GetUp() ) );
-      AssertThat( ship->GetOrientation().GetForward() * rock->GetOrientation().GetForward(), Equals(-1.0f) );
+      AssertThat( ship->GetOrientation().GetForward() * rock->GetOrientation().GetForward(), EqualsWithDelta(-1.0f,0.01f) );
+      ship->SetVelocity( ship->GetOrientation().GetForward() * 160.0f );
+      ControlData cd;
+      cd.jsValues[c_axisThrottle] = 1.0f;
+      ship->SetControls(cd);
+      Time startT = t;
+      Seconds interval(0.1f);
+      std::cout << ship->GetHullType()->GetName() << "\n";
+      while( (t - startT) < Seconds(20.0f) )
+      {
+        t += interval;
+        mission.Update(t);
+      }
+      std::cout << ship->GetHullType()->GetName() << "\n";
     });
 
     it( "can terminate", [&]() {

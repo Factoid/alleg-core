@@ -548,10 +548,12 @@ class   BoundingHull : public HitTest
                 pcvRecent[i] = pMultiHull->GetSingleHull(i)->vertex0();
         }
 #else
-        BoundingHull(IObject* d, bool staticF, MultiHullBasePtr pMultiHull) : HitTest(d, pMultiHull->GetOriginalRadius(), staticF, pMultiHull->GetNhulls()), m_pMultiHull(pMultiHull), pcvRecent(pMultiHull->GetNhulls())
+        BoundingHull(IObject* d, bool staticF, MultiHullBasePtr pMultiHull) : HitTest(d, pMultiHull->GetOriginalRadius(), staticF, pMultiHull->GetNhulls()), m_pMultiHull(pMultiHull), pcvRecent(pMultiHull->GetNhulls(),nullptr)
         {
             for (int i = pMultiHull->GetNhulls() - 1; (i >= 0); i--)
+            {
                 pcvRecent[i] = pMultiHull->GetSingleHull(i)->vertex0();
+            }
         }
 #endif
 
@@ -616,7 +618,6 @@ class   BoundingHull : public HitTest
             assert (direction.LengthSquared() <= 1.02f);
 
             assert (m_pMultiHull);
-
             const ConvexVertex**    ppcvRecent = &(recentVertex0()[hullID]);
             assert (ppcvRecent);
             const ConvexVertex*     pcv = *ppcvRecent;
@@ -732,10 +733,17 @@ class   BoundingHull : public HitTest
         }
 
     private:
+#ifdef WIN
         const ConvexVertex**    recentVertex0(void) const
         {
             return ((const ConvexVertex**)(((char*)this) + sizeof(*this)));
         }
+#else
+        const ConvexVertex** recentVertex0()
+        {
+          return &pcvRecent[0];
+        }
+#endif
 
         float               m_desiredRadius;
         float               m_scale;
