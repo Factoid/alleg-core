@@ -22,8 +22,8 @@ const float c_deceleration = 10.0f;
 CprobeIGC::CprobeIGC(void)
 :
     m_probeType(NULL),
-    m_fraction(1.0f),
     m_projectileType(NULL),
+    m_fraction(1.0f),
     m_bCreateNow (false)
 {
 }

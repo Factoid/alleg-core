@@ -19,14 +19,14 @@
 // CweaponIGC
 CweaponIGC::CweaponIGC(void)
 :
-    m_partType(NULL),
-    m_projectileType(NULL),
-    m_ship(NULL),
     m_pshipGunner(NULL),
+    m_partType(NULL),
+    m_ship(NULL),
+    m_projectileType(NULL),
+    m_mountID(c_mountNA),
     m_fActive(false),
     m_fFiringShot(false),
-    m_fFiringBurst(false),
-    m_mountID(c_mountNA)
+    m_fFiringBurst(false)
 {
 }
 
@@ -205,9 +205,6 @@ void        CweaponIGC::FireWeapon(Time now)
             
                 //This is how much energy deficit recovers between shots
                 float   dtimeBurst = GetDtBurst();
-
-                float   recharge = rechargeRate * dtimeBurst;
-
                 const Vector&       myVelocity      = m_ship->GetVelocity();
                 Vector              myPosition      = m_ship->GetPosition() + *m_pposition * shipOrientation; //*pMyOrientation;
 

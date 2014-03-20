@@ -179,7 +179,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
         */
     public:
     // IbaseIGC
-        virtual HRESULT             Initialize(ImissionIGC* pMission, Time now, const void* data, int length);
+        virtual HRESULT             Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length);
         virtual void                Terminate(void);
         virtual void                Update(Time now);
         virtual int                 Export(void* data) const;

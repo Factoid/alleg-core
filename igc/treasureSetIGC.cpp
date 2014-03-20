@@ -24,7 +24,7 @@ HRESULT     CtreasureSetIGC::Initialize(ImissionIGC* pMission, Time now, const v
 
     ZRetailAssert (data && (dataSize >= sizeof(DataTreasureSetIGC)));
 
-    int size;
+    unsigned int size;
     if (((DataTreasureSetIGC*)data)->nTreasureData == 0)
     {
         assert (dataSize == sizeof(DataTreasureSetIGC));
@@ -38,7 +38,7 @@ HRESULT     CtreasureSetIGC::Initialize(ImissionIGC* pMission, Time now, const v
     {
         m_maxTreasureData = ((DataTreasureSetIGC*)data)->nTreasureData;
 
-        assert (dataSize == int(sizeof(DataTreasureSetIGC) +
+        assert (dataSize == (sizeof(DataTreasureSetIGC) +
                                 m_maxTreasureData *
                                 sizeof(TreasureData)));
 

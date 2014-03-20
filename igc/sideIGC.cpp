@@ -20,7 +20,7 @@
 HRESULT         CsideIGC::Initialize(ImissionIGC*   pMission,
                                      Time           now,
                                      const void*    data,
-                                     int            dataSize)
+                                     unsigned int dataSize)
 {
     m_pMission = pMission;
 
@@ -101,13 +101,12 @@ void            CsideIGC::Terminate(void)
     Release();
 }
 
-int             CsideIGC::Export(void*  data) const
+int CsideIGC::Export(void*  data) const
 {
-    int nBytes = sizeof(DataSideIGC);
-
     if (data)
-        *((DataSideIGC*)data) = m_data;
-
+    {
+      *((DataSideIGC*)data) = m_data;
+    }
     return sizeof(DataSideIGC);
 }
 

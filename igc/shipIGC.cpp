@@ -25,32 +25,33 @@ const float   c_dtTimeBetweenComplaints = 30.0f;
 
 CshipIGC::CshipIGC(void)
 :
-    m_fuel(0.0f),
-    m_stateM(0),
-    m_station(NULL),
-    m_pmissileLast(NULL),
-    m_damageTrack(NULL),
     m_dwPrivate(0),
     m_myHullType(this),
-    m_cloaking(1.0f),
+    m_station(NULL),
+    m_pmodelRipcord(NULL),
     m_pshipParent(NULL),
-    m_turretID(NA),
-    m_bAutopilot(false),
+    m_damageTrack(NULL),
     m_gotoplan(this),
-    m_dtTimeBetweenComplaints(c_dtTimeBetweenComplaints),
+    m_stateM(0),
+    m_cloaking(1.0f),
+    m_fuel(0.0f),
+    m_ripcordDebt(0.0f),
     m_nKills(0),
     m_nDeaths(0),
     m_nEjections(0),
-    m_sidFlag(NA),
-    m_ripcordDebt(0.0f),
-	m_wingID(NA), //Imago 6/10 #91
+    m_pmissileLast(NULL),
 #ifdef WIN
 	m_lastLaunch(Time::Now()), //Imago 7/10 #7
-	m_lastDock(Time::Now())
+	m_lastDock(Time::Now()),
 #else
 	m_lastLaunch(Clock::now()), //Imago 7/10 #7
-	m_lastDock(Clock::now())
+	m_lastDock(Clock::now()),
 #endif
+    m_dtTimeBetweenComplaints(c_dtTimeBetweenComplaints),
+  	m_wingID(NA), //Imago 6/10 #91
+    m_sidFlag(NA),
+    m_turretID(NA),
+    m_bAutopilot(false)
 {
     //Start with a single kill's worth of exp
     SetExperience(1.0f);
@@ -1349,12 +1350,12 @@ DamageResult CshipIGC::ReceiveDamage(DamageTypeID            type,
           if (oldFraction > 0.0f)  //Only send the death message once.
           {
             // TE: Get the player credited for the kill
-            DamageBucketLink* pdmglink = NULL;
             ImodelIGC* pcredit = launcher;
             DamageTrack*  pdt = this->GetDamageTrack();
             if (pdt)
             {
 #ifdef WIN
+              DamageBucketLink* pdmglink = NULL;
               pdmglink = pdt->GetDamageBuckets()->first();
               if (pdmglink)
               {
@@ -1362,10 +1363,13 @@ DamageResult CshipIGC::ReceiveDamage(DamageTypeID            type,
                   pcredit = pdmglink->data()->model();
               }
 #else
-              DamageBucket* pdmg = pdt->GetDamageBuckets()->front();
-              if( pdmg->model()->GetMission() == GetMyMission() )
+              if( !pdt->GetDamageBuckets()->empty() )
               {
-                pcredit = pdmg->model();
+                DamageBucket* pdmg = pdt->GetDamageBuckets()->front();
+                if( pdmg->model()->GetMission() == GetMyMission() )
+                {
+                  pcredit = pdmg->model();
+                }
               }
 #endif
             }
@@ -1534,15 +1538,16 @@ void    CshipIGC::DeletePart(IpartIGC* part)
 {
     assert (part);
     part->SetMountID(c_mountNA);
-
+#ifdef DEBUG
     int iPart = 0;      //NYI debug
-
+#endif
     part->AddRef();
 #ifdef WIN
     for (PartLinkIGC*   l = m_parts.first(); (l != NULL); l = l->next())
     {
+#ifdef DEBUG
         iPart++;    //NYI debug
-
+#endif
         IpartIGC*   p = l->data();
 #else
     for( auto pi = m_parts.begin(); pi != m_parts.end(); ++pi )
@@ -1553,10 +1558,10 @@ void    CshipIGC::DeletePart(IpartIGC* part)
         {
             SetMass(GetMass() - part->GetMass());
 
-/*
+#ifdef DEBUG
             debugf("Deleting\t%s/%d to %s/%d (%d)\n", part->GetPartType()->GetName(), iPart,
                    GetName(), GetObjectID(), m_parts.n() - 1);
-*/
+#endif
 #ifdef WIN
             delete l;
             p->Release();
@@ -1698,8 +1703,7 @@ void    CshipIGC::ExecuteTurretMove(Time          timeStart,
     else
         l = 1.0f;
 
-    float   oldTurnRate2 = m_turnRates[c_axisYaw]   * m_turnRates[c_axisYaw] +
-                           m_turnRates[c_axisPitch] * m_turnRates[c_axisPitch];
+//    float   oldTurnRate2 = m_turnRates[c_axisYaw]   * m_turnRates[c_axisYaw] + m_turnRates[c_axisPitch] * m_turnRates[c_axisPitch];
 
     //Keep in sync with wintrek.cpp's FOV by throttle
     static const float  c_minRate = RadiansFromDegrees(7.5f);
@@ -2083,7 +2087,6 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
             }
         }
 
-        bool    bControlsSet = false;
 #ifdef WIN
         float   dT = timeStop - timeStart;
 #else
@@ -2418,7 +2421,8 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     float   fShootSkill = 0.75f;
                     float   fTurnSkill = 0.75f;
                     int     state = 0;
-                    bool    bDodge = Dodge(this, NULL, &state);
+                    //bool    bDodge = Dodge(this, NULL, &state);
+                    Dodge(this,NULL,&state);
 
                     Vector  direction;
                     float   t = solveForLead(this,
@@ -3184,8 +3188,8 @@ void CshipIGC::SetSide(IsideIGC* pside)  //override the default SetSide method
         SetParentShip(NULL);
 
         //Blow away the children
-        ShipLinkIGC*    psl;
 #ifdef WIN
+        ShipLinkIGC*    psl;
         while (psl = m_shipsChildren.first())   //intentional assignment
         {
             psl->data()->SetParentShip(NULL);
@@ -3331,8 +3335,8 @@ void    CshipIGC::Promote(void)
     //Transfer all of the gunners from the old hull to the new hull
     {
         const ShipListIGC*  pships = pshipParent->GetChildShips();
-        ShipLinkIGC*        psl;
 #ifdef WIN
+        ShipLinkIGC*        psl;
         while (psl = pships->first())       //Intentional
         {
             IshipIGC*   pship = psl->data();
@@ -3405,8 +3409,8 @@ void    CshipIGC::SetParentShip(IshipIGC*   pshipParent)
             debugf("%s\n", pshipParent->GetName());
 
             {
-                ShipLinkIGC*    psl;
 #ifdef WIN
+                ShipLinkIGC*    psl;
                 while (psl = m_shipsChildren.first())       //Intentional
                 {
                     debugf("%s <- %s \n", this->GetName(), psl->data()->GetName());
@@ -3689,9 +3693,7 @@ ImodelIGC*    CshipIGC::FindRipcordModel(IclusterIGC*   pcluster)
             for( auto pprobe : *(pcluster->GetProbes()) )
             {
 #endif
-                if ((pprobe->GetSide() == pside || pside->AlliedSides(pside, pprobe->GetSide()) 
-					&& GetMission()->GetMissionParams()->bAllowAlliedRip) 
-					&& pprobe->GetCanRipcord(ripcordSpeed)) //ALLY RIPCORD imago 7/8/09
+                if(((pprobe->GetSide() == pside || pside->AlliedSides(pside, pprobe->GetSide())) && GetMission()->GetMissionParams()->bAllowAlliedRip) && pprobe->GetCanRipcord(ripcordSpeed)) //ALLY RIPCORD imago 7/8/09
                 {
                     if (positionGoal)
                     {
@@ -4360,7 +4362,7 @@ bool    CshipIGC::InGarage(IshipIGC* pship, float   tCollision) const
 }
 
 //Ibase
-HRESULT     MyHullType::Initialize(ImissionIGC* pMission, Time now, const void* data, int length)
+HRESULT     MyHullType::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length)
 {
     assert (false);
     return E_FAIL;

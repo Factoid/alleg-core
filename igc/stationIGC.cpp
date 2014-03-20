@@ -548,7 +548,7 @@ void    CstationIGC::RepairAndRefuel(IshipIGC* pship) const
 }
 
 //Ibase
-HRESULT     MyStationType::Initialize(ImissionIGC* pMission, Time now, const void* data, int length)
+HRESULT     MyStationType::Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length)
 {
     assert (false);
     return E_FAIL;

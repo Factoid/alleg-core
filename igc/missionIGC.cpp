@@ -4669,8 +4669,13 @@ void                    CmissionIGC::GenerateMission(Time                   now,
         for( auto pcluster : m_clusters )
         {
 #endif
+#ifdef WIN
             IsideIGC*       psideOwner = NULL;
-            StationLinkIGC*    psl;
+            StationLinkIGC*    psl = NULL;
+#else
+            IsideIGC* psideOwner = nullptr;
+            bool contested = false;
+#endif
 #ifdef WIN
             for (psl = pcluster->GetStations()->first(); (psl != NULL); psl = psl->next())
             {
@@ -4680,14 +4685,28 @@ void                    CmissionIGC::GenerateMission(Time                   now,
             {
               IsideIGC* pside = station->GetSide();
 #endif
+#ifdef WIN
                 if (psideOwner == NULL)
+#else
+                if (psideOwner == nullptr)
+#endif
+                {
                     psideOwner = pside;
+                }
                 else if (psideOwner != pside)
+                {
+#ifndef WIN
+                    contested = true;
+#endif
                     break;
+                }
             }
+#ifdef WIN
+            if (psideOwner && (psl == NULL)) nTerritoriesPerSide[psideOwner->GetObjectID()]++;
+#else
+            if (psideOwner && !contested) nTerritoriesPerSide[psideOwner->GetObjectID()]++;
+#endif
 
-            if (psideOwner && (psl == NULL))
-                nTerritoriesPerSide[psideOwner->GetObjectID()]++;
         }
 
 #ifdef WIN
@@ -4763,10 +4782,14 @@ void    CmissionIGC::GenerateTreasure(Time         now,
             const ModelListIGC* models = pCluster->GetModels();
 
             float   radius = c_radiusUniverse;
-
+#ifdef WIN
             ModelLinkIGC*   pmlink;
+#else
+            bool done = true;
+#endif
             do
             {
+                done = true;
                 //Pick a random position for the asteroid
                 //in a squashed disk
                 dt.p0 = Vector::RandomDirection();
@@ -4792,11 +4815,16 @@ void    CmissionIGC::GenerateTreasure(Time         now,
                     {
                         //Too close ... try again
                         radius *= 1.05f;
+                        done = false;
                         break;
                     }
                 }
             }
+#ifdef WIN
             while (pmlink && (--nTriesLeft > 0));
+#else
+            while( !done && (--nTriesLeft > 0));
+#endif
 
             if (nTriesLeft == 0)
                 return;     //Couldn't find a spot for a treasure

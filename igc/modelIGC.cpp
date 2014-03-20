@@ -20,18 +20,18 @@
 // CmodelIGC
 CmodelIGC::CmodelIGC(ImodelIGC* model)
 :
-    m_model(model),
-    m_visibleF(true),
-    m_render(c_ucRenderAll),
-    m_selectedF(false),
-    m_attributes(0),
+    m_pThingSite(NULL),
     m_side(NULL),
-    m_cluster(NULL),
-    m_decalF(false),
-    m_pHitTest(NULL),
+    m_model(model),
     m_rotation(c_rotationZero),
+    m_cluster(NULL),
     m_signature(1.0f),
-    m_pThingSite(NULL)
+    m_pHitTest(NULL),
+    m_attributes(0),
+    m_visibleF(true),
+    m_selectedF(false),
+    m_decalF(false),
+    m_render(c_ucRenderAll)
 {
     m_name[0] = '\0';
 }

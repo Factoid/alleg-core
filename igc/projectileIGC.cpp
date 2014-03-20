@@ -22,8 +22,8 @@
 // CprojectileIGC
 CprojectileIGC::CprojectileIGC(void)
 :
-    m_launcher(NULL),
     m_projectileType(NULL),
+    m_launcher(NULL),
     m_pExplosionData(NULL)
 {
 }

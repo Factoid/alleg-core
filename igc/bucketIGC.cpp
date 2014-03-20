@@ -20,7 +20,7 @@
 HRESULT         CbucketIGC::Initialize(ImissionIGC* pMission,
                                        Time         now,
                                        const void*  data,
-                                       int          dataSize)
+                                       unsigned int dataSize)
 {
     assert (pMission);
     m_pMission = pMission;

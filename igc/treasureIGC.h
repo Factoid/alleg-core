@@ -22,7 +22,7 @@ class CtreasureIGC : public TmodelIGC<ItreasureIGC>
 {
     public:
     // IbaseIGC
-        virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, int length);
+        virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, unsigned int length);
         virtual void    Terminate(void)
         {
             AddRef();
