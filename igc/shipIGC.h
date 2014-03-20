@@ -886,7 +886,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                 Mount   maxWeapons = m_myHullType.GetMaxWeapons();
                 for (Mount i = 0; (i < maxWeapons); i++)
                 {
-                    IpartIGC*   p1 = m_mountedWeapons[i];
+                    IpartIGC*   p1 = m_mountedWeapons[(unsigned char)i];
                     IpartIGC*   p2 = pship->GetMountedPart(ET_Weapon, i);
 
                     if ((p1 != NULL) || (p2 != NULL))
@@ -2655,7 +2655,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                 {
                     for (Mount mount = 0; mount < pht->GetMaxFixedWeapons(); ++mount)
                     {
-                        IweaponIGC* pweapon = m_mountedWeapons[mount];
+                        IweaponIGC* pweapon = m_mountedWeapons[(unsigned char)mount];
 
                         if (pweapon && pweapon->GetProjectileType()->GetBlastRadius() > 0.0f)
                             return true;

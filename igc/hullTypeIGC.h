@@ -165,7 +165,7 @@ class       ChullTypeIGC : public IhullTypeIGC
             if (et == ET_Weapon)
             {
                 return (mountID < m_data->maxWeapons)
-                       ? (((HardpointData*)(((char*)m_data) + m_data->hardpointOffset))[mountID]).partMask
+                       ? (((HardpointData*)(((char*)m_data) + m_data->hardpointOffset))[(unsigned char)mountID]).partMask
                        : 0;
             }
             else
@@ -221,7 +221,7 @@ class       ChullTypeIGC : public IhullTypeIGC
         virtual const HardpointData& GetHardpointData(Mount hardpointID) const
         {
             assert ((hardpointID >= 0) && (hardpointID < m_data->maxWeapons));
-            return ((HardpointData*)(((char*)m_data) + m_data->hardpointOffset))[hardpointID];
+            return ((HardpointData*)(((char*)m_data) + m_data->hardpointOffset))[(unsigned char)hardpointID];
         }
 
         virtual const char*          GetTextureName(void) const
@@ -260,14 +260,14 @@ class       ChullTypeIGC : public IhullTypeIGC
             assert (mount >= 0);
             assert (mount < m_data->maxWeapons);
 
-            return m_positionWeapons[mount];
+            return m_positionWeapons[(unsigned char)mount];
         }
         virtual const Orientation&   GetWeaponOrientation(Mount mount) const
         {
             assert (mount >= 0);
             assert (mount < m_data->maxWeapons);
 
-            return m_orientationWeapons[mount];
+            return m_orientationWeapons[(unsigned char)mount];
         }
 
         virtual float   GetMaxFuel(void) const

@@ -456,7 +456,7 @@ const float fNA = -1; // To support supression of compiler warnings.  Floats sho
 typedef long            MissionID;
 
 //*ID are unique IDs for something
-typedef unsigned short           ObjectID;
+typedef short           ObjectID;
 typedef ObjectID        BucketID;
 typedef ObjectID        PartID;
 typedef ObjectID        ShipID;
@@ -499,7 +499,7 @@ typedef BYTE            Cookie;
 
 //"Enumerated" types which probably should be something other than integers
 //This has to be signed so that NA means NA
-typedef unsigned char    ModelAttributes;
+typedef signed char    ModelAttributes;
 const ModelAttributes  c_mtNotPickable         = 0x01;          //User can never pick the object
 const ModelAttributes  c_mtScanner             = 0x02;          //Can see other objects
 const ModelAttributes  c_mtPredictable         = 0x04;          //Send this object to a team when it is seen for the 1st time
@@ -812,7 +812,7 @@ enum ClusterQuality
 // ships have a capacity, and mounted parts use up that capacity (drain)
 typedef float HitPoints;
 typedef int   Money;
-typedef unsigned char  Mount;
+typedef char  Mount;
 typedef unsigned char  Command;
 typedef short RankID;
 

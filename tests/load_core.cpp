@@ -198,27 +198,28 @@ go_bandit( []() {
       AssertThat( station == nullptr, IsFalse() );
       station->RepairAndRefuel(ship);
       station->Launch(ship);
-      AssertThat( ship->GetAmmo(), !Equals(0) );
-      std::cout << "Ammo: " << ship->GetAmmo() << "\n";
-      AssertThat( ship->GetEnergy(), !Equals(0.0f) );
-      std::cout << "Energy: " << ship->GetEnergy() << "\n";
-      AssertThat( ship->GetFuel(), !Equals(0.0f) );
-      std::cout << "Fuel: " << ship->GetFuel() << "\n";
-      std::cout << "Pos: " << ship->GetPosition() << "\n";
-      std::cout << "Vel: " << ship->GetVelocity() << "\n";
-      std::cout << "Station: " << station->GetPosition() << "\n";
-      std::cout << "Station Size: " << station->GetRadius() << "\n";
+      AssertThat( ship->GetAmmo(), Equals(ship->GetHullType()->GetMaxAmmo()) );
+      AssertThat( ship->GetEnergy(), Equals(ship->GetHullType()->GetMaxEnergy()) );
+      AssertThat( ship->GetFuel(), Equals(ship->GetHullType()->GetMaxFuel()) );
       Seconds interval(0.1f);
       Time startT = t;
       while( (t - startT) < Seconds(10.0f) )
       {
         t += interval;
-        std::cout << "Tick! ";
         mission.Update(t);
       }
-      std::cout << "\n";
-      std::cout << "Pos: " << ship->GetPosition() << "\n";
-      std::cout << "Velocity: " << ship->GetVelocity() << "\n";
+    });
+
+    it( "can fly into an asteroid", [&]() {
+      IshipIGC* ship = mission.GetShip(0);
+      AssertThat( ship == nullptr, IsFalse() );
+      IclusterIGC* cluster = ship->GetCluster();
+      AssertThat( cluster == nullptr, IsFalse() );
+      IasteroidIGC* rock = cluster->GetAsteroid(0);
+      AssertThat( rock == nullptr, IsFalse() );
+      ship->SetPosition( rock->GetPosition() + (rock->GetRadius() + 100) * rock->GetOrientation().GetForward() );
+      ship->SetOrientation( Orientation( rock->GetOrientation().GetForward() * -1, rock->GetOrientation().GetUp() ) );
+      AssertThat( ship->GetOrientation().GetForward() * rock->GetOrientation().GetForward(), Equals(-1.0f) );
     });
 
     it( "can terminate", [&]() {
@@ -279,6 +280,7 @@ int main( int argc, char** argv )
   std::vector<IweaponIGC*> weapons;
   for( auto p : *ship->GetHullType()->GetPreferredPartTypes() )
   {
+    
     std::cout << "Ship wants a " << p->GetName() << " " << p->GetEquipmentType() << "\n";
     Mount maxMounts = (p->GetEquipmentType() == ET_Weapon ) ? ship->GetHullType()->GetMaxWeapons() : 1;
     for( Mount i = 0; i < maxMounts; ++i )

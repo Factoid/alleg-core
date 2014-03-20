@@ -69,15 +69,15 @@ CshipIGC::CshipIGC(void)
     }
     {
         for (Mount i = 0; (i < c_maxMountedWeapons); i++)
-            m_mountedWeapons[i] = NULL;
+            m_mountedWeapons[(unsigned char)i] = NULL;
     }
     {
         for (Mount i = 0; (i < ET_MAX); i++)
-            m_mountedOthers[i] = NULL;
+            m_mountedOthers[(unsigned char)i] = NULL;
     }
     {
         for (Mount i = 0; (i < c_maxCargo); i++)
-            m_mountedCargos[i] = NULL;
+            m_mountedCargos[(unsigned char)i] = NULL;
     }
 }
 
@@ -179,7 +179,7 @@ void    CshipIGC::ReInitialize(DataShipIGC * dataShip, Time now)
             const PartData*   pd = (PartData*)(((char*)dataShip) + dataShip->partsOffset);
             for (Mount i = 0; (i < dataShip->nParts); i++)
             {
-                CreateAndAddPart(&(pd[i]));
+                CreateAndAddPart(&(pd[(unsigned char)i]));
             }
         }
 
@@ -373,7 +373,7 @@ void    CshipIGC::Update(Time now)
 
             for (Mount j = maxFixedWeapons; (j < maxWeapons); j++)
             {
-                IweaponIGC* w = m_mountedWeapons[j];
+                IweaponIGC* w = m_mountedWeapons[(unsigned char)j];
 
                 if (w)
                 {
@@ -1596,7 +1596,7 @@ IpartIGC* const*   CshipIGC::PartLocation(EquipmentType  type,
             case ET_Weapon:
             {
                 assert (mountID < c_maxMountedWeapons);
-                partLocation = (IpartIGC* const*)&(m_mountedWeapons[mountID]);
+                partLocation = (IpartIGC* const*)&(m_mountedWeapons[(unsigned char)mountID]);
             }
             break;
 
@@ -4519,7 +4519,7 @@ Mount                MyHullType::GetMaxFixedWeapons(void) const
 const HardpointData& MyHullType::GetHardpointData(Mount hardpointID) const
 {
     assert ((hardpointID >= 0) && (hardpointID < m_pHullData->maxWeapons));
-    return ((HardpointData*)(((char*)m_pHullData) + m_pHullData->hardpointOffset))[hardpointID];
+    return ((HardpointData*)(((char*)m_pHullData) + m_pHullData->hardpointOffset))[(unsigned char)hardpointID];
 }
 
 const char*          MyHullType::GetTextureName(void) const

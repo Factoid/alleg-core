@@ -607,7 +607,7 @@ VOID CmapMakerIGC::GenerateSides(CMapData * pMapData)
 #ifdef WIN
     assert (pMapData->GetMission()->GetSides()->n() == pMapData->GetTeams());
 #else
-    assert (pMapData->GetMission()->GetSides()->size() == pMapData->GetTeams());
+    assert (pMapData->GetMission()->GetSides()->size() == (size_t)pMapData->GetTeams());
 #endif
 }
 

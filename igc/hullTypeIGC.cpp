@@ -110,7 +110,7 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
                 if (hd.bFixed)
                 {
                     assert (i < m_data->maxFixedWeapons);
-                    m_positionWeapons[i] = pfd ? (pfd->position * m_scale) : Vector::GetZero();
+                    m_positionWeapons[(unsigned char)i] = pfd ? (pfd->position * m_scale) : Vector::GetZero();
                 }
                 else
                 {
@@ -128,20 +128,20 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
 
                     if (pfd)
                     {
-                        m_positionWeapons[i] = pfd->position * m_scale;
+                        m_positionWeapons[(unsigned char)i] = pfd->position * m_scale;
 
                         static const Vector up(0.0f, 1.0f, 0.0f);
                         if (fabs(pfd->forward * up) < 0.9f)
-                            m_orientationWeapons[i].Set(pfd->forward, up);
+                            m_orientationWeapons[(unsigned char)i].Set(pfd->forward, up);
                         else
                         {
-                            m_orientationWeapons[i].Set(pfd->forward, z);
+                            m_orientationWeapons[(unsigned char)i].Set(pfd->forward, z);
                         }
                     }
                     else
                     {
-                        m_positionWeapons[i] = Vector::GetZero();
-                        m_orientationWeapons[i].Set(z);
+                        m_positionWeapons[(unsigned char)i] = Vector::GetZero();
+                        m_orientationWeapons[(unsigned char)i].Set(z);
                     }
                 }
             }

@@ -4250,7 +4250,7 @@ void		CmissionIGC::UpdateAllies(const char Allies[c_cSidesMax])
 #ifdef WIN
 	for (SideID s = 0; s < GetSides()->n(); s++)
 #else
-	for (SideID s = 0; s < GetSides()->size(); s++)
+	for (SideID s = 0; (size_t)(s) < GetSides()->size(); s++)
 #endif
 	{
 		IsideIGC* pside = GetSide(s);
