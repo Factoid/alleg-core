@@ -30,6 +30,11 @@ public:
 //    std::cout << "IGCSite::Preload( " << (mn == nullptr ? "" : mn) << ", " << (tn == nullptr ? "" : tn) << ")\n" << std::flush;
     IIgcSite::Preload( mn, tn );
   }
+
+  void KillShipEvent( Time now, IshipIGC* ship, ImodelIGC* launcher, float amount, const Vector& p1, const Vector& p2 )
+  {
+    ship->Reset(false);
+  }
 };
 
 Time appStart;
@@ -58,6 +63,8 @@ go_bandit( []() {
   });
 
   describe( "CVH Tests", []() {
+    MultiHullBasePtr hitTestA = HitTest::Load("fig05");
+    AssertThat( hitTestA.get() == nullptr, IsFalse() );
   });
 
   describe( "ImissionIGC", []() {
@@ -233,13 +240,12 @@ go_bandit( []() {
       ship->SetControls(cd);
       Time startT = t;
       Seconds interval(0.1f);
-      std::cout << ship->GetHullType()->GetName() << "\n";
       while( (t - startT) < Seconds(20.0f) )
       {
         t += interval;
         mission.Update(t);
       }
-      std::cout << ship->GetHullType()->GetName() << "\n";
+      AssertThat( ship->GetHullType()->GetName(), Equals("Lifepod") );
     });
 
     it( "can terminate", [&]() {

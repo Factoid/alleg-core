@@ -350,10 +350,11 @@ class   SingleHull
           file >> nVerts >> nAdj >> m_center.x >> m_center.y >> m_center.z;
           m_center.x *= -1;
           verts.resize(nVerts);
-          for( auto v : verts )
+          for( auto& v : verts )
           {
             v.load( file, verts );
           }
+          CalculateExtremeVertices();
         }
 #endif
         void                    CalculateExtremeVertices(void)
@@ -485,7 +486,7 @@ class   MultiHull : public MultiHullBase
 #ifndef WIN
         void load( std::ifstream& file )
         {
-          for( auto h : hulls )          
+          for( auto& h : hulls )          
           {
             h.load( file );
           }
@@ -655,7 +656,7 @@ class   BoundingHull : public HitTest
                 }
                 while (*(++ppcvAdjacent) != NULL);
 #else
-                for( auto v : pcv->adjacencies )
+                for( auto& v : pcv->adjacencies )
                 {
                   double dot = direction * v->m_position;
                   if( dot > dotMax )
@@ -667,7 +668,9 @@ class   BoundingHull : public HitTest
 #endif
 
                 if (pcvNext)
+                {
                     pcv = pcvNext;
+                }
                 else
                 {
                     *ppcvRecent = pcv;
@@ -1085,7 +1088,6 @@ HitTestPtr HitTest::Create( const std::string& filename, IObject* data, bool sta
 
     if (!filename.empty())
     {
-        //An unsafe upcast ... but we know better.
         MultiHullBasePtr pMultiHull = Load(filename);
         if (pMultiHull)
         {

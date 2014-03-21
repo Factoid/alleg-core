@@ -754,8 +754,10 @@ class HitTest : public Transform44
             m_deadF(true),
             m_staticF(staticF)
         {
-            assert (data);
-            data->AddRef();
+            if( data )
+            {
+              data->AddRef();
+            }
 
             m_endpoints[0][0].highF = 
                 m_endpoints[1][0].highF = 
@@ -774,8 +776,9 @@ class HitTest : public Transform44
 
         virtual ~HitTest(void)
         {
-            assert (m_data);
+          if( m_data ) {
             m_data->Release();
+          }
         }
 
         ULONG __stdcall AddRef(void)
