@@ -9,7 +9,10 @@
 
 #include <cstdlib>
 #include <climits>
-
+#ifndef WIN
+#include <iomanip>
+#include <sstream>
+#endif
 //////////////////////////////////////////////////////////////////////////////
 //
 // This class is a type safe way of dealing with flag words see surface.h
@@ -218,6 +221,19 @@ template<unsigned long int nBits> class TLargeBitMask
 #endif
           }
         }
+
+#ifndef WIN
+        std::string ToString() const
+        {
+          std::ostringstream os;
+          long unsigned int cb = sizeof(m_bits);
+          for( long unsigned int i = 0; i < cb; ++i )
+          {
+            os << std::hex << m_bits[i];
+          }
+          return os.str();
+        }
+#endif
 
         bool FromString(const char* pszBits)
         {
