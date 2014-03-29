@@ -3543,7 +3543,7 @@ void     CmissionIGC::Update(Time now)
             m_lastUpdate = now;
     }
 
-    assert (m_lastUpdate == now);
+//    assert (m_lastUpdate == now);
 }
 
 static int  ExportList(__int64              maskTypes,
