@@ -6261,7 +6261,7 @@ bool    LoadIGCFile (const std::string& name, ImissionIGC* pMission, void (*mung
 // if the load function fails, it returns NA.
 //------------------------------------------------------------------------------
 bool    DumpIGCStaticCore (const char* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void (*munge)(int size, char* data) = NULL);
-int     LoadIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVersionOnly, void (*munge)(int size, char* data) = NULL);
+int DLL_PUBLIC LoadIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVersionOnly, void (*munge)(int size, char* data) = NULL);
 int     CacheIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVersionOnly, void (*munge)(int size, char* data) = NULL);
 
 #endif

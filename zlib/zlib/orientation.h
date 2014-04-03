@@ -10,7 +10,7 @@
 #include "zlib/vector.h"
 #endif
 
-class Orientation {
+class DLL_PUBLIC Orientation {
 private:
     float m_r[3][3]; 
 

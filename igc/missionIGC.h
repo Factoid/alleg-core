@@ -437,7 +437,7 @@ class   CstaticIGC
 
 /////////////////////////////////////////////////////////////////////////////
 // CmissionIGC
-class   CmissionIGC : public ImissionIGC
+class DLL_PUBLIC CmissionIGC : public ImissionIGC
 {
     public:
         CmissionIGC(void)
