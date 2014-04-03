@@ -13,7 +13,7 @@
 #include "zlib/zassert.h"
 #endif
 
-class Vector {
+class DLL_PUBLIC Vector {
 private:
     static const Vector s_vectorZero;
 
