@@ -11,9 +11,12 @@
 **
 **  History:
 */
+#ifdef _WINDOWS
+#include <windows.h>
+#undef max
+#endif
 
 #define __MODULE__ "igc"
-
 #if defined _WIN32 || defined __CYGWIN__
 #ifdef BUILDING_DLL
 #ifdef __GNUC__
@@ -75,8 +78,10 @@ inline float random( float a, float b )
   return dis(gen);
 }
 
+#ifndef _WINDOWS
 #define _vsnprintf vsnprintf
 const unsigned int MAX_PATH=0x104;
+#endif
 const unsigned int c_cbFileName = 13;
 const unsigned int c_cbLocAbrev = 9;
 const unsigned int c_cbName = 25;
@@ -87,25 +92,27 @@ const int   c_minNodeSize = 5;
 const int   c_minRootSize = 10;
 const float pi = 3.14159265359f;
 const float sqrt2 = 1.41421356237f;
+#ifndef _WINDOWS
 #define TRUE true
 typedef std::mutex CRITICAL_SECTION;
+#endif
 typedef std::string ZString;
 typedef const char* PCC;
 typedef int INT;
 typedef uint32_t UINT;
 #ifndef _WINDOWS
 typedef int64_t __int64;
-#endif
 typedef void VOID;
+typedef uint32_t DWORD;
+typedef DWORD HRESULT;
+typedef uint64_t ULONG;
+#endif
 typedef unsigned char BYTE;
 typedef char CHAR;
-typedef uint32_t DWORD;
 typedef DWORD D3DCOLOR;
 typedef DWORD COLORREF;
-typedef DWORD HRESULT;
 typedef long LONG;
 typedef char HitTestShape;
-typedef uint64_t ULONG;
 typedef void* HitTestID;
 
 class MultiHullBase;
@@ -113,7 +120,7 @@ class HitTest;
 typedef std::shared_ptr<MultiHullBase> MultiHullBasePtr;
 typedef HitTest* HitTestPtr;
 
-
+#ifndef _WINDOWS
 inline bool FAILED( HRESULT hr )
 {
   return hr < 0;
@@ -122,6 +129,7 @@ inline bool SUCCEEDED( HRESULT hr )
 {
   return !FAILED(hr);
 }
+#endif
 
 inline void Strcpy( ZString& d, const ZString& s )
 {
@@ -136,11 +144,13 @@ inline void Strcpy( char* d, const ZString& s )
 inline const float RadiansFromDegrees(float value) { return value * pi / 180.0f; }
 inline const float DegreesFromRadians(float value) { return value * 180.0f / pi; }
 
+#ifndef _WINDOWS
 const HRESULT S_OK = 0;
 const HRESULT S_FALSE = 1;
 const HRESULT E_ABORT = 0x80004004;
 const HRESULT E_INVALIDARG = 0x80070057;
 const HRESULT E_FAIL = 0x80004005;
+#endif
 //These do not depend on orientation
 const HitTestShape  c_htsPoint      = -4;
 const HitTestShape  c_htsSphere     = -3;
@@ -201,11 +211,13 @@ public:
   inline void Release() {};
 };
 
+#ifndef _WINDOWS
 struct POINT
 {
   LONG x;
   LONG y;
 };
+#endif
 
 using Seconds = std::chrono::duration<float>;
 using Clock = std::chrono::high_resolution_clock;
@@ -367,8 +379,10 @@ inline void InitializeCriticalSection(std::mutex*p) {}
 inline void DeleteCriticalSection(std::mutex*p) {}
 inline void EnterCriticalSection(std::mutex*p) { p->lock(); }
 inline void LeaveCriticalSection(std::mutex*p) { p->unlock(); }
+#ifndef _WINDOWS
 inline void ZeroMemory( void* p, std::size_t count ) { std::memset(p,0,count); }
-inline COLORREF RGB( unsigned char r, unsigned char g, unsigned char b ) { return r << 16 | g << 8 | b; }
+inline COLORREF RGB(unsigned char r, unsigned char g, unsigned char b) { return r << 16 | g << 8 | b; }
+#endif
 inline unsigned char RGB_GETRED( COLORREF c ) { return (c >> 16) & 0xFF; }
 inline unsigned char RGB_GETGREEN( COLORREF c ) { return (c >> 8) & 0xFF; }
 inline unsigned char RGB_GETBLUE( COLORREF c ) { return c & 0xFF; }

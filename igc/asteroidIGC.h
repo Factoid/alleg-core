@@ -62,6 +62,7 @@ class   CasteroidIGC : public TmodelIGC<IasteroidIGC>
 #ifdef WIN
 				if (m_inhibitCounter == -1)
 #else
+#undef min
         if (m_inhibitCounter == Time::min())
 #endif
         {
