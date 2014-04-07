@@ -75,7 +75,7 @@ inline float random( float a, float b )
   static std::random_device rd;
   static std::mt19937 gen(rd());
   std::uniform_real_distribution<> dis(a,b);
-  return dis(gen);
+  return (float)dis(gen);
 }
 
 #ifndef _WINDOWS
@@ -299,10 +299,7 @@ class DLL_PUBLIC UTL
             return s_artworkPath;
         }
 #else
-        static const std::string& artworkPath()
-        {
-          return s_artworkPath;
-        }
+		static const std::string& artworkPath();
 #endif
 #ifdef WIN
         static LONG GetPathFromReg(IN  HKEY hkey,
@@ -316,7 +313,7 @@ class DLL_PUBLIC UTL
 #ifdef WIN
         static char     s_artworkPath[MAX_PATH];
 #else
-        static std::string s_artworkPath;
+		static std::string s_artworkPath;
 #endif
         static char     s_szUrlRoot[MAX_PATH];
 		static TMap<DWORD,ZString> m_PrivilegedUsersMap; //Imago 6/10
@@ -478,7 +475,7 @@ class Rotation
 };
 const Rotation c_rotationZero(0.0f, 0.0f, 1.0f, 0.0f);
 
-class Transform44
+class DLL_PUBLIC Transform44
 {
     public:
         inline Transform44(void)

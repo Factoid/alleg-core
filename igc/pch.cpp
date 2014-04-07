@@ -21,7 +21,12 @@
 #ifdef WIN
 char UTL::s_artworkPath[MAX_PATH] = "";
 #else
-std::string UTL::s_artworkPath;
+DLL_PUBLIC std::string UTL::s_artworkPath;
+
+const std::string& UTL::artworkPath()
+{
+	return s_artworkPath;
+}
 #endif
 
 void ZAssertImpl(bool bSucceeded, const char* psz, const char* pszFile, int line, const char* pszModule)
