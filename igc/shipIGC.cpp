@@ -81,6 +81,419 @@ CshipIGC::CshipIGC(void)
     }
 }
 
+void CshipIGC::Kill(Time timeCollision, ImodelIGC* pcredit, float amount, const Vector& p1, const Vector& p2)
+{
+  ImissionIGC*          pmission = GetMission();
+  const MissionParams*  pmp = pmission->GetMissionParams();
+  IsideIGC*             pside = GetSide();
+
+  IclusterIGC*  pcluster = GetCluster();
+  IshipIGC*     pshipParent = GetParentShip();
+
+  if (pshipParent == nullptr )
+  {
+    //Transfer credit to the deserving individual, if we are tracking that sort of thing
+    DamageTrack*  pdt = GetDamageTrack();
+    if (pdt)
+    {
+      auto pdmglink = pdt->GetDamageBuckets()->begin();
+      if( pdmglink != pdt->GetDamageBuckets()->end() )
+      {
+          if ((*pdmglink)->model()->GetMission() == pmission) pcredit = (*pdmglink)->model();
+
+          auto pblAssist = ++pdmglink;
+          while (pblAssist != pdt->GetDamageBuckets()->end() )
+          {
+            ImodelIGC*  pAssist = (*pblAssist)->model();
+            if ((pAssist->GetObjectType() == OT_ship) &&
+                ( (pAssist->GetSide() != pside) && !pside->AlliedSides(pside,pAssist->GetSide()) ) && // #ALLY -imago 7/3/09 kgjv
+                (pAssist->GetMission() == pmission))
+            {
+//              IshipIGC* pAssistShip = dynamic_cast<IshipIGC*>(pAssist);
+//                if (pAssistShip->IsPlayer())
+//                {
+//                  GetMyMission()->GetSiteIGC()->AwardAssist(pAssistShip);
+//                  break;
+//                }
+            }
+
+            ++pblAssist;
+          }
+      }
+    }
+
+    //If we die, then all of our children die.
+    const ShipListIGC*  pshipsChildren = GetChildShips();
+    while(!pshipsChildren->empty())   //Intentional assignment
+    {
+      pshipsChildren->front()->Kill(timeCollision, pcredit, amount, p1, p2);
+    }
+
+      //Dead ship ... create treasures for all of its parts
+    const PartListIGC*  plist = GetParts();
+    while( !plist->empty() )
+    {
+      if( randomInt(0,4) == 0 )
+      {
+        //CreateTreasure(timeCollision, this, plist->front(), plist->front()->GetPartType(), p1, 100.0f, 60.0f );
+      }
+      plist->front()->Terminate();
+    }
+    
+    //No ammo or fuel either
+    //Treasures for ammo
+    {
+        short ammo = GetAmmo();
+        if (ammo > 0)
+        {
+            //IpartTypeIGC*  pptAmmo = pmission->GetAmmoPack();
+            if (randomInt(0, 4) == 0)
+            {
+                //CreateTreasure(timeCollision, this, ammo, pptAmmo, p1, 100.0f, 30.0f);
+            }
+            SetAmmo(0);
+        }
+    }
+    //Ditto for fuel
+    {
+        short fuel = short(GetFuel());
+        if (fuel > 0)
+        {
+            //IpartTypeIGC*  pptFuel = pmission->GetFuelPack();
+            if (randomInt(0, 4) == 0)
+            {
+            //    CreateTreasure(timeCollision, this, fuel, pptFuel, p1, 100.0f, 30.0f);
+            }
+        }
+        SetFuel(0.0f);
+    }
+
+    //Jetison flags
+    {
+        SideID sidFlag = GetFlag();
+        if (sidFlag != NA)
+        {
+            SetFlag(NA);
+
+            const Vector&   p = GetPosition();
+            float           lm = pmission->GetFloatConstant(c_fcidLensMultiplier);
+            float           r = 1.5f * pmission->GetFloatConstant(c_fcidRadiusUniverse);
+            if (p.x*p.x + p.y*p.y + p.z*p.z/(lm*lm) > r*r)
+            {
+                //RespawnFlag(sidFlag,NULL); // mmf 11/07 added second argument pside (which is set to null in this case)
+            }
+            else
+            {
+                DataTreasureIGC dt;
+                dt.treasureCode = c_tcFlag;
+                dt.treasureID = sidFlag;
+                dt.amount = 0;
+                dt.lifespan = 3600.0f * 24.0f * 10.0f;      //10 days
+                dt.createNow = false;
+                //CreateTreasure(timeCollision, pship, &dt, p1, 100.0f);
+            }
+
+/*
+            BEGIN_PFM_CREATE(g.fm, pfmGain, S, GAIN_FLAG)
+            END_PFM_CREATE
+            pfmGain->sideidFlag = NA;
+            pfmGain->shipidRecipient = GetObjectID();
+			pfmGain->bIsTreasureDocked = false; // KGJV #118
+            g.fm.SendMessages(m_pfsMission->GetGroupRealSides(), FM_GUARANTEED, FM_FLUSH);
+*/
+        }
+    }
+  }
+
+//  CFSShip * pfsShip = (CFSShip *) GetPrivateData();
+  //ShipID shipID = GetObjectID();
+  //Adjust side moneys for the forced ejection or eject pod kill
+
+  bool  bKilled;
+  bool  bLifepod;
+  if (IsPlayer())
+  {
+//    GetPlayer()->SetTreasureObjectID(NA);
+
+    bLifepod = (pshipParent == NULL) &&
+               GetBaseHullType()->HasCapability(c_habmLifepod);
+
+    bKilled = (!pmp->bEjectPods) || bLifepod || (amount < 0.0f);
+  }
+  else
+  {
+    bKilled = true;
+    bLifepod = false;
+  }
+
+  if (bKilled)
+        SetExperience(0.0f);
+
+/*
+  IshipIGC*   pshipCredit = NULL;
+  if (amount != 0.0f)
+  {
+    BEGIN_PFM_CREATE(g.fm, pfmKillShip, S, KILL_SHIP)
+    END_PFM_CREATE
+    pfmKillShip->shipID = shipID;
+
+    pfmKillShip->bKillCredit = false;
+    pfmKillShip->bDeathCredit = bKilled;
+
+    pfmKillShip->sideidKiller = NA;
+    if (pcredit)
+    {
+        ObjectType  type = pcredit->GetObjectType();
+
+        IsideIGC*   psideCredit = pcredit->GetSide();
+        if (psideCredit)
+        {
+            //Killed by something that belongs to a side ... award appropriate money
+            pfmKillShip->sideidKiller = psideCredit->GetObjectID();
+
+            if ((!bLifepod) && (psideCredit != pside))
+            {
+                //Didn't slay a helpless eject pod or a team mate... award kill credit
+                pfmKillShip->bKillCredit = true;
+
+                if (type == OT_ship)
+                {
+                    CFSShip*    pfsshipCredit = (CFSShip*)(((IshipIGC*)pcredit)->GetPrivateData());
+                    pfsshipCredit->AddKill();
+
+                    PlayerScoreObject::AdjustCombatRating(pmission, pfsshipCredit->GetPlayerScoreObject(), pfsShip->GetPlayerScoreObject());
+
+                    if ( (pside != psideCredit) && !pside->AlliedSides(pside,psideCredit) ) // #ALLY: kgjv dont up KB when FF is on - Imago 7/3/09
+                        ((IshipIGC*)pcredit)->AddExperience();
+
+                    if (pdmglink)
+                    {
+                        //Award score credit for partial kills to anyone who did damage in the damage track
+                        float totalDamage = 0.0f;
+                        {
+                            for (DamageBucketLink* l = pdmglink; (l != NULL); l = l->next())
+                            {
+                                if (l->data()->model()->GetSide() != pside)
+                                    totalDamage += l->data()->totalDamage();
+                            }
+                        }
+                        if (totalDamage != 0.0f)
+                        {
+                            for (DamageBucketLink* l = pdmglink; (l != NULL); l = l->next())
+                            {
+                                ImodelIGC*    pmodel = l->data()->model();
+                                if ((pmodel->GetObjectType() == OT_ship) &&
+                                    ( (pmodel->GetSide() != pside) && !pside->AlliedSides(pside,pmodel->GetSide()) ) && // #ALLY -imago 7/3/09 kgjv
+                                    (pmodel->GetMission() == pmission))
+                                {
+                                    IshipIGC*   pshipCredit = (IshipIGC*)pmodel;
+                                    CFSShip*    pfsShip = (CFSShip*)(pshipCredit->GetPrivateData());
+                                    pfsShip->GetPlayerScoreObject()->KillShip(pship, l->data()->totalDamage() / totalDamage);
+
+                                    IshipIGC*   pshipParent = pshipCredit->GetParentShip();
+                                    if (pshipParent)
+                                    {
+                                        IhullTypeIGC* phtParent = pshipParent->GetBaseHullType();
+                                        assert (phtParent);
+                                        float   divisor = 2.0f + float(phtParent->GetMaxWeapons() - phtParent->GetMaxFixedWeapons());
+
+                                        CFSShip*  pfsParent = (CFSShip*)(pshipParent->GetPrivateData());
+                                        pfsParent->GetPlayerScoreObject()->KillShip(pship,
+                                                                                    l->data()->totalDamage() /
+                                                                                    (totalDamage * divisor));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    psideCredit->AddKill();
+                }
+
+                IsideIGC*   psideWin = m_pfsMission->CheckForVictoryByKills(psideCredit);
+                if (psideWin)
+                {
+                    static char szReason[100];     //Make this static so we only need to keep a pointer to it around
+                    if (pshipCredit)
+                        sprintf(szReason, "%s pushes %s over the top with a kill", pshipCredit->GetName(), psideWin->GetName());
+                    else
+                        sprintf(szReason, "%s won by killing enough of their opponents", psideWin->GetName());
+                    m_pfsMission->GameOver(psideWin, szReason);
+                }
+            }
+        }
+
+        pfmKillShip->typeCredit = type;
+        pfmKillShip->idCredit = pcredit->GetObjectID();
+    }
+    else
+        pfmKillShip->typeCredit = pfmKillShip->idCredit   = NA;
+
+    g.fm.SendMessages(m_pfsMission->GetGroupMission(), FM_GUARANTEED, FM_FLUSH);
+  }
+*/
+
+  IhullTypeIGC*   pht = pside->GetCivilization()->GetLifepod();
+  if (!bKilled)
+  {
+ //   CFSPlayer* pfsPlayer = pfsShip->GetPlayer();
+ //   pfsPlayer->AddEjection();
+    assert (pcluster);
+    for( auto pmissile : *pcluster->GetMissiles() )
+    {
+        if (pmissile->GetTarget() == this)
+            pmissile->SetTarget(NULL);
+    }
+
+    //Eject the player
+    Vector  v = GetSourceShip()->GetVelocity();
+
+    //Let our teammates and any observers know that we are now in an eject pod
+    //ShipStatusHullChange(pht);
+    //Put us in the eject pod.
+    if (pshipParent)
+        SetParentShip(NULL);
+    SetBaseHullType(pht);
+
+    Vector      f = Vector::RandomDirection();
+    Vector      position;
+    Orientation o;
+    if (pshipParent)
+    {
+        o.Set(f);
+
+        //Start the escape pod well away from the parent ship
+        position = p1 - f * (40.0f + 0.5f * pht->GetLength() + pshipParent->GetRadius());
+    }
+    else
+    {
+        bool    bLook;
+        Vector  vectorLook;
+        if (pcredit)
+        {
+            ImodelIGC*  plauncher = (pcredit->GetObjectType() == OT_ship)
+                                    ? ((IshipIGC*)pcredit)->GetSourceShip()
+                                    : pcredit;
+
+            if (plauncher->GetCluster() == pcluster)
+            {
+                bLook = true;
+                vectorLook = plauncher->GetPosition();
+            }
+            else
+            {
+                bLook = false;
+            }
+        }
+        else
+        {
+            bLook = true;
+            vectorLook = p2;
+        }
+
+        if (bLook)
+        {
+            Vector  dp = (vectorLook - p1);
+            float   length2 = dp.LengthSquared();
+
+            if (length2 >= 1.0f)
+            {
+                o.Set(dp);
+
+                Vector  fNew = (f + dp * (8.0f / float(sqrt(length2))));
+                length2 = fNew.LengthSquared();
+                if (length2 > 0.01f)
+                    f = fNew / float(sqrt(length2));
+            }
+            else
+                o.Set(f);
+        }
+        else
+            o.Set(f);
+
+        position = p1;
+    }
+
+    v -= f * 100.0f;
+    SetPosition(position);
+    SetVelocity(v);
+    SetOrientation(o);
+
+    SetCurrentTurnRate(c_axisRoll, pi * 2.0f);
+    SetBB(timeCollision, timeCollision, 0.0f);
+
+    //Send the eject message to everyone in the sector
+/*
+    {
+        BEGIN_PFM_CREATE(g.fm, pfmEject, S, EJECT)
+        END_PFM_CREATE
+        pfmEject->shipID = shipID;
+        pfmEject->position = position;
+        pfmEject->velocity = v;
+        pfmEject->forward = f;
+        pfmEject->cookie = pfsPlayer->NewCookie();
+        g.fm.SendMessages(GetGroupSectorFlying(pcluster), FM_GUARANTEED, FM_FLUSH);
+    }
+*/
+  }
+  else
+  {
+ //     pfsShip->AnnounceExit(NULL, (amount != 0.0f) ? SDR_KILLED : SDR_TERMINATE);
+      if (IsPlayer())
+      {
+        assert (amount != 0.0f);
+        assert (pcluster);
+
+        //CFSPlayer * pfsPlayer = pfsShip->GetPlayer();
+        //pfsPlayer->AddDeath();
+
+        IstationIGC* pstationDest = (IstationIGC*)(FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster, NULL, NULL, NULL, NULL, c_sabmRestart));
+        //Oh ick ... if the game ended this tick, the side might not actually have a station
+        //so there is no place to send them to. Fortunately, this really is not a problem because
+        //if the game ends then the clients are all going to be rather firmly reset anyhow
+
+        //there also might be more than two
+        SetCluster(NULL);
+
+        if (pshipParent) SetParentShip(NULL);
+
+        //Put us in the eject pod.
+        SetBaseHullType(pht);
+
+        // Look for a new space station for him
+        if (pstationDest)
+        {
+          //pfsPlayer->ShipStatusRestart(pstationDest);
+/*
+          BEGIN_PFM_CREATE(g.fm, pfmEnterLifepod, S, ENTER_LIFEPOD)
+          END_PFM_CREATE
+          //pfmEnterLifepod->shipID = shipID;
+          g.fm.SendMessages(pfsPlayer->GetConnection(), FM_GUARANTEED, FM_FLUSH);
+*/
+//          pfsPlayer->GetIGCShip()->SetStation(pstationDest);
+          SetStation(pstationDest);
+
+//          pfsPlayer->ShipStatusDocked(pstationDest);
+
+//          pfsPlayer->SetCluster(pcluster, true);      //Pretend the client sent a set view cluster
+
+
+//          if (IsGhost() && !m_pfsMission->HasPlayers(pside, false))
+//          {
+//              m_pfsMission->DeactivateSide(pside);
+//          }
+        }
+      }
+      else // drone go bye bye
+      {
+        assert (GetParentShip() == NULL);
+//        delete pfsShip->GetDrone();
+      }
+  }
+}
+
 void    CshipIGC::ReInitialize(DataShipIGC * dataShip, Time now)
 {
     ImissionIGC * pmission = GetMyMission();

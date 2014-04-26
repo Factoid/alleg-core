@@ -6,7 +6,7 @@ sources = $(wildcard *.cpp)
 objects = $(sources:.cpp=.o)
 depends = $(sources:.cpp=.d)
 
-all: libigc.so $(objects)
+all: libigc.so
 
 libigc.so: $(objects)
 	$(CC) $(CFLAGS) -shared -o $@ $^
@@ -18,9 +18,6 @@ libigc.so: $(objects)
 	$(CC) $(CFLAGS) $(DEP_INCLUDE) -c $< -o $@
 
 deps: $(depends)
-
-install:
-	cp libigc.so ../tests
 
 depclean:
 	rm *.d

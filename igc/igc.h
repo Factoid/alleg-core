@@ -3238,13 +3238,14 @@ class IshipIGC : public IscannerIGC
 {
     public:
         virtual void                 SetObjectID(ObjectID    id) {}
-
+        virtual bool IsPlayer() { return GetPilotType() >= c_ptPlayer; }
         virtual Money                GetValue(void) const = 0;
 
         virtual IstationIGC*         GetStation(void) const = 0;
         virtual void                 SetStation(IstationIGC* s) = 0;
 
         virtual void                 Reset(bool bFull) = 0;
+        virtual void Kill(Time timeCollision, ImodelIGC* pcredit, float amount, const Vector& p1, const Vector& p2) = 0;
 
         virtual float                GetTorqueMultiplier(void) const = 0;
 

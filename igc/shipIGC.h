@@ -194,6 +194,8 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
             return m_shipID;
         }
 
+        void Kill(Time timeCollision, ImodelIGC* pcredit, float amount, const Vector& p1, const Vector& p2);
+
     // ImodelIGC
         virtual void    SetCluster(IclusterIGC* cluster)
         {
