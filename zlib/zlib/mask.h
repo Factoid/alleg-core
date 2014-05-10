@@ -186,7 +186,11 @@ template<unsigned long int nBits> class TLargeBitMask
 
         bool    GetAllZero(void) const
         {
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for(long unsigned int i = 0; (i < (nBits/8)); ++i )
+#endif
             {
                 if (m_bits[i] != 0)
                     return false;
@@ -290,8 +294,14 @@ template<unsigned long int nBits> class TLargeBitMask
 
         TLargeBitMask&   operator |= (const TLargeBitMask& tbm)
         {
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
+            {
                 m_bits[i] |= tbm.m_bits[i];
+            }
 
             return *this;
         }
@@ -299,16 +309,28 @@ template<unsigned long int nBits> class TLargeBitMask
         TLargeBitMask    operator | (const TLargeBitMask& tbm) const
         {
             TLargeBitMask<nBits> r;
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
-                r.m_bits[i] = m_bits[i] | tbm.m_bits[i];
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
+            {
+              r.m_bits[i] = m_bits[i] | tbm.m_bits[i];
+            }
 
             return r;
         }
 
         TLargeBitMask&   operator &= (const TLargeBitMask& tbm)
         {
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
+            {
                 m_bits[i] &= tbm.m_bits[i];
+            }
 
             return *this;
         }
@@ -316,8 +338,14 @@ template<unsigned long int nBits> class TLargeBitMask
         TLargeBitMask    operator & (const TLargeBitMask& tbm) const
         {
             TLargeBitMask<nBits> r;
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
+            {
                 r.m_bits[i] = m_bits[i] & tbm.m_bits[i];
+            }
 
             return r;
         }
@@ -325,7 +353,11 @@ template<unsigned long int nBits> class TLargeBitMask
         bool        operator == (const TLargeBitMask&    tbm) const
         {
             bool    rc = true;
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
             {
                 if (m_bits[i] != tbm.m_bits[i])
                 {
@@ -340,7 +372,11 @@ template<unsigned long int nBits> class TLargeBitMask
         bool        operator != (const TLargeBitMask&    tbm) const
         {
             bool    rc = true;
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
             {
                 if (m_bits[i] != tbm.m_bits[i])
                 {
@@ -356,7 +392,11 @@ template<unsigned long int nBits> class TLargeBitMask
         bool        operator <= (const TLargeBitMask& tbm) const
         {
             bool    rc = true;
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
             {
                 if ((m_bits[i] & tbm.m_bits[i]) != m_bits[i])
                 {
@@ -372,7 +412,11 @@ template<unsigned long int nBits> class TLargeBitMask
         bool        operator >= (const TLargeBitMask& tbm) const
         {
             bool    rc = true;
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
             {
                 if ((m_bits[i] & tbm.m_bits[i]) != tbm.m_bits[i])
                 {
@@ -388,8 +432,14 @@ template<unsigned long int nBits> class TLargeBitMask
         //e.g. remove all the bits in B from A
         TLargeBitMask&   operator -= (const TLargeBitMask& tbm)
         {
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
+            {
                 m_bits[i] &= ~tbm.m_bits[i];
+            }
 
             return *this;
         }
@@ -397,8 +447,14 @@ template<unsigned long int nBits> class TLargeBitMask
         TLargeBitMask    operator - (const TLargeBitMask& tbm) const
         {
             TLargeBitMask<nBits> r;
+#ifdef WIN
             for (int i = 0; (i < (nBits / 8)); i++)
+#else
+            for (unsigned long int i = 0; (i < (nBits / 8)); i++)
+#endif
+            {
                 r.m_bits[i] = m_bits[i] & ~tbm.m_bits[i];
+            }
 
             return r;
         }

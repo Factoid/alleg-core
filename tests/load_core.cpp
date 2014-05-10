@@ -33,7 +33,7 @@ public:
 
   void KillShipEvent( Time now, IshipIGC* ship, ImodelIGC* launcher, float amount, const Vector& p1, const Vector& p2 )
   {
-    ship->Reset(false);
+    ship->Kill(now,nullptr,amount,p1,p2);
   }
 };
 
@@ -87,6 +87,7 @@ go_bandit( []() {
       params.strGameName = std::string("My Test Game");
       params.nTeams = 2;
       params.rgCivID = { 18, 18 };
+      params.mmMapType = c_mmBrawl;
       mission.SetMissionParams( &params );
       AssertThat( mission.GetMissionParams()->strGameName, Equals("My Test Game") );
     });
@@ -141,7 +142,7 @@ go_bandit( []() {
       AssertThat( *mission.GetSides(), !IsEmpty() );
       mission.GenerateMission( t, mission.GetMissionParams(), nullptr, nullptr );
       AssertThat( *mission.GetClusters(), !IsEmpty() );
-      AssertThat( *mission.GetWarps(), !IsEmpty() );
+      AssertThat( *mission.GetWarps(), IsEmpty() );
       AssertThat( *mission.GetStations(), !IsEmpty() );
       AssertThat( *mission.GetAsteroids(), !IsEmpty() );
       AssertThat( *mission.GetTreasures(), !IsEmpty() );
@@ -187,7 +188,7 @@ go_bandit( []() {
       IsideIGC* side0 = mission.GetSide(0);
       AssertThat( side0 == nullptr, IsFalse() );
       AssertThat( *side0->GetShips(), IsEmpty() );
-      AssertThat( side0->GetStations()->size(), Equals(1) );
+      AssertThat( side0->GetStations()->size(), Equals<unsigned long>(1) );
 
       DataShipIGC shipData;
       shipData.shipID = mission.GenerateNewShipID();
@@ -246,6 +247,13 @@ go_bandit( []() {
         mission.Update(t);
       }
       AssertThat( ship->GetHullType()->GetName(), Equals("Lifepod") );
+    });
+
+    it( "can kill the lifepod", [&]() {
+      IshipIGC* ship = mission.GetShip(0);
+      AssertThat( ship == nullptr, IsFalse() );
+      AssertThat( ship->GetHullType()->GetName(), Equals("Lifepod") );
+      ship->ReceiveDamage(c_dmgidCollision, 1000, mission.GetLastUpdate(), ship->GetPosition(), Vector::GetZero(), NULL);
     });
 
     it( "can terminate", [&]() {

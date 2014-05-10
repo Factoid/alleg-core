@@ -472,12 +472,25 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
         assert (mLink);
 #else
         auto mLink = std::find(models->begin(),models->end(),pmodelCurrent);
+        if( mLink == models->end() )
+        {
+          mLink = models->begin();
+        }
+
         if( ttMask & c_ttPrevious )
         {
+          if( mLink == models->begin() ) 
+          {
+            mLink = models->end();
+          }
           --mLink;
         } else
         {
           ++mLink;
+          if( mLink == models->end() ) 
+          {
+            mLink = models->begin();
+          }
         }
 #endif
         float   capacity;
@@ -586,10 +599,18 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
 #else
             if( ttMask & c_ttPrevious )
             {
-              l = (l == models->begin()) ? (--models->end()) : --l;
+              if( l == models->begin() )
+              {
+                l = models->end();
+              }
+              --l;
             } else
             {
-              l = (l == models->end()) ? (models->begin()) : ++l;
+              ++l;
+              if( l == models->end() )
+              {
+                l = models->begin();
+              }
             }
 #endif
         }
