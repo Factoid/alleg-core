@@ -399,6 +399,7 @@ void CstationIGC::Launch(IshipIGC* pship)
     pship->SetCurrentTurnRate(c_axisPitch, 0.0f);
     pship->SetCurrentTurnRate(c_axisRoll, 0.0f);
 
+    pship->SetStation(nullptr);
     pship->SetCluster(pcluster);
 #ifdef WIN
 	pship->SetLastTimeLaunched(Time::Now());
