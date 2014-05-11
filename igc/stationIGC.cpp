@@ -317,93 +317,93 @@ const ShipListIGC*        CstationIGC::GetShips(void) const
 
 void CstationIGC::Launch(IshipIGC* pship)
 {
-	Orientation orientation;
-    Vector position(random(-0.5f, 0.5f), random(-0.5f, 0.5f), random(-0.5f, 0.5f));
-    Vector forward;
+  Orientation orientation;
+  Vector position(random(-0.5f, 0.5f), random(-0.5f, 0.5f), random(-0.5f, 0.5f));
+  Vector forward;
 
-    const Orientation&  o = GetOrientation();
-    float   vLaunch = GetMyMission()->GetFloatConstant(c_fcidExitStationSpeed); //imago TODO use m_myLaunchSpeed - this will allow core devs to tweak
+  const Orientation&  o = GetOrientation();
+  float   vLaunch = GetMyMission()->GetFloatConstant(c_fcidExitStationSpeed); //imago TODO use m_myLaunchSpeed - this will allow core devs to tweak
 
-	IclusterIGC*    pcluster = GetCluster();
-    int nLaunchSlots = m_myStationType.GetLaunchSlots();
-    if (nLaunchSlots == 0)
-    {
-        if ((pship->GetPilotType() < c_ptPlayer) && m_myStationType.HasCapability(c_sabmRipcord)) { //imago 8/7/09
-            forward = Vector::RandomDirection();
-        } else { //do the regular thing
-            switch (m_undockPosition++)
-            {
-                case 4:
-                {
-                    m_undockPosition = 0;
-                }
-                //No break
-                case 0:
-                {
-                    forward = o.GetRight();
-                }
-                break;
-                case 1:
-                {
-                    forward = o.GetUp();
-                }
-                break;
-                case 2:
-                {
-                    forward = -o.GetRight();
-                }
-                break;
-                case 3:
-                {
-                    forward = -o.GetUp();
-                }
-                break;
-            }
-        }
-
-        position += forward * (GetRadius() + pship->GetRadius() + vLaunch * 0.5f);
+  IclusterIGC*    pcluster = GetCluster();
+  int nLaunchSlots = m_myStationType.GetLaunchSlots();
+  if (nLaunchSlots == 0)
+  {
+    if ((pship->GetPilotType() < c_ptPlayer) && m_myStationType.HasCapability(c_sabmRipcord)) { //imago 8/7/09
+      forward = Vector::RandomDirection();
+    } else { //do the regular thing
+      switch (m_undockPosition++)
+      {
+        case 4:
+          {
+            m_undockPosition = 0;
+          }
+          //No break
+        case 0:
+          {
+            forward = o.GetRight();
+          }
+          break;
+        case 1:
+          {
+            forward = o.GetUp();
+          }
+          break;
+        case 2:
+          {
+            forward = -o.GetRight();
+          }
+          break;
+        case 3:
+          {
+            forward = -o.GetUp();
+          }
+          break;
+      }
     }
-    else
-    { 
-        position += m_myStationType.GetLaunchPosition(m_undockPosition) * o;
-        forward = m_myStationType.GetLaunchDirection(m_undockPosition) * o;
 
-		//Imago 6/10
-		Time    lastUpdate = pcluster->GetLastUpdate();
-		Time    lastLaunch = GetLastLaunch();
+    position += forward * (GetRadius() + pship->GetRadius() + vLaunch * 0.5f);
+  }
+  else
+  { 
+    position += m_myStationType.GetLaunchPosition(m_undockPosition) * o;
+    forward = m_myStationType.GetLaunchDirection(m_undockPosition) * o;
+
+    //Imago 6/10
+    Time    lastUpdate = pcluster->GetLastUpdate();
+    Time    lastLaunch = GetLastLaunch();
 #ifdef WIN
-		float	m_fDeltaTime = (float)(lastUpdate - lastLaunch);
+    float	m_fDeltaTime = (float)(lastUpdate - lastLaunch);
 #else
-		float	m_fDeltaTime = Seconds(lastUpdate - lastLaunch).count();
+    float	m_fDeltaTime = Seconds(lastUpdate - lastLaunch).count();
 #endif
-		//debugf(" *** %s(%i) launch time cluster delta = %f\n\n", m_myStationType.GetName(), m_myStationType.GetObjectID(), m_fDeltaTime);
-		if (m_fDeltaTime <= 0.1f) {
-			 position += forward * (pship->GetRadius() + vLaunch * 0.85f);
-			 //debugf("*** %s(%i) position adjusted to ensure smooth take-off\n",pship->GetName(),pship->GetObjectID());
-		} else {
-			 position += forward * (pship->GetRadius() + vLaunch * 0.5f);
-		}
-		//
-
-        m_undockPosition = (m_undockPosition + 1) % nLaunchSlots;
+    //debugf(" *** %s(%i) launch time cluster delta = %f\n\n", m_myStationType.GetName(), m_myStationType.GetObjectID(), m_fDeltaTime);
+    if (m_fDeltaTime <= 0.1f) {
+      position += forward * (pship->GetRadius() + vLaunch * 0.85f);
+      //debugf("*** %s(%i) position adjusted to ensure smooth take-off\n",pship->GetName(),pship->GetObjectID());
+    } else {
+      position += forward * (pship->GetRadius() + vLaunch * 0.5f);
     }
+    //
 
-    orientation.Set(forward, o.GetForward());
+    m_undockPosition = (m_undockPosition + 1) % nLaunchSlots;
+  }
+
+  orientation.Set(forward, o.GetForward());
 
 
-    
-    pship->SetPosition(position + GetPosition());
-    pship->SetOrientation(orientation);
-    pship->SetVelocity(forward * vLaunch);
-    pship->SetCurrentTurnRate(c_axisYaw, 0.0f);
-    pship->SetCurrentTurnRate(c_axisPitch, 0.0f);
-    pship->SetCurrentTurnRate(c_axisRoll, 0.0f);
 
-    pship->SetStation(nullptr);
-    pship->SetCluster(pcluster);
+  pship->SetPosition(position + GetPosition());
+  pship->SetOrientation(orientation);
+  pship->SetVelocity(forward * vLaunch);
+  pship->SetCurrentTurnRate(c_axisYaw, 0.0f);
+  pship->SetCurrentTurnRate(c_axisPitch, 0.0f);
+  pship->SetCurrentTurnRate(c_axisRoll, 0.0f);
+
+  pship->SetStation(nullptr);
+  pship->SetCluster(pcluster);
 #ifdef WIN
-	pship->SetLastTimeLaunched(Time::Now());
-	SetLastLaunch(Time::Now());
+  pship->SetLastTimeLaunched(Time::Now());
+  SetLastLaunch(Time::Now());
 #else
   pship->SetLastTimeLaunched(Clock::now());
   SetLastLaunch(Clock::now());

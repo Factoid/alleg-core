@@ -63,8 +63,9 @@ go_bandit( []() {
   });
 
   describe( "CVH Tests", []() {
-    MultiHullBasePtr hitTestA = HitTest::Load("fig05");
+    MultiHullBasePtr hitTestA = HitTest::Load("ss93");
     AssertThat( hitTestA.get() == nullptr, IsFalse() );
+    AssertThat( hitTestA->GetFrame("launch1") == nullptr, IsFalse() );
   });
 
   describe( "ImissionIGC", []() {

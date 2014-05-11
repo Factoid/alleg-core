@@ -490,7 +490,21 @@ class   MultiHull : public MultiHullBase
           {
             h.load( file );
           }
+          std::string name;
+          file >> name;
+          while( file )
+          {
+            FrameDataUTL fd;
+            strcpy(fd.szName,name.c_str());
+            file >> fd.position.x >> fd.position.y >> fd.position.z >> fd.forward.x >> fd.forward.y >> fd.forward.z;
+            fd.position.x *= -1;
+            fd.forward.y *= -1;
+            fd.forward.z *= -1;
+            m_frames.push_back(fd); 
+            file >> name;
+          }
         }
+
         float GetEllipseRadiusMultiplier() const 
         {
           return m_ellipseRadiusMultiplier;
