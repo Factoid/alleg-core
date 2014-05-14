@@ -1,6 +1,7 @@
 DEP_INCLUDE+=-I../ -I../utility/ -I../zlib/
-CC=g++
+#CC=g++
 CFLAGS=-std=gnu++11 -DBUILDING_DLL -ggdb3 -O0 -fvisibility=hidden -fno-inline-functions -fmax-errors=10 -fPIC -Wall -Werror -Wno-unused-function
+#CFLAGS=-std=gnu++11 -DBUILDING_DLL -ggdb3 -O0 -fvisibility=hidden -fno-inline-functions -fmax-errors=10 -Wall -Werror -Wno-unused-function
 
 sources = $(wildcard *.cpp)
 objects = $(sources:.cpp=.o)

@@ -2363,246 +2363,246 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                                              const Vector&  position,
                                              bool           bDocked)
         {
-            bool fGaveOrder = false;
+          bool fGaveOrder = false;
 
-            //No orders ... pick something
-            switch (m_pilotType)
-            {
-                case c_ptMiner:
+          //No orders ... pick something
+          switch (m_pilotType)
+          {
+            case c_ptMiner:
+              {
+                float   capacity = GetMyMission()->GetFloatConstant(c_fcidCapacityHe3) * 
+                  GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaMiningCapacity);
+                if (m_fOre < capacity / 2.0f)
                 {
-                    float   capacity = GetMyMission()->GetFloatConstant(c_fcidCapacityHe3) * 
-                                       GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaMiningCapacity);
-                    if (m_fOre < capacity / 2.0f)
+                  ImodelIGC*  pmodel = NULL;
+                  //Try the mining sector first
+                  if (m_miningCluster)
+                  {
+                    if (m_newMiningCluster)
                     {
-						ImodelIGC*  pmodel = NULL;
-						//Try the mining sector first
-						if (m_miningCluster)
-						{
-							if (m_newMiningCluster)
-							{
-								pmodel = FindTarget(this,
-															c_ttNeutral | c_ttAsteroid | c_ttNearest |
-															c_ttLeastTargeted, //not cowardly to allow assault mining
-															NULL, m_miningCluster, NULL, NULL,
-															m_abmOrders);
-								m_newMiningCluster = false;
-							}
-							else
-								pmodel = FindTarget(this,
-															c_ttNeutral | c_ttAsteroid | c_ttNearest |
-															c_ttLeastTargeted | c_ttCowardlyNeutOK,
-															NULL, m_miningCluster, NULL, NULL,
-															m_abmOrders);
-
-						}
-						//Spunky #288	
-						if (!pmodel)
-						{
-							m_miningCluster = NULL;
-							pmodel = FindTarget(this,
-                                                        c_ttNeutral | c_ttAsteroid | c_ttNearest |
-                                                        c_ttLeastTargeted | c_ttAnyCluster | c_ttPositiveBOP | c_ttNoEye,
-                                                        NULL, pcluster, &position, NULL,
-                                                        m_abmOrders);
-						}
-
-						if (!pmodel)
-						{
-							pmodel = FindTarget(this,
-                                                        c_ttNeutral | c_ttAsteroid | c_ttNearest |
-                                                        c_ttLeastTargeted | c_ttAnyCluster | c_ttPositiveBOP,
-                                                        NULL, pcluster, &position, NULL,
-                                                        m_abmOrders);
-						}
-
-						if (!pmodel)
-						{
-							pmodel = FindTarget(this,
-	                                                    c_ttNeutral | c_ttAsteroid | c_ttNearest |
-	                                                    c_ttLeastTargeted | c_ttAnyCluster | c_ttNoEye,
-	                                                    NULL, pcluster, &position, NULL,
-	                                                    m_abmOrders);
-						}
-						if (!pmodel)
-						{
-							pmodel = FindTarget(this,
-	                                                    c_ttNeutral | c_ttAsteroid | c_ttNearest |
-	                                                    c_ttLeastTargeted | c_ttAnyCluster | c_ttCowardly,
-	                                                    NULL, pcluster, &position, NULL,
-	                                                    m_abmOrders);
-							
-							
-						}
-						if (pmodel)
-						{
-							//Spunky #334
-							ImodelIGC*  pRefInCluster = NULL;
-							if (m_fOre > capacity * 0.25f && pmodel->GetCluster() != pcluster)
-							//we have significant ore and are going out of the cluster - unload if there is a ref here
-								 pRefInCluster = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest,
-                                                NULL, pcluster, &position, NULL,
-                                                c_sabmTeleportUnload);
-							if (pRefInCluster)
-								SetCommand(c_cmdAccepted, pRefInCluster, c_cidGoto);
-							else
-								SetCommand(c_cmdAccepted, pmodel, c_cidMine);
-							fGaveOrder = true;
-						}
-					}
-
-                    if ((!m_commandTargets[c_cmdCurrent]) && ((m_fOre > 0.0f) || !bDocked))
-                    {
-                        ImodelIGC*  pmodel = NULL;
-
-                        if (m_fOre > 0.0f)
-						{
-							//Spunky #331
-							pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest,
-                                                NULL, pcluster, &position, NULL,
-                                                c_sabmUnload);
-							if (!pmodel)
-								pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster | c_ttCowardly,
-                                                NULL, pcluster, &position, NULL,
-                                                c_sabmUnload);
-							if (!pmodel)
-								pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
-                                                NULL, pcluster, &position, NULL,
-                                                c_sabmUnload);
-						}
-
-                        if (pmodel == NULL)
-                            pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
-                                                NULL, pcluster, &position, NULL,
-                                                c_sabmLand);
-
-						//Spunky #269 - if we are not almost full, continue mining, but not if a base in sector is closer
-						//than the asteroid
-						if (m_fOre < capacity * 0.75f)
-						{				
-							ImodelIGC*  pmodelAsteroid = NULL;
-							pmodelAsteroid = FindTarget(this,
-                                                        c_ttNeutral | c_ttAsteroid | c_ttNearest | c_ttLeastTargeted | 
-														c_ttPositiveBOP | c_ttNoEye, //very cowardly
-                                                        NULL, pcluster, &position, NULL,
-                                                        m_abmOrders);
-
-							if (pmodelAsteroid && pmodel)
-							{		
-								bool mineAnother = false;
-								if (pmodel->GetCluster() != pcluster)
-									mineAnother = true;
-								else
-								{
-									//Spunky #334
-									if ((((IstationIGC*)pmodel)->GetBaseStationType()->GetCapabilities() & c_sabmTeleportUnload) == 0)	
-									{
-										const Vector basePosition = pmodel->GetPosition();
-										const Vector asteroidPosition = pmodelAsteroid->GetPosition();
-										const float ourDistanceToBase = (position - basePosition).Length();				
-
-								
-										if ((asteroidPosition - basePosition).Length() < ourDistanceToBase * 1.5f 
-											&& (position - asteroidPosition).Length() < ourDistanceToBase)
-											mineAnother = true;
-									}
-								}
-								
-								if (mineAnother)
-								{
-										SetCommand(c_cmdAccepted, pmodelAsteroid, c_cidMine);
-										fGaveOrder = true;
-										break;
-								}
-							}						
-						}
-						if (pmodel)
-						{
-							SetCommand(c_cmdAccepted, pmodel, c_cidGoto);
-							fGaveOrder = true;
-						}
-
-						
+                      pmodel = FindTarget(this,
+                          c_ttNeutral | c_ttAsteroid | c_ttNearest |
+                          c_ttLeastTargeted, //not cowardly to allow assault mining
+                          NULL, m_miningCluster, NULL, NULL,
+                          m_abmOrders);
+                      m_newMiningCluster = false;
                     }
+                    else
+                      pmodel = FindTarget(this,
+                          c_ttNeutral | c_ttAsteroid | c_ttNearest |
+                          c_ttLeastTargeted | c_ttCowardlyNeutOK,
+                          NULL, m_miningCluster, NULL, NULL,
+                          m_abmOrders);
+
+                  }
+                  //Spunky #288	
+                  if (!pmodel)
+                  {
+                    m_miningCluster = NULL;
+                    pmodel = FindTarget(this,
+                        c_ttNeutral | c_ttAsteroid | c_ttNearest |
+                        c_ttLeastTargeted | c_ttAnyCluster | c_ttPositiveBOP | c_ttNoEye,
+                        NULL, pcluster, &position, NULL,
+                        m_abmOrders);
+                  }
+
+                  if (!pmodel)
+                  {
+                    pmodel = FindTarget(this,
+                        c_ttNeutral | c_ttAsteroid | c_ttNearest |
+                        c_ttLeastTargeted | c_ttAnyCluster | c_ttPositiveBOP,
+                        NULL, pcluster, &position, NULL,
+                        m_abmOrders);
+                  }
+
+                  if (!pmodel)
+                  {
+                    pmodel = FindTarget(this,
+                        c_ttNeutral | c_ttAsteroid | c_ttNearest |
+                        c_ttLeastTargeted | c_ttAnyCluster | c_ttNoEye,
+                        NULL, pcluster, &position, NULL,
+                        m_abmOrders);
+                  }
+                  if (!pmodel)
+                  {
+                    pmodel = FindTarget(this,
+                        c_ttNeutral | c_ttAsteroid | c_ttNearest |
+                        c_ttLeastTargeted | c_ttAnyCluster | c_ttCowardly,
+                        NULL, pcluster, &position, NULL,
+                        m_abmOrders);
+
+
+                  }
+                  if (pmodel)
+                  {
+                    //Spunky #334
+                    ImodelIGC*  pRefInCluster = NULL;
+                    if (m_fOre > capacity * 0.25f && pmodel->GetCluster() != pcluster)
+                      //we have significant ore and are going out of the cluster - unload if there is a ref here
+                      pRefInCluster = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest,
+                          NULL, pcluster, &position, NULL,
+                          c_sabmTeleportUnload);
+                    if (pRefInCluster)
+                      SetCommand(c_cmdAccepted, pRefInCluster, c_cidGoto);
+                    else
+                      SetCommand(c_cmdAccepted, pmodel, c_cidMine);
+                    fGaveOrder = true;
+                  }
                 }
-				
-                break;
 
-                case c_ptBuilder:
+                if ((!m_commandTargets[c_cmdCurrent]) && ((m_fOre > 0.0f) || !bDocked))
                 {
-                    if ((m_abmOrders == c_aabmBuildable) && !bDocked)
-                        break;
-					
-                    //Spunky #304
-					ImodelIGC*  pmodel = FindTarget(this,
-                                                    c_ttNeutral | c_ttAsteroid | c_ttNearest |
-                                                    c_ttLeastTargeted,
-                                                    NULL, pcluster, &position, NULL,
-                                                    m_abmOrders);
+                  ImodelIGC*  pmodel = NULL;
 
-                    if (pmodel)
-                    {
-                        assert (m_pbaseData);
+                  if (m_fOre > 0.0f)
+                  {
+                    //Spunky #331
+                    pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest,
+                        NULL, pcluster, &position, NULL,
+                        c_sabmUnload);
+                    if (!pmodel)
+                      pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster | c_ttCowardly,
+                          NULL, pcluster, &position, NULL,
+                          c_sabmUnload);
+                    if (!pmodel)
+                      pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
+                          NULL, pcluster, &position, NULL,
+                          c_sabmUnload);
+                  }
 
-                        CommandID   cid = (m_abmOrders != c_aabmBuildable && !m_doNotBuild) ? c_cidBuild : c_cidGoto;//Spunky #304
+                  if (pmodel == NULL)
+                    pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
+                        NULL, pcluster, &position, NULL,
+                        c_sabmLand);
 
-                        SetCommand(c_cmdAccepted, pmodel, cid);
+                  //Spunky #269 - if we are not almost full, continue mining, but not if a base in sector is closer
+                  //than the asteroid
+                  if (m_fOre < capacity * 0.75f)
+                  {				
+                    ImodelIGC*  pmodelAsteroid = NULL;
+                    pmodelAsteroid = FindTarget(this,
+                        c_ttNeutral | c_ttAsteroid | c_ttNearest | c_ttLeastTargeted | 
+                        c_ttPositiveBOP | c_ttNoEye, //very cowardly
+                        NULL, pcluster, &position, NULL,
+                        m_abmOrders);
+
+                    if (pmodelAsteroid && pmodel)
+                    {		
+                      bool mineAnother = false;
+                      if (pmodel->GetCluster() != pcluster)
+                        mineAnother = true;
+                      else
+                      {
+                        //Spunky #334
+                        if ((((IstationIGC*)pmodel)->GetBaseStationType()->GetCapabilities() & c_sabmTeleportUnload) == 0)	
+                        {
+                          const Vector basePosition = pmodel->GetPosition();
+                          const Vector asteroidPosition = pmodelAsteroid->GetPosition();
+                          const float ourDistanceToBase = (position - basePosition).Length();				
+
+
+                          if ((asteroidPosition - basePosition).Length() < ourDistanceToBase * 1.5f 
+                              && (position - asteroidPosition).Length() < ourDistanceToBase)
+                            mineAnother = true;
+                        }
+                      }
+
+                      if (mineAnother)
+                      {
+                        SetCommand(c_cmdAccepted, pmodelAsteroid, c_cidMine);
                         fGaveOrder = true;
-                        if (cid == c_cidBuild)
-                            GetMyMission()->GetIgcSite()->SendChatf(this, CHAT_TEAM, GetSide()->GetObjectID(),
-                                                                    droneInTransitSound,
-                                                                    "Building %s at %s",
+                        break;
+                      }
+                    }						
+                  }
+                  if (pmodel)
+                  {
+                    SetCommand(c_cmdAccepted, pmodel, c_cidGoto);
+                    fGaveOrder = true;
+                  }
+
+
+                }
+              }
+
+              break;
+
+            case c_ptBuilder:
+              {
+                if ((m_abmOrders == c_aabmBuildable) && !bDocked)
+                  break;
+
+                //Spunky #304
+                ImodelIGC*  pmodel = FindTarget(this,
+                    c_ttNeutral | c_ttAsteroid | c_ttNearest |
+                    c_ttLeastTargeted,
+                    NULL, pcluster, &position, NULL,
+                    m_abmOrders);
+
+                if (pmodel)
+                {
+                  assert (m_pbaseData);
+
+                  CommandID   cid = (m_abmOrders != c_aabmBuildable && !m_doNotBuild) ? c_cidBuild : c_cidGoto;//Spunky #304
+
+                  SetCommand(c_cmdAccepted, pmodel, cid);
+                  fGaveOrder = true;
+                  if (cid == c_cidBuild)
+                    GetMyMission()->GetIgcSite()->SendChatf(this, CHAT_TEAM, GetSide()->GetObjectID(),
+                        droneInTransitSound,
+                        "Building %s at %s",
 #ifdef WIN
-                                                                    ((IstationTypeIGC*)(IbaseIGC*)m_pbaseData)->GetName(),
+                        ((IstationTypeIGC*)(IbaseIGC*)m_pbaseData)->GetName(),
 #else
-                                                                    ((IstationTypeIGC*)(IbaseIGC*)m_pbaseData.get())->GetName(),
+                        ((IstationTypeIGC*)(IbaseIGC*)m_pbaseData.get())->GetName(),
 #endif
-                                                                    GetModelName(pmodel));
-                    }
+                        GetModelName(pmodel));
                 }
-                break;
+              }
+              break;
 
-                case c_ptLayer:
+            case c_ptLayer:
+              {
+                if (!bDocked)
+                  break;
+
+                ImodelIGC*  pmodel = FindTarget(this,
+                    c_ttNeutral | c_ttAsteroid | c_ttNearest |
+                    c_ttLeastTargeted | c_ttAnyCluster | c_ttCowardly,
+                    NULL, pcluster, &position, NULL,
+                    0);
+
+                if (pmodel)
                 {
-                    if (!bDocked)
-                        break;
-
-                    ImodelIGC*  pmodel = FindTarget(this,
-                                                    c_ttNeutral | c_ttAsteroid | c_ttNearest |
-                                                    c_ttLeastTargeted | c_ttAnyCluster | c_ttCowardly,
-                                                    NULL, pcluster, &position, NULL,
-                                                    0);
-
-                    if (pmodel)
-                    {
-                        SetCommand(c_cmdAccepted, pmodel, c_cidGoto);
-                        fGaveOrder = true;
-                    }
+                  SetCommand(c_cmdAccepted, pmodel, c_cidGoto);
+                  fGaveOrder = true;
                 }
-                break;
+              }
+              break;
 
-                case c_ptWingman:
+            case c_ptWingman:
+              {
+                ImodelIGC*  pmodel = FindTarget(this,
+                    c_ttEnemy | c_ttShip | c_ttNearest,
+                    NULL, pcluster, &position, NULL, 0);
+
+                if (pmodel)
                 {
-                    ImodelIGC*  pmodel = FindTarget(this,
-                                                    c_ttEnemy | c_ttShip | c_ttNearest,
-                                                    NULL, pcluster, &position, NULL, 0);
-
-                    if (pmodel)
-                    {
-                        SetCommand(c_cmdAccepted, pmodel, c_cidAttack);
-                        fGaveOrder = true;
-                        GetMyMission()->GetIgcSite()->SendChatf(this, CHAT_TEAM, GetSide()->GetObjectID(),
-                                                                droneInTransitSound,
-                                                                "Attacking %s", GetModelName(pmodel));
-                    }
+                  SetCommand(c_cmdAccepted, pmodel, c_cidAttack);
+                  fGaveOrder = true;
+                  GetMyMission()->GetIgcSite()->SendChatf(this, CHAT_TEAM, GetSide()->GetObjectID(),
+                      droneInTransitSound,
+                      "Attacking %s", GetModelName(pmodel));
                 }
-                break;
-            }
+              }
+              break;
+          }
 
-            if (!fGaveOrder)
-                SetCommand(c_cmdAccepted, NULL, c_cidNone);
-              
+          if (!fGaveOrder)
+            SetCommand(c_cmdAccepted, NULL, c_cidNone);
 
-            return (m_commandIDs[c_cmdAccepted] != c_cidNone);
+
+          return (m_commandIDs[c_cmdAccepted] != c_cidNone);
         }
 
         bool    IsGhost(void) const
