@@ -11,6 +11,9 @@
 **
 **  History:
 */
+#ifndef __PCH_H__
+#define __PCH_H__
+
 #ifdef _WINDOWS
 #include <windows.h>
 #undef max
@@ -1166,3 +1169,5 @@ class DLL_PUBLIC HitTest : public Transform44
 #include "igc.h"
 
 #include "private.h"
+
+#endif
